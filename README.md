@@ -1,5 +1,21 @@
 [![DOI](https://zenodo.org/badge/@@@.svg)](https://zenodo.org/badge/latestdoi/@@@)
 
+
+
+
+```json
+   // code for coloring
+```
+```html
+   // code for coloring
+```
+```js
+   // code for coloring
+```
+```css
+   // code for coloring
+```
+
 # XX
 
 Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments. 
