@@ -2,10 +2,12 @@
 
 
 ```
-    A  
-   TCG  
-  ACGTA  
-    T   SEQ-SPRUCEUP
+SEQ-SPRUCEUP
+
+     A  
+    TCG  
+   ACGTA  
+     T 
 ```
 
 Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments. 
