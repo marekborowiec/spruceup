@@ -1,9 +1,7 @@
 [![DOI](https://zenodo.org/badge/@@@.svg)](https://zenodo.org/badge/latestdoi/@@@)
 
-
+# seq-spruceup
 ```
-SEQ-SPRUCEUP
-
      A  
     TCG  
    ACGTA  
@@ -38,7 +36,7 @@ sudo apt-get install python3.6
 
 ```
 
-# Interface
+## Interface
 Once you successfully installed `XX` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format and 2) a configuration file to run it. To run the program from the command line you can type:
 ```bash
 XX my-configuration-file.conf
