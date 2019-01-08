@@ -1,14 +1,12 @@
 [![DOI](https://zenodo.org/badge/@@@.svg)](https://zenodo.org/badge/latestdoi/@@@)
 
 
-
-
-
-     A  
-    TCG  
-   ACGTA  
-     T  
-
+```
+                    A  
+                   TCG  
+                  ACGTA  
+                    T  
+```
 
 # :christmas_tree: seq-spruceup
 
