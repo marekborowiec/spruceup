@@ -2,13 +2,11 @@
 
 
 ```
-                    A  
-                   TCG  
-                  ACGTA  
-                    T  
+    A  
+   TCG  
+  ACGTA  
+    T   SEQ-SPRUCEUP
 ```
-
-# :christmas_tree: seq-spruceup
 
 Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments. 
 
