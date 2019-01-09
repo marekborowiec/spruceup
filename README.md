@@ -10,7 +10,7 @@
 
 Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments. 
 
-If you are using this program, please cite: [this publication](link):
+If you are using this program, please cite [this publication](link):
 ```
 ```
 
@@ -39,13 +39,13 @@ sudo apt-get install python3.6
 ## Interface
 Once you successfully installed `XX` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format and 2) a configuration file to run it. To run the program from the command line you can type:
 ```bash
-XX my-configuration-file.conf
+spruceup my-configuration-file.conf
 ```
 Directory `Examples` contains a template configuration file. It has the following fields:
 ### [input]
 The input category defines parameters of the input alignment and its type.
-input_file_name: 
-input_format:
+`input_file_name` is the file path of the alignment to be processed. 
+`input_format` indicates which format the alignment file is in. It can be one of five popular formats: `fasta`, `phylip`, `phylip-int` (interleaved PHYLIP), `nexus`, and `nexus-int`. 
 data_type:
 cores:
 method:
