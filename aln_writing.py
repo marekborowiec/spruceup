@@ -1,15 +1,16 @@
 ### DESCRIPTION ###
 
+
 def print_fasta(source_dict):
-    # print fasta-formatted string from a dictionary        
+    # print fasta-formatted string from a dictionary
     fasta_string = ""
-    # each sequence line will have 80 characters 
+    # each sequence line will have 80 characters
     n = 80
     for taxon, seq in sorted(source_dict.items()):
         # split dictionary values to a list of string, each n chars long
-        seq = [seq[i:i+n] for i in range(0, len(seq), n)]
+        seq = [seq[i : i + n] for i in range(0, len(seq), n)]
         # in case there are unwanted spaces in taxon names
-        taxon = taxon.replace(" ","_").strip("'")
+        taxon = taxon.replace(" ", "_").strip("'")
         fasta_string += ">" + taxon + "\n"
         for element in seq:
             fasta_string += element + "\n"
@@ -27,14 +28,14 @@ def print_phylip(source_dict):
     header = str(len(source_dict)) + " " + str(seq_length)
     phylip_string = header + "\n"
     for taxon, seq in sorted(source_dict.items()):
-        taxon = taxon.replace(" ","_").strip("'")
+        taxon = taxon.replace(" ", "_").strip("'")
         # left-justify taxon names relative to sequences
         phylip_string += taxon.ljust(pad_longest_name, ' ') + seq + "\n"
     return phylip_string
 
 
 def print_phylip_int(source_dict):
-    # print phylip interleaved-formatted string from a dictionary        
+    # print phylip interleaved-formatted string from a dictionary
     taxa_list = list(source_dict.keys())
     no_taxa = len(taxa_list)
     pad_longest_name = len(max(taxa_list, key=len)) + 3
@@ -44,16 +45,18 @@ def print_phylip_int(source_dict):
     # this will be a list of tuples to hold taxa names and sequences
     seq_matrix = []
     # each sequence line will have 500 characters
-    n = 500  
+    n = 500
     # recreate sequence matrix
     add_to_matrix = seq_matrix.append
     for taxon, seq in sorted(source_dict.items()):
-        add_to_matrix((taxon, [seq[i:i+n] for i in range(0, len(seq), n)]))
+        add_to_matrix((taxon, [seq[i : i + n] for i in range(0, len(seq), n)]))
     first_seq = seq_matrix[0][1]
     for index, item in enumerate(first_seq):
         for taxon, sequence in seq_matrix:
             if index == 0:
-                phylip_int_string += taxon.ljust(pad_longest_name, ' ') + sequence[index] + "\n"
+                phylip_int_string += (
+                    taxon.ljust(pad_longest_name, ' ') + sequence[index] + "\n"
+                )
             else:
                 phylip_int_string += sequence[index] + "\n"
         phylip_int_string += "\n"
@@ -61,7 +64,7 @@ def print_phylip_int(source_dict):
 
 
 def print_nexus(source_dict, data_type):
-    # print nexus-formatted string from a dictionary    
+    # print nexus-formatted string from a dictionary
     if data_type == "aa" or command == "translate":
         data_type = "PROTEIN"
     elif data_type == "nt":
@@ -71,11 +74,17 @@ def print_nexus(source_dict, data_type):
     pad_longest_name = len(max(taxa_list, key=len)) + 3
     seq_length = len(next(iter(source_dict.values())))
     header = str(len(source_dict)) + " " + str(seq_length)
-    nexus_string = "#NEXUS\n\nBEGIN DATA;\n\tDIMENSIONS  NTAX=" + str(no_taxa) +\
-     " NCHAR=" + str(seq_length) + ";\n\tFORMAT DATATYPE=" + data_type +\
-      "  GAP = - MISSING = ?;\n\tMATRIX\n"
+    nexus_string = (
+        "#NEXUS\n\nBEGIN DATA;\n\tDIMENSIONS  NTAX="
+        + str(no_taxa)
+        + " NCHAR="
+        + str(seq_length)
+        + ";\n\tFORMAT DATATYPE="
+        + data_type
+        + "  GAP = - MISSING = ?;\n\tMATRIX\n"
+    )
     for taxon, seq in sorted(source_dict.items()):
-        taxon = taxon.replace(" ","_").strip("'")
+        taxon = taxon.replace(" ", "_").strip("'")
         nexus_string += "\t" + taxon.ljust(pad_longest_name, ' ') + seq + "\n"
     nexus_string += "\n;\n\nEND;"
     return nexus_string
@@ -94,19 +103,28 @@ def print_nexus_int(source_dict, data_type):
     header = str(len(source_dict)) + " " + str(seq_length)
     # this will be a list of tuples to hold taxa names and sequences
     seq_matrix = []
-    nexus_int_string = "#NEXUS\n\nBEGIN DATA;\n\tDIMENSIONS  NTAX=" +\
-     str(no_taxa) + " NCHAR=" + str(seq_length) + ";\n\tFORMAT   INTERLEAVE" +\
-      "   DATATYPE=" + data_type + "  GAP = - MISSING = ?;\n\tMATRIX\n"
+    nexus_int_string = (
+        "#NEXUS\n\nBEGIN DATA;\n\tDIMENSIONS  NTAX="
+        + str(no_taxa)
+        + " NCHAR="
+        + str(seq_length)
+        + ";\n\tFORMAT   INTERLEAVE"
+        + "   DATATYPE="
+        + data_type
+        + "  GAP = - MISSING = ?;\n\tMATRIX\n"
+    )
     n = 500
     # recreate sequence matrix
     add_to_matrix = seq_matrix.append
     for taxon, seq in sorted(source_dict.items()):
-        add_to_matrix((taxon, [seq[i:i+n] for i in range(0, len(seq), n)]))
+        add_to_matrix((taxon, [seq[i : i + n] for i in range(0, len(seq), n)]))
     first_seq = seq_matrix[0][1]
     for index, item in enumerate(first_seq):
         for taxon, sequence in seq_matrix:
             if index == 0:
-                nexus_int_string += taxon.ljust(pad_longest_name, ' ') + sequence[index] + "\n"
+                nexus_int_string += (
+                    taxon.ljust(pad_longest_name, ' ') + sequence[index] + "\n"
+                )
             else:
                 nexus_int_string += sequence[index] + "\n"
         nexus_int_string += "\n"
@@ -115,7 +133,7 @@ def print_nexus_int(source_dict, data_type):
 
 
 def write_alignment_file(alignment_dict, file_format, out_file_name, data_type):
-    # write the correct format string into a file      
+    # write the correct format string into a file
     with open(out_file_name, 'w') as of:
         if file_format == 'phylip':
             of.write(print_phylip(alignment_dict))

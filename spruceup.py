@@ -17,7 +17,9 @@ from tqdm import tqdm
 import psutil
 
 import aln_parsing, aln_writing
+
 plt.switch_backend('agg')
+
 
 def read_config(config_file_name):
     config = configparser.RawConfigParser()
@@ -25,8 +27,7 @@ def read_config(config_file_name):
     return config
 
 
-def distances_wrapper(parsed_alignments, cores, method='p-distance', 
-                      fraction=1):
+def distances_wrapper(parsed_alignments, cores, method='p-distance', fraction=1):
     """Use multiple cores to get p-distances from list of alignment dicts.
     
     Keyword args:
@@ -37,15 +38,20 @@ def distances_wrapper(parsed_alignments, cores, method='p-distance',
     elif int(cores) > 1:
         with mp.Pool(processes=cores) as pool:
             with tqdm(total=len(parsed_alignments)) as pbar:
-                for i, output in \
-                 tqdm(enumerate(pool.imap_unordered(partial(get_distances, method=method, fraction=fraction), \
-                  parsed_alignments)), \
-                   desc='Calculating distances'):
+                for i, output in tqdm(
+                    enumerate(
+                        pool.imap_unordered(
+                            partial(get_distances, method=method, fraction=fraction),
+                            parsed_alignments,
+                        )
+                    ),
+                    desc='Calculating distances',
+                ):
                     pbar.update()
                     yield output
 
 
-def missing_distance(seq1, seq2): # will probably drop this one
+def missing_distance(seq1, seq2):  # will probably drop this one
     """Calculate difference between amount of missing data for two sequences.
 
     Positive is first sequence is longer, zero or negative otherwise."""
@@ -55,6 +61,7 @@ def missing_distance(seq1, seq2): # will probably drop this one
     eff_len2 = len(seq2.strip('-').strip('?'))
     missing_distance = (eff_len2 - eff_len1) / len(seq1)
     return missing_distance
+
 
 def p_distance(seq1, seq2):
     """Calculate p-distance for two sequences.
@@ -66,11 +73,21 @@ def p_distance(seq1, seq2):
     eff_len1 = len(seq1.strip('-').strip('?'))
     eff_len2 = len(seq2.strip('-').strip('?'))
     if eff_len1 != 0 and eff_len2 != 0:
-        p_distance = sum(el1 != el2 for el1, el2 in zip(seq1, seq2) \
-         if el1 is not '-' and el2 is not '-' and el1 is not '?' and el2 is not '?') / eff_len1
+        p_distance = (
+            sum(
+                el1 != el2
+                for el1, el2 in zip(seq1, seq2)
+                if el1 is not '-'
+                and el2 is not '-'
+                and el1 is not '?'
+                and el2 is not '?'
+            )
+            / eff_len1
+        )
     else:
-        p_distance = 0 # is this the best solution?
+        p_distance = 0  # is this the best solution?
     return p_distance
+
 
 def get_distances(aln_tuple, method, fraction):
     """Calculate distances or p-distances for alignment.
@@ -80,28 +97,36 @@ def get_distances(aln_tuple, method, fraction):
     Keyword args:
     method (str) -- 'p-distance', 'jc69', or 'missing'
     """
-#### efficiency of this can be improved by adding option of calculating 
-#### distance over only a fraction of sequences 
+    #### efficiency of this can be improved by adding option of calculating
+    #### distance over only a fraction of sequences
 
     aln_name, aln_dict = aln_tuple
-    seqs_to_compare_to = random.sample(aln_dict.items(), int(len(aln_dict.items()) * fraction))
+    seqs_to_compare_to = random.sample(
+        aln_dict.items(), int(len(aln_dict.items()) * fraction)
+    )
 
     if method == 'p-distance':
-        #print('Calculating pairwse p-distances for {} ...'.format(aln_name))
-        distances = [(sp1, sp2, p_distance(seq1, seq2)) \
-         for sp2, seq2 in  seqs_to_compare_to \
-          for sp1, seq1 in aln_dict.items()]
+        # print('Calculating pairwse p-distances for {} ...'.format(aln_name))
+        distances = [
+            (sp1, sp2, p_distance(seq1, seq2))
+            for sp2, seq2 in seqs_to_compare_to
+            for sp1, seq1 in aln_dict.items()
+        ]
     elif method == 'jc69':
-        #print('Calculating pairwise Jukes-Cantor distances for {} ...'.format(aln_name))
-        distances = [(sp1, sp2, jc69_correction(p_distance(seq1, seq2))) \
-         for sp2, seq2 in  seqs_to_compare_to \
-          for sp1, seq1 in aln_dict.items()]
+        # print('Calculating pairwise Jukes-Cantor distances for {} ...'.format(aln_name))
+        distances = [
+            (sp1, sp2, jc69_correction(p_distance(seq1, seq2)))
+            for sp2, seq2 in seqs_to_compare_to
+            for sp1, seq1 in aln_dict.items()
+        ]
     elif method == 'missing':
-        #print('Calculating missing data distances for {} ...'.format(aln_name))
-        distances = [(sp1, sp2, missing_distance(seq1, seq2)) \
-         for sp2, seq2 in  seqs_to_compare_to \
-          for sp1, seq1 in aln_dict.items()]
-    #print(aln_name, distances)
+        # print('Calculating missing data distances for {} ...'.format(aln_name))
+        distances = [
+            (sp1, sp2, missing_distance(seq1, seq2))
+            for sp2, seq2 in seqs_to_compare_to
+            for sp1, seq1 in aln_dict.items()
+        ]
+    # print(aln_name, distances)
     return (aln_name, distances)
 
 
@@ -112,7 +137,7 @@ def jc69_correction(p_distance):
     elif p_distance > 0.7499999:
         jc69_corrected = 10
     else:
-        jc69_corrected = -3/4 * log(1 - (4/3 * p_distance))
+        jc69_corrected = -3 / 4 * log(1 - (4 / 3 * p_distance))
     return jc69_corrected
 
 
@@ -122,7 +147,7 @@ def dist_taxa_wrapper(dist_tuples):
     Given list of tuples of multiple alignments
     return tuple (alignment name : (taxa rows, distances list))."""
     for aln_name, distances in dist_tuples:
-       yield (aln_name, get_dist_and_taxa_lists(distances))
+        yield (aln_name, get_dist_and_taxa_lists(distances))
 
 
 def get_dist_and_taxa_lists(distances):
@@ -138,7 +163,7 @@ def get_dist_and_taxa_lists(distances):
 
 def get_dist_matrix(distances, taxa_no):
     """Create distance matrix for alignment."""
-    matrix = [distances[x:x+taxa_no] for x in range(0, len(distances), taxa_no)]
+    matrix = [distances[x : x + taxa_no] for x in range(0, len(distances), taxa_no)]
     return matrix
 
 
@@ -173,8 +198,12 @@ def get_mean_distances(dist_matrix, taxon_map):
     Given matrix of all pairwise distances and taxon map
     return dict of {taxon : mean distances}.
     """
-    mean_distances = {sp : mean_dist for sp, mean_dist \
-     in zip(taxon_map, [get_list_mean(dist) for dist in dist_matrix])}
+    mean_distances = {
+        sp: mean_dist
+        for sp, mean_dist in zip(
+            taxon_map, [get_list_mean(dist) for dist in dist_matrix]
+        )
+    }
     return mean_distances
 
 
@@ -182,7 +211,6 @@ def get_list_mean(lst):
     """Return mean for all items in a list."""
     list_mean = sum(lst) / float(len(lst))
     return list_mean
-
 
 
 def dists_per_taxon(means_tuple_list):
@@ -193,7 +221,7 @@ def dists_per_taxon(means_tuple_list):
     """
     taxa_dists = {}
     for aln_name, dist_dict in means_tuple_list:
-        #print(aln_name, dist_dict)
+        # print(aln_name, dist_dict)
         for sp, mean_dist in dist_dict.items():
             if sp not in taxa_dists.keys():
                 taxa_dists[sp] = [(aln_name, mean_dist)]
@@ -208,8 +236,10 @@ def means_per_taxon(taxa_dists):
     Given dict of {taxon : (alignment, mean distance within alignment)}
     return dict of {taxon : mean distance across alignments}.
     """
-    taxa_means = {sp : get_list_mean([dists for aln_name, dists in aln_dists]) \
-     for sp, aln_dists in taxa_dists.items()}
+    taxa_means = {
+        sp: get_list_mean([dists for aln_name, dists in aln_dists])
+        for sp, aln_dists in taxa_dists.items()
+    }
     return taxa_means
 
 
@@ -235,8 +265,7 @@ def get_list_log(lst):
     return list_log
 
 
-def plot_taxon_dists(dists, taxon, criterion, 
-                     cutoff, cutoff_line, fit_line=0):
+def plot_taxon_dists(dists, taxon, criterion, cutoff, cutoff_line, fit_line=0):
     fname = '{}-{}{}.png'.format(taxon, cutoff, criterion)
     plt.figure(num=None, figsize=(12, 6), dpi=150, facecolor='w', edgecolor='k')
     plt.xlim(0, np.nanmax(dists))
@@ -252,11 +281,12 @@ def plot_taxon_dists(dists, taxon, criterion,
 
 def get_taxon_dists(taxa_dists, taxon):
     """Get dict of distances for each alignment for a taxon."""
-    return {(taxon, aln_name) : dist for aln_name, dist in taxa_dists[taxon]}
+    return {(taxon, aln_name): dist for aln_name, dist in taxa_dists[taxon]}
 
 
-def get_outliers_wrapper(all_taxa_dists, window_size, criterion, 
-                         cutoff, manual_cutoffs):
+def get_outliers_wrapper(
+    all_taxa_dists, window_size, criterion, cutoff, manual_cutoffs
+):
     """Wrapper around outlier identification function.
 
     Given dict of {taxon : alignment_name, mean_distance}
@@ -264,20 +294,41 @@ def get_outliers_wrapper(all_taxa_dists, window_size, criterion,
     """
     taxa = sorted(all_taxa_dists.keys())
     if criterion == 'lognorm':
-        outliers_dict = {taxon : get_lognorm_outliers(get_taxon_dists(all_taxa_dists, taxon), taxon,
-                                                                    window_size, criterion, cutoff,
-                                                                    manual_cutoffs) \
-                         for taxon in taxa}
+        outliers_dict = {
+            taxon: get_lognorm_outliers(
+                get_taxon_dists(all_taxa_dists, taxon),
+                taxon,
+                window_size,
+                criterion,
+                cutoff,
+                manual_cutoffs,
+            )
+            for taxon in taxa
+        }
     if criterion == 'mean':
-        outliers_dict = {taxon : get_mean_outliers(get_taxon_dists(all_taxa_dists, taxon), taxon,
-                                                                    window_size, criterion, cutoff,
-                                                                    manual_cutoffs) \
-                         for taxon in taxa}
+        outliers_dict = {
+            taxon: get_mean_outliers(
+                get_taxon_dists(all_taxa_dists, taxon),
+                taxon,
+                window_size,
+                criterion,
+                cutoff,
+                manual_cutoffs,
+            )
+            for taxon in taxa
+        }
     if criterion == 'median':
-        outliers_dict = {taxon : get_median_outliers(get_taxon_dists(all_taxa_dists, taxon), taxon,
-                                                                    window_size, criterion, cutoff,
-                                                                    manual_cutoffs) \
-                         for taxon in taxa}
+        outliers_dict = {
+            taxon: get_median_outliers(
+                get_taxon_dists(all_taxa_dists, taxon),
+                taxon,
+                window_size,
+                criterion,
+                cutoff,
+                manual_cutoffs,
+            )
+            for taxon in taxa
+        }
     return outliers_dict
 
 
@@ -289,8 +340,9 @@ def get_window_tuple(tpl, window_size):
     return aln_tpl
 
 
-def get_lognorm_outliers(taxon_dists, taxon, window_size, 
-                       criterion, cutoff, manual_cutoffs):
+def get_lognorm_outliers(
+    taxon_dists, taxon, window_size, criterion, cutoff, manual_cutoffs
+):
     """Identify outlier windows in a taxon.
 
     Given dict of _(taxon, aln_name) : dist}
@@ -313,21 +365,29 @@ def get_lognorm_outliers(taxon_dists, taxon, window_size,
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            plot_taxon_dists(dists, taxon, criterion, 
-                             cutoff, manual_dict[taxon], fit_line=logn_fit_line)
+            plot_taxon_dists(
+                dists,
+                taxon,
+                criterion,
+                cutoff,
+                manual_dict[taxon],
+                fit_line=logn_fit_line,
+            )
             for tpl, dist in taxon_dists.items():
                 if dist >= manual_dict[taxon]:
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
-            plot_taxon_dists(dists, taxon, criterion, 
-                             cutoff, logn_cutoff, fit_line=logn_fit_line)
+            plot_taxon_dists(
+                dists, taxon, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
+            )
             for tpl, dist in taxon_dists.items():
                 if dist >= logn_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
     else:
         print(taxon, logn_cutoff)
-        plot_taxon_dists(dists, taxon, criterion, 
-                         cutoff, logn_cutoff, fit_line=logn_fit_line)
+        plot_taxon_dists(
+            dists, taxon, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
+        )
         for tpl, dist in taxon_dists.items():
             if dist >= logn_cutoff:
                 outliers.append(get_window_tuple(tpl, window_size))
@@ -338,8 +398,10 @@ def get_lognorm_outliers(taxon_dists, taxon, window_size,
     outlier_sequence_ranges = list(merged_outliers)
     return (logn_cutoff, outlier_sequence_ranges)
 
-def get_mean_outliers(taxon_dists, taxon, window_size, 
-                      criterion, cutoff, manual_cutoffs):
+
+def get_mean_outliers(
+    taxon_dists, taxon, window_size, criterion, cutoff, manual_cutoffs
+):
     """Identify outlier windows in a taxon.
 
     Given dict of _(taxon, aln_name) : dist}
@@ -356,20 +418,21 @@ def get_mean_outliers(taxon_dists, taxon, window_size,
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            plot_taxon_dists(taxon_dists.values(), taxon, criterion, 
-                             cutoff, manual_dict[taxon])
+            plot_taxon_dists(
+                taxon_dists.values(), taxon, criterion, cutoff, manual_dict[taxon]
+            )
             for tpl, dist in taxon_dists.items():
                 if dist >= manual_dict[taxon]:
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
-            plot_taxon_dists(taxon_dists.values(), taxon, criterion, 
-                             cutoff, mean_cutoff)
+            plot_taxon_dists(
+                taxon_dists.values(), taxon, criterion, cutoff, mean_cutoff
+            )
             for tpl, dist in taxon_dists.items():
                 if dist >= mean_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
     else:
-        plot_taxon_dists(taxon_dists.values(), taxon, criterion, 
-                         cutoff, mean_cutoff)
+        plot_taxon_dists(taxon_dists.values(), taxon, criterion, cutoff, mean_cutoff)
         for tpl, dist in taxon_dists.items():
             if dist >= mean_cutoff:
                 outliers.append(get_window_tuple(tpl, window_size))
@@ -378,11 +441,12 @@ def get_mean_outliers(taxon_dists, taxon, window_size,
     else:
         merged_outliers = []
     outlier_sequence_ranges = list(merged_outliers)
-    return (mean_cutoff, outlier_sequence_ranges)    
+    return (mean_cutoff, outlier_sequence_ranges)
 
 
-def get_median_outliers(taxon_dists, taxon, window_size, 
-                      criterion, cutoff, manual_cutoffs):
+def get_median_outliers(
+    taxon_dists, taxon, window_size, criterion, cutoff, manual_cutoffs
+):
     """Identify outlier windows in a taxon.
 
     Given dict of _(taxon, aln_name) : dist}
@@ -399,20 +463,21 @@ def get_median_outliers(taxon_dists, taxon, window_size,
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            plot_taxon_dists(taxon_dists.values(), taxon, criterion, 
-                             cutoff, manual_dict[taxon])
+            plot_taxon_dists(
+                taxon_dists.values(), taxon, criterion, cutoff, manual_dict[taxon]
+            )
             for tpl, dist in taxon_dists.items():
                 if dist >= manual_dict[taxon]:
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
-            plot_taxon_dists(taxon_dists.values(), taxon, criterion, 
-                             cutoff, median_cutoff)
+            plot_taxon_dists(
+                taxon_dists.values(), taxon, criterion, cutoff, median_cutoff
+            )
             for tpl, dist in taxon_dists.items():
                 if dist >= median_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
     else:
-        plot_taxon_dists(taxon_dists.values(), taxon, criterion, 
-                         cutoff, median_cutoff)
+        plot_taxon_dists(taxon_dists.values(), taxon, criterion, cutoff, median_cutoff)
         for tpl, dist in taxon_dists.items():
             if dist >= median_cutoff:
                 outliers.append(get_window_tuple(tpl, window_size))
@@ -421,7 +486,7 @@ def get_median_outliers(taxon_dists, taxon, window_size,
     else:
         merged_outliers = []
     outlier_sequence_ranges = list(merged_outliers)
-    return (median_cutoff, outlier_sequence_ranges) 
+    return (median_cutoff, outlier_sequence_ranges)
 
 
 def merge(ranges):
@@ -440,15 +505,15 @@ def merge(ranges):
 def get_windows(parsed_alignment, window_size, stride):
     # extract alignment windows of desired length and stride
     print('Splitting into size-{} windows ...\n'.format(window_size))
-    aln_len = len(next(iter(parsed_alignment.values()))) # random seq length
-    # initiate list of window dicts 
+    aln_len = len(next(iter(parsed_alignment.values())))  # random seq length
+    # initiate list of window dicts
     list_of_windows = []
     add_to_list_of_windows = list_of_windows.append
     for i in range(0, aln_len, stride):
         # loop over all parsed partitions, adding taxa and sliced sequences
         name = 'window{}'.format(i)
         start = i
-        stop = i+window_size
+        stop = i + window_size
         new_dict = {}
         if stop < aln_len:
             for taxon, seq in parsed_alignment.items():
@@ -463,9 +528,9 @@ def get_windows(parsed_alignment, window_size, stride):
     return list_of_windows
 
 
-def replace_seq(text,start,end,replacement=''):
+def replace_seq(text, start, end, replacement=''):
     length = end - start + 1
-    return '{}{}{}'.format(text[:start], replacement*length, text[end+1:])
+    return '{}{}{}'.format(text[:start], replacement * length, text[end + 1 :])
 
 
 def print_mem():
@@ -483,7 +548,7 @@ def remove_outliers(parsed_alignment, outliers_dict):
         for taxon, seq in aln_dict.items():
             cutoff_value, ranges = outliers_dict[taxon]
             if ranges:
-                for index, r in enumerate(ranges): 
+                for index, r in enumerate(ranges):
                     start, end = r
                     total_sites_removed += end - start
                     if index == 0:
@@ -505,9 +570,11 @@ def get_alignment_size(alignment_tuple):
     total_alignment_size = seq_length * len(alignment_dict.values())
     return total_alignment_size
 
+
 def get_removed_fraction(untrimmed_alignment_size, no_sites_trimmed):
     removed_fraction = no_sites_trimmed / untrimmed_alignment_size
     return removed_fraction
+
 
 def print_report(outliers, criterion, cutoff, manual_cutoffs):
     report_string = ''
@@ -517,7 +584,7 @@ def print_report(outliers, criterion, cutoff, manual_cutoffs):
             for group in manual_cutoffs:
                 manual_taxon_name, manual_cutoff_value = group
                 if taxon == manual_taxon_name:
-                    cutoff_value = manual_cutoff_value            
+                    cutoff_value = manual_cutoff_value
         ranges = ''
         total_seq_removed_from_taxon = 0
         for outlier_range in outliers_list:
@@ -526,11 +593,12 @@ def print_report(outliers, criterion, cutoff, manual_cutoffs):
             one_range = '{}-{}\t'.format(start, end)
             ranges += one_range
             total_seq_removed_from_taxon += seq_removed
-        report_string += ('{}:\n' \
-                          'Cutoff: {}\n' \
-                          'Removed {} positions\n' \
-                          '{}\n\n'.format(taxon, cutoff_value, total_seq_removed_from_taxon, 
-                                          ranges))
+        report_string += (
+            '{}:\n'
+            'Cutoff: {}\n'
+            'Removed {} positions\n'
+            '{}\n\n'.format(taxon, cutoff_value, total_seq_removed_from_taxon, ranges)
+        )
     return report_string
 
 
@@ -538,8 +606,10 @@ def write_report(report_string, report_file_name):
     with open(report_file_name, 'w') as rf:
         rf.write(report_string)
 
-def analyze(alignment_file_name, input_file_format, window_size, 
-            stride, cores, method, fraction):
+
+def analyze(
+    alignment_file_name, input_file_format, window_size, stride, cores, method, fraction
+):
     print('Parsing alignment {} ...\n'.format(alignment_file_name))
     aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
     aln_name, aln_dict = aln_tuple
@@ -551,24 +621,49 @@ def analyze(alignment_file_name, input_file_format, window_size,
     return (aln_tuple, mean_taxon_distances)
 
 
-def output_loop(untrimmed_alignment, distances, window_size, 
-                criterion, cutoffs, manual_cutoffs, report_file_name,
-                out_format, out_file_name, data_type):
+def output_loop(
+    untrimmed_alignment,
+    distances,
+    window_size,
+    criterion,
+    cutoffs,
+    manual_cutoffs,
+    report_file_name,
+    out_format,
+    out_file_name,
+    data_type,
+):
     alignment_sites = get_alignment_size(untrimmed_alignment)
     for cutoff_string in cutoffs:
         cutoff = float(cutoff_string)
         print('Finding outliers for {} {}s cutoff ...'.format(cutoff, criterion))
-        outliers = get_outliers_wrapper(distances, window_size, criterion, cutoff, manual_cutoffs)
-        sites_removed, trimmed_alignment = remove_outliers(untrimmed_alignment, outliers)
+        outliers = get_outliers_wrapper(
+            distances, window_size, criterion, cutoff, manual_cutoffs
+        )
+        sites_removed, trimmed_alignment = remove_outliers(
+            untrimmed_alignment, outliers
+        )
         print('Sites removed: {}'.format(sites_removed))
         percent_removed = get_removed_fraction(alignment_sites, sites_removed) * 100
-        print('Removed {:.2f}% of sites at cutoff of {} {}s'.format(percent_removed, cutoff_string, criterion))  
-        cutoff_report_fname = '{}_{}s-cutoff-{}'.format(cutoff, criterion, report_file_name)
-        cutoff_trimmed_aln_fname = '{}_{}s-cutoff-{}'.format(cutoff, criterion, out_file_name)
-        write_report(print_report(outliers, criterion, cutoff, manual_cutoffs), cutoff_report_fname)
+        print(
+            'Removed {:.2f}% of sites at cutoff of {} {}s'.format(
+                percent_removed, cutoff_string, criterion
+            )
+        )
+        cutoff_report_fname = '{}_{}s-cutoff-{}'.format(
+            cutoff, criterion, report_file_name
+        )
+        cutoff_trimmed_aln_fname = '{}_{}s-cutoff-{}'.format(
+            cutoff, criterion, out_file_name
+        )
+        write_report(
+            print_report(outliers, criterion, cutoff, manual_cutoffs),
+            cutoff_report_fname,
+        )
         print('Wrote report {} ...'.format(cutoff_report_fname))
-        aln_writing.write_alignment_file(trimmed_alignment, out_format, cutoff_trimmed_aln_fname,
-                                         data_type)
+        aln_writing.write_alignment_file(
+            trimmed_alignment, out_format, cutoff_trimmed_aln_fname, data_type
+        )
         print('Wrote trimmed alignment {} ...\n'.format(cutoff_trimmed_aln_fname))
 
 
@@ -582,35 +677,45 @@ def main():
     # analysis
     method = conf.get('analysis', 'distance_method')
     window_size = conf.getint('analysis', 'window_size')
-    stride = conf.getint('analysis', 'stride') 
+    stride = conf.getint('analysis', 'stride')
     # include warning if large stride will result in non-overlapping windows
     fraction = conf.getfloat('analysis', 'fraction')
     cores = conf.getint('analysis', 'cores')
     criterion = conf.get('analysis', 'criterion')
     cutoffs = conf.get('analysis', 'cutoffs').split(',')
     try:
-        manual_cutoffs  = [tuple(taxon_cutoff.split(',')) \
-         for taxon_cutoff in conf.get('analysis', 'manual_cutoffs').split(';')]
+        manual_cutoffs = [
+            tuple(taxon_cutoff.split(','))
+            for taxon_cutoff in conf.get('analysis', 'manual_cutoffs').split(';')
+        ]
     except configparser.NoOptionError:
         manual_cutoffs = []
     # output
     output_file_aln = conf.get('output', 'output_file_aln')
     output_format = conf.get('output', 'output_format')
     report = conf.get('output', 'report')
-    alignment, mean_taxon_distances = analyze(alignment_name, file_format, window_size,
-                                              stride, cores, method, fraction)
+    alignment, mean_taxon_distances = analyze(
+        alignment_name, file_format, window_size, stride, cores, method, fraction
+    )
     print_mem()
-    output_loop(alignment, mean_taxon_distances, window_size, 
-                criterion, cutoffs, manual_cutoffs, report, 
-                output_format, output_file_aln, data_type)
+    output_loop(
+        alignment,
+        mean_taxon_distances,
+        window_size,
+        criterion,
+        cutoffs,
+        manual_cutoffs,
+        report,
+        output_format,
+        output_file_aln,
+        data_type,
+    )
 
 
 if __name__ == '__main__':
-        
-        main()
 
-
-### To do: 
+    main()
+### To do:
 
 # 1) add docstrings to all functions
 # 2) remove unnecessary print() etc
