@@ -666,6 +666,8 @@ def output_loop(
         )
         print('Wrote trimmed alignment {} ...\n'.format(cutoff_trimmed_aln_fname))
 
+def get_stride(window_size, overlap):
+    return window_size - overlap
 
 def main():
     script, config_file_name = argv
@@ -677,7 +679,7 @@ def main():
     # analysis
     method = conf.get('analysis', 'distance_method')
     window_size = conf.getint('analysis', 'window_size')
-    stride = conf.getint('analysis', 'stride')
+    overlap = conf.getint('analysis', 'overlap')
     # include warning if large stride will result in non-overlapping windows
     fraction = conf.getfloat('analysis', 'fraction')
     cores = conf.getint('analysis', 'cores')
@@ -694,6 +696,7 @@ def main():
     output_file_aln = conf.get('output', 'output_file_aln')
     output_format = conf.get('output', 'output_format')
     report = conf.get('output', 'report')
+    stride = get_stride(window_size, overlap)
     alignment, mean_taxon_distances = analyze(
         alignment_name, file_format, window_size, stride, cores, method, fraction
     )
