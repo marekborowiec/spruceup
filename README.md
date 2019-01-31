@@ -84,4 +84,36 @@ The `output` category tells the program how and where to save your analysis resu
 
 ## Examples and interpretation of results
 
-When you run the script on your sequence alignment, it will be divided into a number of windows of the size and overlap you specified. The script will then compute distances for each OTU (sample/taxon) in each window. This is done all-by-all by default or all-by-fraction of OTUs, if specified. Once all distances are calculated, `criterion` and `cutoffs` settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the recommended `lognorm` criterion, specifying a quantile of `0.99` means that any sequence window that lies above 99th percentile of distances of a given OTU to other OUTs in that window will be deemed an outlier and should be removed. In theory, setting of `0.99` should mean that 1% of all sequence windows will be removed from each OTU. In practice, this is not true because real-life sequence data does not perfectly fit into lognormal distribution. Cutoff being constant, certain OTUs may have many outlier (misaligned) sequence fragments and more than 1% of sequence data removed, while others may have no misaligned fragments and no outliers.
+To use `seq-spruceup` you will need to run the `spruceup` script from the command line and provide the name of your configuration file as the argument:
+```bash
+spruceup.py my-configuration-file.conf
+```
+Once you run the script, your sequence alignment will be divided into a number of windows of the size and overlap you specified. The script will then compute distances for each OTU (sample/taxon) in each window. This is done all-by-all by default or all-by-fraction of OTUs, if specified. You will see some messages along the way, including a progress bar that will display the number of iterations (windows) and remaining time, as we as the maximum amount of memory used for distance calculation.   
+ 
+Once all distances are calculated, `criterion` and `cutoffs` settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the recommended `lognorm` criterion, specifying a quantile of `0.99` means that any sequence window that lies above 99th percentile of distances of a given OTU to other OUTs in that window will be deemed an outlier and should be removed. In theory, setting of `0.99` should mean that 1% of all sequence windows will be removed from each OTU. In practice, this is not true because real-life sequence data does not perfectly fit into lognormal distribution. Cutoff being constant, certain OTUs may have many outlier (misaligned) sequence fragments and more than 1% of sequence data removed, while others may have no misaligned fragments and no outliers.
+
+### Interpreting the output
+
+`spruceup` produces several types of output:
+
+1. Report files ending with suffix `-report.txt`, one of which is written for each cutoff specified, which indicated by the prefix (e.g 0.95, 0.99 and so forth). These files contain the distance cutoff value for each OTU and which sequence windows were determined to be outliers and removed.
+
+2. Trimmed alignment files ending with suffix `-trimmed.fas/phylip/nexus`, again, one for each cutoff value. These are the alignments with outlier windows removed.
+
+3. Distance distribution `png` plots, one for each OTU and cutoff value. These images can be used to examine the distribution of distances for each taxon, its fit to lognormal distribution, and cutoff value placed on each OTU given a cutoff
+
+An example of distances plot is below. The header is the name of the OTU. The x-axis indicates distance to other OTUs, ranging from `0` to `1`. The x-axis is limited to the maximum distance that was found for the OTU. The y-axis specifies number of windows. Blue bars comprise the histogram of distances. Orange line is the fitted lognormal distribution (only shown when using the `lognorm` criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.
+
+This example plot shows an OTU with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than 0.2.
+
+![example-plot-good]
+
+The following plot shows an OTU with less smooth distribution, overall sequences fewer sequences due to missing data, as indicated by the heigth of the histogram bars, and many outlier windows.
+
+![example-plot-poor] 
+
+These plots, combined with visual examinaton of report files and alignments should serve you as a guide on what criterion and cutoff values make most sense for your dataset.
+
+4. Log file (to-do)
+
+5. Distances Python object file (to-do) 
