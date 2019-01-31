@@ -18,12 +18,12 @@ This script uses [numpy](link), [scipy](link), [matplotlib](link), [psutil](link
 
 ## Installation and requirements
 
-You can download a zipped GitHub repository, clone it if you have `git` installed on your system, or install using [pip](https://pip.pypa.io/en/latest/installing.html) (recommended) from the [Python Package Index](https://pypi.python.org/pypi/XX/):
+You can download a zipped GitHub repository, clone it if you have `git` installed on your system, or install using [pip](https://pip.pypa.io/en/latest/installing.html) (recommended) from the [Python Package Index](https://pypi.python.org/pypi/seq-spruceup/) (to-do):
 ```bash
-pip install XX
+pip install seq-spruceup
 ```
 
-`XX` requires you have Python version 3.6 or newer. Dependencies should be installed automatically. If your system does not have Python version 3.6 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using
+`seq-spruceup` requires you have Python version 3.6 or newer. Dependencies should be installed automatically. If your system does not have Python version 3.6 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using
 
 ```bash
 sudo apt-get install python3.6
