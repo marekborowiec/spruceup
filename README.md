@@ -104,15 +104,15 @@ Once all distances are calculated, `criterion` and `cutoffs` settings will deter
 
 An example of distances plot is below. The header is the name of the OTU. The x-axis indicates distance to other OTUs, ranging from `0` to `1`. The x-axis is limited to the maximum distance that was found for the OTU. The y-axis specifies number of windows. Blue bars comprise the histogram of distances. Orange line is the fitted lognormal distribution (only shown when using the `lognorm` criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.
 
-This example plot shows an OTU with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than 0.2.
+The first example plot below shows an OTU with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than 0.2.
 
-![example-plot-good]
+![example-plot-good](https://cdn.rawgit.com/marekborowiec/seq-spruceup//blob/master/example-plot-good.png)
 
 The following plot shows an OTU with less smooth distribution, overall sequences fewer sequences due to missing data, as indicated by the heigth of the histogram bars, and many outlier windows.
 
-![example-plot-poor] 
+![example-plot-poor](https://cdn.rawgit.com/marekborowiec/seq-spruceup/blob/master/example-plot-poor.png)
 
-These plots, combined with visual examinaton of report files and alignments should serve you as a guide on what criterion and cutoff values make most sense for your dataset.
+Both examples have the same cutoff value, `0.97` quantile of fitted lognormal distribution. These plots, combined with visual examinaton of report files and alignments should serve you as a guide on what criterion and cutoff values make most sense for your dataset.
 
 4. Log file (to-do)
 
