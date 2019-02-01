@@ -4,6 +4,7 @@
 import configparser
 import os
 import random
+import json
 import pdb
 from sys import argv
 import multiprocessing as mp
@@ -353,7 +354,6 @@ def get_lognorm_outliers(
     dists[dists == 0] = np.nan
     dists = dists[~np.isnan(dists)]
     shape, loc, scale = scp.lognorm.fit(dists, floc=0)
-    print(taxon, shape, loc, scale)
     logn_cutoff = scp.lognorm.ppf(cutoff, shape, loc, scale)
     x = np.linspace(0, 1, 500)
     logn_fit_line = scp.lognorm.pdf(x, shape, loc, scale)
@@ -384,7 +384,6 @@ def get_lognorm_outliers(
                 if dist >= logn_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
     else:
-        print(taxon, logn_cutoff)
         plot_taxon_dists(
             dists, taxon, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
         )
@@ -495,11 +494,11 @@ def merge(ranges):
     for st, en in sorted([sorted(t) for t in ranges]):
         if st <= saved[1]:
             saved[1] = max(saved[1], en)
+            yield tuple(saved)
         else:
             yield tuple(saved)
             saved[0] = st
             saved[1] = en
-    return tuple(saved)
 
 
 def get_windows(parsed_alignment, window_size, stride):
@@ -606,6 +605,22 @@ def write_report(report_string, report_file_name):
     with open(report_file_name, 'w') as rf:
         rf.write(report_string)
 
+def write_distances_dict(mean_taxon_distances):
+    dist_fn = 'distances.json'
+    with open(dist_fn, 'w') as fp:
+        print('\n')
+        print('Writing distances to file {}'.format(dist_fn))
+        print('\n')
+        json.dump(mean_taxon_distances, fp)
+
+
+def read_distances_dict(distances_json):
+    with open(distances_json, 'r') as fp:
+        print('\n')
+        print('Reading distances from file {}'.format(distances_json))
+        print('\n')
+        mean_taxon_distances = json.load(fp)
+        return mean_taxon_distances
 
 def analyze(
     alignment_file_name, input_file_format, window_size, stride, cores, method, fraction
@@ -618,6 +633,7 @@ def analyze(
     taxa_distances = dist_taxa_wrapper(all_distances)
     mean_aln_distances = mean_distances_wrapper(taxa_distances)
     mean_taxon_distances = dists_per_taxon(mean_aln_distances)
+    write_distances_dict(mean_taxon_distances) 
     return (aln_tuple, mean_taxon_distances)
 
 
@@ -676,6 +692,7 @@ def main():
     alignment_name = conf.get('input', 'input_file_name')
     file_format = conf.get('input', 'input_format')
     data_type = conf.get('input', 'data_type')
+    distances_json = conf.get('input', 'distances_object_file')
     # analysis
     method = conf.get('analysis', 'distance_method')
     window_size = conf.getint('analysis', 'window_size')
@@ -685,21 +702,27 @@ def main():
     cores = conf.getint('analysis', 'cores')
     criterion = conf.get('analysis', 'criterion')
     cutoffs = conf.get('analysis', 'cutoffs').split(',')
-    try:
+    manual_cutoffs = conf.get('analysis', 'manual_cutoffs')
+    if not manual_cutoffs: # this should be resolved differently
+        manual_cutoffs = False
+    else:
         manual_cutoffs = [
             tuple(taxon_cutoff.split(','))
             for taxon_cutoff in conf.get('analysis', 'manual_cutoffs').split(';')
         ]
-    except configparser.NoOptionError:
-        manual_cutoffs = []
     # output
     output_file_aln = conf.get('output', 'output_file_aln')
     output_format = conf.get('output', 'output_format')
     report = conf.get('output', 'report')
     stride = get_stride(window_size, overlap)
-    alignment, mean_taxon_distances = analyze(
-        alignment_name, file_format, window_size, stride, cores, method, fraction
-    )
+    if distances_json:
+        alignment = aln_parsing.parse_alignment(alignment_name, file_format)
+        mean_taxon_distances = read_distances_dict(distances_json)
+    else:
+        alignment, mean_taxon_distances = analyze(
+            alignment_name, file_format, window_size, stride, cores, method, fraction
+        )
+
     print_mem()
     output_loop(
         alignment,
