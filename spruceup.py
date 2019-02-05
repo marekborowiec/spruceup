@@ -318,18 +318,6 @@ def get_outliers_wrapper(
             )
             for taxon in taxa
         }
-    if criterion == 'median':
-        outliers_dict = {
-            taxon: get_median_outliers(
-                get_taxon_dists(all_taxa_dists, taxon),
-                taxon,
-                window_size,
-                criterion,
-                cutoff,
-                manual_cutoffs,
-            )
-            for taxon in taxa
-        }
     return outliers_dict
 
 
@@ -444,51 +432,6 @@ def get_mean_outliers(
         merged_outliers = []
     outlier_sequence_ranges = list(merged_outliers)
     return (mean_cutoff, outlier_sequence_ranges)
-
-
-def get_median_outliers(
-    taxon_dists, taxon, window_size, criterion, cutoff, manual_cutoffs
-):
-    """Identify outlier windows in a taxon.
-
-    Given dict of _(taxon, aln_name) : dist}
-    return tuple of median cutoff distance for taxon 
-    and list of ranges in sequence that are outliers.
-    """
-    median = np.mean(list(taxon_dists.values()))
-    median_cutoff = median * cutoff
-    outliers = []
-    if manual_cutoffs:
-        manual_dict = {}
-        for group in manual_cutoffs:
-            manual_taxon_name, manual_cutoff_value = group
-            manual_cutoff = float(manual_cutoff_value)
-            manual_dict[manual_taxon_name] = manual_cutoff
-        if taxon in manual_dict.keys():
-            plot_taxon_dists(
-                taxon_dists.values(), taxon, criterion, cutoff, manual_dict[taxon]
-            )
-            for tpl, dist in taxon_dists.items():
-                if dist >= manual_dict[taxon]:
-                    outliers.append(get_window_tuple(tpl, window_size))
-        else:
-            plot_taxon_dists(
-                taxon_dists.values(), taxon, criterion, cutoff, median_cutoff
-            )
-            for tpl, dist in taxon_dists.items():
-                if dist >= median_cutoff:
-                    outliers.append(get_window_tuple(tpl, window_size))
-    else:
-        plot_taxon_dists(taxon_dists.values(), taxon, criterion, cutoff, median_cutoff)
-        for tpl, dist in taxon_dists.items():
-            if dist >= median_cutoff:
-                outliers.append(get_window_tuple(tpl, window_size))
-    if outliers:
-        merged_outliers = merge(outliers)
-    else:
-        merged_outliers = []
-    outlier_sequence_ranges = list(merged_outliers)
-    return (median_cutoff, outlier_sequence_ranges)
 
 
 def merge(ranges):
