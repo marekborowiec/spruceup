@@ -57,7 +57,7 @@ The `analysis` category defines parameters used to analyze and clean up your ali
 
 `cores` how many CPU cores to use for distance calculations.
 
-`distance_method` chooses to compute uncorrected distance with `p-distance` or Jukes-Cantor-corrected distance with `jc69`.
+`distance_method` chooses to compute uncorrected distance with `p-distance` or Jukes-Cantor-corrected distance with `jc69` (to-do).
 
 `window_size` chooses how many characters (aa/nt) to include in a window in which distances will be calculated. Default value that works well for most alignments is `20`. 
 
@@ -86,7 +86,7 @@ The `output` category tells the program how and where to save your analysis resu
 
 To use `seq-spruceup` you will need to run the `spruceup` script from the command line and provide the name of your configuration file as the argument:
 ```bash
-spruceup.py my-configuration-file.conf
+spruceup.py ./examples/config_example.conf
 ```
 Once you run the script, your sequence alignment will be divided into a number of windows of the size and overlap you specified. The script will then compute distances for each OTU (sample/taxon) in each window. This is done all-by-all by default or all-by-fraction of OTUs, if specified. You will see some messages along the way, including a progress bar that will display the number of iterations (windows) and remaining time, as we as the maximum amount of memory used for distance calculation.
 
