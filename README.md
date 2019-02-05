@@ -30,8 +30,6 @@ sudo apt-get install python3.6
 ```
 
 
-
-
 ```bash
 
 ```
@@ -41,7 +39,7 @@ Once you successfully installed `seq-spruceup` you will need 1) an alignment in 
 ```bash
 spruceup my-configuration-file.conf
 ```
-Directory `Examples` contains a template configuration file. It has the following fields:
+Directory `examples` contains a template configuration file. It has the following fields:
 
 ### [input]
 The `input` category defines parameters of the input alignment and its type.
@@ -94,7 +92,7 @@ Once you run the script, your sequence alignment will be divided into a number o
 
 ![progress-bar](progress-bar.png) 
  
-Once all distances are calculated, `criterion` and `cutoffs` settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the recommended `lognorm` criterion, specifying a quantile of `0.99` means that any sequence window that lies above 99th percentile of distances of a given OTU to other OUTs in that window will be deemed an outlier and should be removed. In theory, setting of `0.99` should mean that 1% of all sequence windows will be removed from each OTU. In practice, this is not true because real-life sequence data does not perfectly fit into lognormal distribution. Cutoff being constant, certain OTUs may have many outlier (misaligned) sequence fragments and more than 1% of sequence data removed, while others may have no misaligned fragments and no outliers.
+Once all distances are calculated, `criterion` and `cutoffs` settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the `lognorm` criterion, specifying a quantile of `0.99` means that any sequence window that lies above 99th percentile of distances of a given OTU to other OUTs in that window will be deemed an outlier and should be removed. In theory, setting of `0.99` should mean that 1% of all sequence windows will be removed from each OTU. In practice, this is not true because real-life sequence data does not perfectly fit into lognormal distribution. Cutoff being constant, certain OTUs may have many outlier (misaligned) sequence fragments and more than 1% of sequence data removed, while others may have no misaligned fragments and no outliers.
 
 ### Interpreting the output
 
