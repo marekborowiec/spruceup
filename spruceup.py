@@ -407,6 +407,9 @@ def get_mean_outliers(
     return tuple of mean cutoff distance for taxon 
     and list of ranges in sequence that are outliers.
     """
+    dists = np.asarray(list(taxon_dists.values()))
+    dists[dists == 0] = np.nan
+    dists = dists[~np.isnan(dists)]    
     mean = np.mean(list(taxon_dists.values()))
     mean_cutoff = mean * cutoff
     outliers = []
@@ -418,20 +421,20 @@ def get_mean_outliers(
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
             plot_taxon_dists(
-                taxon_dists.values(), taxon, criterion, cutoff, manual_dict[taxon]
+                dists, taxon, criterion, cutoff, manual_dict[taxon]
             )
             for tpl, dist in taxon_dists.items():
                 if dist >= manual_dict[taxon]:
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
             plot_taxon_dists(
-                taxon_dists.values(), taxon, criterion, cutoff, mean_cutoff
+            dists, taxon, criterion, cutoff, mean_cutoff
             )
             for tpl, dist in taxon_dists.items():
                 if dist >= mean_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
     else:
-        plot_taxon_dists(taxon_dists.values(), taxon, criterion, cutoff, mean_cutoff)
+        plot_taxon_dists(dists, taxon, criterion, cutoff, mean_cutoff)
         for tpl, dist in taxon_dists.items():
             if dist >= mean_cutoff:
                 outliers.append(get_window_tuple(tpl, window_size))
@@ -605,8 +608,8 @@ def write_report(report_string, report_file_name):
     with open(report_file_name, 'w') as rf:
         rf.write(report_string)
 
-def write_distances_dict(mean_taxon_distances):
-    dist_fn = 'distances.json'
+def write_distances_dict(mean_taxon_distances, window_size, overlap):
+    dist_fn = 'distances-{}window-{}overlap.json'.format(window_size, overlap)
     with open(dist_fn, 'w') as fp:
         print('\n')
         print('Writing distances to file {}'.format(dist_fn))
@@ -623,17 +626,18 @@ def read_distances_dict(distances_json):
         return mean_taxon_distances
 
 def analyze(
-    alignment_file_name, input_file_format, window_size, stride, cores, method, fraction
+    alignment_file_name, input_file_format, window_size, overlap, cores, method, fraction
 ):
     print('Parsing alignment {} ...\n'.format(alignment_file_name))
     aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
+    stride = get_stride(window_size, overlap)
     aln_name, aln_dict = aln_tuple
     windows = get_windows(aln_dict, window_size, stride)
     all_distances = distances_wrapper(windows, cores, method=method, fraction=fraction)
     taxa_distances = dist_taxa_wrapper(all_distances)
     mean_aln_distances = mean_distances_wrapper(taxa_distances)
     mean_taxon_distances = dists_per_taxon(mean_aln_distances)
-    write_distances_dict(mean_taxon_distances) 
+    write_distances_dict(mean_taxon_distances, window_size, overlap) 
     return (aln_tuple, mean_taxon_distances)
 
 
@@ -714,13 +718,13 @@ def main():
     output_file_aln = conf.get('output', 'output_file_aln')
     output_format = conf.get('output', 'output_format')
     report = conf.get('output', 'report')
-    stride = get_stride(window_size, overlap)
     if distances_json:
+        print('Parsing alignment {} ...\n'.format(alignment_name))
         alignment = aln_parsing.parse_alignment(alignment_name, file_format)
         mean_taxon_distances = read_distances_dict(distances_json)
     else:
         alignment, mean_taxon_distances = analyze(
-            alignment_name, file_format, window_size, stride, cores, method, fraction
+            alignment_name, file_format, window_size, overlap, cores, method, fraction
         )
 
     print_mem()
