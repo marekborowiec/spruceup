@@ -14,7 +14,7 @@ If you are using this program, please cite [this publication](link):
 ```
 ```
 
-This script uses [numpy](link), [scipy](link), [matplotlib](link), [psutil](link) and [tqdm](link).
+This script uses [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/index.html), [matplotlib](https://matplotlib.org/), [psutil](https://pypi.org/project/psutil/) and [tqdm](https://pypi.org/project/tqdm/).
 
 ## Installation and requirements
 
@@ -52,6 +52,8 @@ The `input` category defines parameters of the input alignment and its type.
 
 `data_type` tells the program whether your alignment contains amino acids (`aa`) or DNA nucleotides (`nt`).
 
+`distances_object_file` is the file name of an existing distance object. Because sometimes you will want to adjust cutoffs or cutoff criterion and computing distances is the most time-consuming part of the analysis, `spruceup` saves a `json` format file with distances from each analysis. By default this is blank, but if you do have a distance file from a previous analysis and you want to trim your alignment with new cutoffs, supply the `json` file name here. `spruceup` will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.
+
 ### [analysis]
 The `analysis` category defines parameters used to analyze and clean up your alignment.
 
@@ -59,15 +61,15 @@ The `analysis` category defines parameters used to analyze and clean up your ali
 
 `distance_method` chooses to compute uncorrected distance with `p-distance` or Jukes-Cantor-corrected distance with `jc69`.
 
-`window_size` chooses how many characters (aa/nt) to include in a window in which distances will be calculated.
+`window_size` chooses how many characters (aa/nt) to include in a window in which distances will be calculated. Default value that works well for most alignments is `20`. 
 
-`overlap` indicates how many characters (aa/nt) each sliding window will be overlapping with preceding window. Stride of 15 and window size of 20 means that each new window will move 5 positions down the alignment and overlap by 15 characters with the preceding window. Increasing overlap will decrease computational burden because fewer windows will be created.
+`overlap` indicates how many characters (aa/nt) each sliding window will be overlapping with preceding window. Stride of 15 and window size of 20 means that each new window will move 5 positions down the alignment and overlap by 15 characters with the preceding window. Increasing overlap will decrease computational burden because fewer windows will be created. Default value is `15` (two thirds of default window size of `20`) but you may want to go lower, to half of window size or even `0` (non-overlapping windows) if your alignment is very large and you want to decrease compute time and memory usage and don't mind sacrificing some precision. 
 
-`fraction` signifies proportion of OTUs/samples that will be used to calculate average distance in each window. With fraction set to `1.0` distances for each OTU will be calculated against all other OTUs in the alignment. With fraction set to `0.5` distances for each OTU will be calculated against a random sample representing 50% of OTUs in the alignment. This setting may help to speed up calculations in alignments with large numbers of taxa.
+`fraction` signifies proportion of OTUs/samples that will be used to calculate average distance in each window. With fraction set to `1.0` distances for each OTU will be calculated against all other OTUs in the alignment. With fraction set to `0.5` distances for each OTU will be calculated against a random sample representing 50% of OTUs in the alignment. Lowering this number will help to speed up calculations in alignments with large numbers of taxa.
 
 `criterion` chooses how outlier distances will be determined. `lognorm` (recommended) means that a [lognormal distribution](https://en.wikipedia.org/wiki/Log-normal_distribution) will be fitted to your distance data for each OTU and cutoffs will be determined by specifying quantile of observations above which sequence will be considered outliers. If you are using `mean` or `median`, simple multiple of those values computed for each OTU will be considered cutoffs for identifying outliers.
 
-`cutoffs` specifies multiple values considered as cutoffs. For `lognorm` criterion use fractions of `1`, for example `0.9,0.995` etc. If you are using `mean` or `median` as your criterion, use multiples of those values, for example `5` or `15`.
+`cutoffs` specifies multiple values considered as cutoffs. For `lognorm` criterion use fractions of `1`, for example `0.9,0.995` etc. If you are using `mean` or `median` as your criterion, use multiples of those values, for example `5` or `15`. Default values that should work for most alignments are `0.9,0.95,0.97,0.99,0.995,0.999` for `lognorm` and `3,5,6,9,15` for `mean`. `median` values will often be `0` if the alignment is very uniform, i.e. composed of closely related OTUs and so you may want to play around to see whether that criterion is appropriate for your data. If the alignment contains many saturated or poorly aligned sites, a low setting may result in huge amount of data being trimmed from the original alignment. This is time-consuming and you may want to trim your alignment with a more stringent 'block' method before using `spruceup` or remove lower cutoff values from the list.
 
 `manual_cutoffs` is an optional setting that allows manual modifications to cutoffs for individual OTUs. It may prove useful if only one or a few samples have a significant proportion of poorly aligned sequences, skewing their overall cutoff such that they are not being flagged. If you find that this is case, however, you should probably rather be checking your data and pipeline for errors!
 
@@ -98,7 +100,7 @@ Once all distances are calculated, `criterion` and `cutoffs` settings will deter
 
 `spruceup` produces several types of output:
 
-1. Report files ending with suffix `-report.txt`, one of which is written for each cutoff specified, which indicated by the prefix (e.g 0.95, 0.99 and so forth). These files contain the distance cutoff value for each OTU and which sequence windows were determined to be outliers and removed.
+1. Report files ending with suffix `-report.txt`, one of which is written for each cutoff specified, which indicated by the prefix (e.g `0.95`, `0.99` and so forth). These files contain the distance cutoff value for each OTU and which sequence windows were determined to be outliers and removed.
 
 2. Trimmed alignment files ending with suffix `-trimmed.fas/phylip/nexus`, again, one for each cutoff value. These are the alignments with outlier windows removed.
 
@@ -118,4 +120,6 @@ Both examples have the same cutoff value, `0.97` quantile of fitted lognormal di
 
 4. Log file (to-do)
 
-5. Distances Python object file (to-do) 
+5. Distances Python object file
+
+Calculating distances with `spruceup` is often the most time- and memory-consuming part of the process, although trimming very large numbers of positions from the alignment can also take a long time. Because of this `spruceup` writes a `json` format file each time you run an analysis from scratch, allowing you to load it up later and trim with different criterion or cutoff values. Note that distances will be specific for each window size, overlap, and taxon fraction and you will need to re-run the whole analysis if you want to adjust these parameters.
