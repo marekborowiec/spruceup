@@ -26,7 +26,7 @@ def read_config(config_file_name):
     try:
         with open(config_file_name) as cf:
             config = configparser.RawConfigParser()
-            config.read(cf)
+            config.read(config_file_name)
     except IOError as ex:
         exit('Sorry, could not open the file: ' + ex.strerror)
     return config
@@ -74,11 +74,9 @@ def p_distance(seq1, seq2):
                 and el1 is not '?'
                 and el2 is not '?'
                 )
-        scaled_p_distance = p_distance / eff_len1
     else:
         p_distance = 0
-    return p_distance
-
+    return p_distance, 5
 
 def get_distances(aln_tuple, method, fraction, data_type):
     """Calculate distances or p-distances for alignment.
@@ -88,8 +86,6 @@ def get_distances(aln_tuple, method, fraction, data_type):
     Keyword args:
     method (str) -- 'p-distance' or 'jc69'
     """
-    #### efficiency of this can be improved by adding option of calculating
-    #### distance over only a fraction of sequences
 
     aln_name, aln_dict = aln_tuple
     seqs_to_compare_to = random.sample(
@@ -192,7 +188,7 @@ def get_mean_distances(dist_matrix, taxon_map):
 def get_list_mean(lst):
     """Return mean for all items in a list."""
     list_mean = sum(lst) / float(len(lst))
-    return list_mean
+    return round(list_mean, 5)
 
 
 def dists_per_taxon(means_tuple_list):
@@ -202,8 +198,7 @@ def dists_per_taxon(means_tuple_list):
     return dict of {taxon : (alignment name, mean distance within alignment)}.
     """
     taxa_dists = {}
-    for aln_name, dist_dict in means_tuple_list:
-        # print(aln_name, dist_dict)
+    for aln_name, dist_dict in sorted(means_tuple_list):
         for sp, mean_dist in dist_dict.items():
             if sp not in taxa_dists.keys():
                 taxa_dists[sp] = [(aln_name, mean_dist)]
@@ -223,28 +218,6 @@ def means_per_taxon(taxa_dists):
         for sp, aln_dists in taxa_dists.items()
     }
     return taxa_means
-
-
-def log_dists_per_taxon(means_tuple_list):
-    """Get log of mean distances per taxon.
-
-    Given tuple list [(alignment name, {taxon : mean distance within alignment})]
-    return dict of {taxon : (alignment name, log of mean distance within alignment)}.
-    """
-    taxa_dists = {}
-    for aln_name, dist_dict in means_tuple_list:
-        for sp, mean_dist in dist_dict.items():
-            if sp not in taxa_dists.keys():
-                taxa_dists[sp] = [(aln_name, log(mean_dist))]
-            else:
-                taxa_dists[sp].append((aln_name, log(mean_dist)))
-    return taxa_dists
-
-
-def get_list_log(lst):
-    """Get log of all values in a list."""
-    list_log = [log(i) for i in lst]
-    return list_log
 
 
 def plot_taxon_dists(dists, taxon, criterion, cutoff, cutoff_line, fit_line=0):
@@ -304,7 +277,7 @@ def get_outliers_wrapper(
 
 def get_window_tuple(tpl, window_size):
     taxon, aln = tpl
-    aln_start = int(aln.strip('window'))
+    aln_start = aln 
     aln_end = aln_start + window_size
     aln_tpl = (aln_start, aln_end)
     return aln_tpl
@@ -319,6 +292,7 @@ def get_lognorm_outliers(
     return tuple of lognormal fit cutoff for taxon 
     and list of ranges in sequence that are outliers.
     """
+    from scipy.optimize import curve_fit
     dists = np.asarray(list(taxon_dists.values()))
     dists[dists == 0] = np.nan
     dists = dists[~np.isnan(dists)]
@@ -342,21 +316,21 @@ def get_lognorm_outliers(
                 manual_dict[taxon],
                 fit_line=logn_fit_line,
             )
-            for tpl, dist in taxon_dists.items():
+            for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= manual_dict[taxon]:
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
             plot_taxon_dists(
                 dists, taxon, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
             )
-            for tpl, dist in taxon_dists.items():
+            for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= logn_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
     else:
         plot_taxon_dists(
             dists, taxon, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
         )
-        for tpl, dist in taxon_dists.items():
+        for tpl, dist in sorted(taxon_dists.items()):
             if dist >= logn_cutoff:
                 outliers.append(get_window_tuple(tpl, window_size))
     if outliers:
@@ -380,7 +354,7 @@ def get_mean_outliers(
     dists[dists == 0] = np.nan
     dists = dists[~np.isnan(dists)]    
     mean = np.mean(list(taxon_dists.values()))
-    mean_cutoff = mean * cutoff
+    mean_cutoff = round((mean * cutoff), 5)
     outliers = []
     if manual_cutoffs:
         manual_dict = {}
@@ -392,19 +366,19 @@ def get_mean_outliers(
             plot_taxon_dists(
                 dists, taxon, criterion, cutoff, manual_dict[taxon]
             )
-            for tpl, dist in taxon_dists.items():
+            for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= manual_dict[taxon]:
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
             plot_taxon_dists(
             dists, taxon, criterion, cutoff, mean_cutoff
             )
-            for tpl, dist in taxon_dists.items():
+            for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= mean_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
     else:
         plot_taxon_dists(dists, taxon, criterion, cutoff, mean_cutoff)
-        for tpl, dist in taxon_dists.items():
+        for tpl, dist in sorted(taxon_dists.items()):
             if dist >= mean_cutoff:
                 outliers.append(get_window_tuple(tpl, window_size))
     if outliers:
@@ -437,7 +411,6 @@ def get_windows(parsed_alignment, window_size, stride):
     add_to_list_of_windows = list_of_windows.append
     for i in range(0, aln_len, stride):
         # loop over all parsed partitions, adding taxa and sliced sequences
-        name = 'window{}'.format(i)
         start = i
         stop = i + window_size
         new_dict = {}
@@ -450,7 +423,7 @@ def get_windows(parsed_alignment, window_size, stride):
                 new_seq = '{}'.format(seq[start:aln_len])
                 new_dict[taxon] = new_seq
             break
-        add_to_list_of_windows((name, new_dict))
+        add_to_list_of_windows((i, new_dict))
     return list_of_windows
 
 
@@ -471,7 +444,7 @@ def remove_outliers(parsed_alignment, outliers_dict):
     total_sites_removed = 0
     if outliers_dict:
         trimmed_aln_dict = {}
-        for taxon, seq in aln_dict.items():
+        for taxon, seq in sorted(aln_dict.items()):
             cutoff_value, ranges = outliers_dict[taxon]
             if ranges:
                 for index, r in enumerate(ranges):
@@ -672,8 +645,6 @@ if __name__ == '__main__':
 ### To do:
 
 # 1) add docstrings to all functions
-# 2) remove unnecessary print() etc
-# 3) input validation
-# 4) tests
-# 5) setup.py
-# 6) README
+# 2) input validation
+# 3) tests
+# 4) setup.py
