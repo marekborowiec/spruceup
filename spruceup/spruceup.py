@@ -6,7 +6,7 @@ import os
 import random
 import json
 import pdb
-from sys import argv
+from sys import argv, exit
 import multiprocessing as mp
 from functools import partial
 from math import log
@@ -23,8 +23,12 @@ plt.switch_backend('agg')
 
 
 def read_config(config_file_name):
-    config = configparser.RawConfigParser()
-    config.read(config_file_name)
+    try:
+        with open(config_file_name) as cf:
+            config = configparser.RawConfigParser()
+            config.read(cf)
+    except IOError as ex:
+        exit('Sorry, could not open the file: ' + ex.strerror)
     return config
 
 
