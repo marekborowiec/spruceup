@@ -32,7 +32,9 @@ def read_config(config_file_name):
     return config
 
 
-def distances_wrapper(parsed_alignments, cores, data_type, method='p-distance', fraction=1):
+def distances_wrapper(
+    parsed_alignments, cores, data_type, method='p-distance', fraction=1
+):
     """Use multiple cores to get p-distances from list of alignment dicts.
     
     Keyword args:
@@ -46,7 +48,12 @@ def distances_wrapper(parsed_alignments, cores, data_type, method='p-distance', 
                 for i, output in tqdm(
                     enumerate(
                         pool.imap_unordered(
-                            partial(get_distances, method=method, fraction=fraction, data_type=data_type),
+                            partial(
+                                get_distances,
+                                method=method,
+                                fraction=fraction,
+                                data_type=data_type,
+                            ),
                             parsed_alignments,
                         )
                     ),
@@ -67,16 +74,14 @@ def p_distance(seq1, seq2):
     eff_len2 = len(seq2.strip('-').strip('?'))
     if eff_len1 != 0 and eff_len2 != 0:
         p_distance = sum(
-                el1 != el2
-                for el1, el2 in zip(seq1, seq2)
-                if el1 is not '-'
-                and el2 is not '-'
-                and el1 is not '?'
-                and el2 is not '?'
-                )
+            el1 != el2
+            for el1, el2 in zip(seq1, seq2)
+            if el1 is not '-' and el2 is not '-' and el1 is not '?' and el2 is not '?'
+        )
     else:
         p_distance = 0
-    return p_distance, 5
+    return p_distance
+
 
 def get_distances(aln_tuple, method, fraction, data_type):
     """Calculate distances or p-distances for alignment.
@@ -108,7 +113,7 @@ def get_distances(aln_tuple, method, fraction, data_type):
 
 
 def jc69_correction(p_distance, data_type):
-    """Get Jukes-Cantor corrected distances for nucleotides."""
+    """Get Jukes-Cantor corrected distances."""
     if p_distance == 0:
         jc69_corrected = 0
     else:
@@ -277,7 +282,7 @@ def get_outliers_wrapper(
 
 def get_window_tuple(tpl, window_size):
     taxon, aln = tpl
-    aln_start = aln 
+    aln_start = aln
     aln_end = aln_start + window_size
     aln_tpl = (aln_start, aln_end)
     return aln_tpl
@@ -293,6 +298,7 @@ def get_lognorm_outliers(
     and list of ranges in sequence that are outliers.
     """
     from scipy.optimize import curve_fit
+
     dists = np.asarray(list(taxon_dists.values()))
     dists[dists == 0] = np.nan
     dists = dists[~np.isnan(dists)]
@@ -352,7 +358,7 @@ def get_mean_outliers(
     """
     dists = np.asarray(list(taxon_dists.values()))
     dists[dists == 0] = np.nan
-    dists = dists[~np.isnan(dists)]    
+    dists = dists[~np.isnan(dists)]
     mean = np.mean(list(taxon_dists.values()))
     mean_cutoff = round((mean * cutoff), 5)
     outliers = []
@@ -363,16 +369,12 @@ def get_mean_outliers(
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            plot_taxon_dists(
-                dists, taxon, criterion, cutoff, manual_dict[taxon]
-            )
+            plot_taxon_dists(dists, taxon, criterion, cutoff, manual_dict[taxon])
             for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= manual_dict[taxon]:
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
-            plot_taxon_dists(
-            dists, taxon, criterion, cutoff, mean_cutoff
-            )
+            plot_taxon_dists(dists, taxon, criterion, cutoff, mean_cutoff)
             for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= mean_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
@@ -434,7 +436,7 @@ def replace_seq(text, start, end, replacement=''):
 
 def print_mem():
     process = psutil.Process(os.getpid())
-    mem = process.memory_info().rss / 1000000
+    mem = process.memory_info().rss / 1_000_000
     print('\n')
     print('Used {0:.2f} MB memory\n'.format(mem))
 
@@ -505,6 +507,7 @@ def write_report(report_string, report_file_name):
     with open(report_file_name, 'w') as rf:
         rf.write(report_string)
 
+
 def write_distances_dict(mean_taxon_distances, window_size, overlap):
     dist_fn = 'distances-{}window-{}overlap.json'.format(window_size, overlap)
     with open(dist_fn, 'w') as fp:
@@ -522,19 +525,29 @@ def read_distances_dict(distances_json):
         mean_taxon_distances = json.load(fp)
         return mean_taxon_distances
 
+
 def analyze(
-    alignment_file_name, input_file_format, data_type, window_size, overlap, cores, method, fraction
+    alignment_file_name,
+    input_file_format,
+    data_type,
+    window_size,
+    overlap,
+    cores,
+    method,
+    fraction,
 ):
     print('Parsing alignment {} ...\n'.format(alignment_file_name))
     aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
     stride = get_stride(window_size, overlap)
     aln_name, aln_dict = aln_tuple
     windows = get_windows(aln_dict, window_size, stride)
-    all_distances = distances_wrapper(windows, cores, data_type, method=method, fraction=fraction)
+    all_distances = distances_wrapper(
+        windows, cores, data_type, method=method, fraction=fraction
+    )
     taxa_distances = dist_taxa_wrapper(all_distances)
     mean_aln_distances = mean_distances_wrapper(taxa_distances)
     mean_taxon_distances = dists_per_taxon(mean_aln_distances)
-    write_distances_dict(mean_taxon_distances, window_size, overlap) 
+    write_distances_dict(mean_taxon_distances, window_size, overlap)
     return (aln_tuple, mean_taxon_distances)
 
 
@@ -583,8 +596,10 @@ def output_loop(
         )
         print('Wrote trimmed alignment {} ...\n'.format(cutoff_trimmed_aln_fname))
 
+
 def get_stride(window_size, overlap):
     return window_size - overlap
+
 
 def main():
     script, config_file_name = argv
@@ -604,7 +619,7 @@ def main():
     criterion = conf.get('analysis', 'criterion')
     cutoffs = conf.get('analysis', 'cutoffs').split(',')
     manual_cutoffs = conf.get('analysis', 'manual_cutoffs')
-    if not manual_cutoffs: # this should be resolved differently
+    if not manual_cutoffs:  # this should be resolved differently
         manual_cutoffs = False
     else:
         manual_cutoffs = [
@@ -621,9 +636,15 @@ def main():
         mean_taxon_distances = read_distances_dict(distances_json)
     else:
         alignment, mean_taxon_distances = analyze(
-            alignment_name, file_format, data_type, window_size, overlap, cores, method, fraction
+            alignment_name,
+            file_format,
+            data_type,
+            window_size,
+            overlap,
+            cores,
+            method,
+            fraction,
         )
-
     print_mem()
     output_loop(
         alignment,
@@ -642,6 +663,7 @@ def main():
 if __name__ == '__main__':
 
     main()
+
 ### To do:
 
 # 1) add docstrings to all functions
