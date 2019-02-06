@@ -28,21 +28,21 @@ def read_config(config_file_name):
     return config
 
 
-def distances_wrapper(parsed_alignments, cores, method='p-distance', fraction=1):
+def distances_wrapper(parsed_alignments, cores, data_type, method='p-distance', fraction=1):
     """Use multiple cores to get p-distances from list of alignment dicts.
     
     Keyword args:
     method (str) -- 'p-distance', 'jc69', or 'missing' (default 'p-distance')"""
     if int(cores) == 1:
         for aln_tuple in tqdm(parsed_alignments, desc='Calculating distances'):
-            yield get_distances(aln_tuple, method, fraction)
+            yield get_distances(aln_tuple, method, fraction, data_type)
     elif int(cores) > 1:
         with mp.Pool(processes=cores) as pool:
             with tqdm(total=len(parsed_alignments)) as pbar:
                 for i, output in tqdm(
                     enumerate(
                         pool.imap_unordered(
-                            partial(get_distances, method=method, fraction=fraction),
+                            partial(get_distances, method=method, fraction=fraction, data_type=data_type),
                             parsed_alignments,
                         )
                     ),
@@ -52,51 +52,37 @@ def distances_wrapper(parsed_alignments, cores, method='p-distance', fraction=1)
                     yield output
 
 
-def missing_distance(seq1, seq2):  # will probably drop this one
-    """Calculate difference between amount of missing data for two sequences.
-
-    Positive is first sequence is longer, zero or negative otherwise."""
-    if len(seq1) != len(seq2):
-        raise ValueError("Sequences are of unequal length")
-    eff_len1 = len(seq1.strip('-').strip('?'))
-    eff_len2 = len(seq2.strip('-').strip('?'))
-    missing_distance = (eff_len2 - eff_len1) / len(seq1)
-    return missing_distance
-
-
 def p_distance(seq1, seq2):
     """Calculate p-distance for two sequences.
 
     Return the Hamming distance between equal-length sequences
     divided by seq length excluding missing data."""
     if len(seq1) != len(seq2):
-        raise ValueError("Sequences are of unequal length")
+        raise ValueError('Sequences are of unequal length. Did you align them?')
     eff_len1 = len(seq1.strip('-').strip('?'))
     eff_len2 = len(seq2.strip('-').strip('?'))
     if eff_len1 != 0 and eff_len2 != 0:
-        p_distance = (
-            sum(
+        p_distance = sum(
                 el1 != el2
                 for el1, el2 in zip(seq1, seq2)
                 if el1 is not '-'
                 and el2 is not '-'
                 and el1 is not '?'
                 and el2 is not '?'
-            )
-            / eff_len1
-        )
+                )
+        scaled_p_distance = p_distance / eff_len1
     else:
-        p_distance = 0  # is this the best solution?
+        p_distance = 0
     return p_distance
 
 
-def get_distances(aln_tuple, method, fraction):
+def get_distances(aln_tuple, method, fraction, data_type):
     """Calculate distances or p-distances for alignment.
 
     Given tuple (alignment name, alignment distances dict)
     return tuple of (alignment name, list of pairwise distances).
     Keyword args:
-    method (str) -- 'p-distance', 'jc69', or 'missing'
+    method (str) -- 'p-distance' or 'jc69'
     """
     #### efficiency of this can be improved by adding option of calculating
     #### distance over only a fraction of sequences
@@ -107,38 +93,29 @@ def get_distances(aln_tuple, method, fraction):
     )
 
     if method == 'p-distance':
-        # print('Calculating pairwse p-distances for {} ...'.format(aln_name))
         distances = [
             (sp1, sp2, p_distance(seq1, seq2))
             for sp2, seq2 in seqs_to_compare_to
             for sp1, seq1 in aln_dict.items()
         ]
     elif method == 'jc69':
-        # print('Calculating pairwise Jukes-Cantor distances for {} ...'.format(aln_name))
         distances = [
-            (sp1, sp2, jc69_correction(p_distance(seq1, seq2)))
+            (sp1, sp2, jc69_correction(p_distance(seq1, seq2), data_type))
             for sp2, seq2 in seqs_to_compare_to
             for sp1, seq1 in aln_dict.items()
         ]
-    elif method == 'missing':
-        # print('Calculating missing data distances for {} ...'.format(aln_name))
-        distances = [
-            (sp1, sp2, missing_distance(seq1, seq2))
-            for sp2, seq2 in seqs_to_compare_to
-            for sp1, seq1 in aln_dict.items()
-        ]
-    # print(aln_name, distances)
     return (aln_name, distances)
 
 
-def jc69_correction(p_distance):
+def jc69_correction(p_distance, data_type):
     """Get Jukes-Cantor corrected distances for nucleotides."""
     if p_distance == 0:
         jc69_corrected = 0
-    elif p_distance > 0.7499999:
-        jc69_corrected = 10
     else:
-        jc69_corrected = -3 / 4 * log(1 - (4 / 3 * p_distance))
+        if data_type == 'nt':
+            jc69_corrected = 3 / 4 * log(1 - 4 / 3 * -p_distance)
+        if data_type == 'aa':
+            jc69_corrected = 19 / 20 * log(1 - 20 / 19 * -p_distance)
     return jc69_corrected
 
 
@@ -272,7 +249,7 @@ def plot_taxon_dists(dists, taxon, criterion, cutoff, cutoff_line, fit_line=0):
     plt.xlim(0, np.nanmax(dists))
     plt.hist(dists[~np.isnan(dists)], bins=100, density=True)
     if fit_line is not 0:
-        x = np.linspace(0, 1, 500)
+        x = np.linspace(0, np.nanmax(dists), 500)
         plt.plot(x, fit_line)
     plt.title(taxon)
     plt.axvline(cutoff_line, color='k', linestyle='dashed', linewidth=1)
@@ -343,7 +320,7 @@ def get_lognorm_outliers(
     dists = dists[~np.isnan(dists)]
     shape, loc, scale = scp.lognorm.fit(dists, floc=0)
     logn_cutoff = scp.lognorm.ppf(cutoff, shape, loc, scale)
-    x = np.linspace(0, 1, 500)
+    x = np.linspace(0, np.nanmax(dists), 500)
     logn_fit_line = scp.lognorm.pdf(x, shape, loc, scale)
     outliers = []
     if manual_cutoffs:
@@ -569,14 +546,14 @@ def read_distances_dict(distances_json):
         return mean_taxon_distances
 
 def analyze(
-    alignment_file_name, input_file_format, window_size, overlap, cores, method, fraction
+    alignment_file_name, input_file_format, data_type, window_size, overlap, cores, method, fraction
 ):
     print('Parsing alignment {} ...\n'.format(alignment_file_name))
     aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
     stride = get_stride(window_size, overlap)
     aln_name, aln_dict = aln_tuple
     windows = get_windows(aln_dict, window_size, stride)
-    all_distances = distances_wrapper(windows, cores, method=method, fraction=fraction)
+    all_distances = distances_wrapper(windows, cores, data_type, method=method, fraction=fraction)
     taxa_distances = dist_taxa_wrapper(all_distances)
     mean_aln_distances = mean_distances_wrapper(taxa_distances)
     mean_taxon_distances = dists_per_taxon(mean_aln_distances)
@@ -667,7 +644,7 @@ def main():
         mean_taxon_distances = read_distances_dict(distances_json)
     else:
         alignment, mean_taxon_distances = analyze(
-            alignment_name, file_format, window_size, overlap, cores, method, fraction
+            alignment_name, file_format, data_type, window_size, overlap, cores, method, fraction
         )
 
     print_mem()
