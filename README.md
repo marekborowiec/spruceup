@@ -57,7 +57,7 @@ The `analysis` category defines parameters used to analyze and clean up your ali
 
 `cores` how many CPU cores to use for distance calculations.
 
-`distance_method` chooses to compute uncorrected distance with `p-distance` or Jukes-Cantor-corrected distance with `jc69` (to-do).
+`distance_method` chooses to compute uncorrected p-distance with `uncorrected` or Jukes-Cantor-corrected distance with `jc`.
 
 `window_size` chooses how many characters (aa/nt) to include in a window in which distances will be calculated. Default value that works well for most alignments is `20`. 
 
@@ -104,7 +104,7 @@ Once all distances are calculated, `criterion` and `cutoffs` settings will deter
 
 3. Distance distribution `png` plots, one for each OTU and cutoff value. These images can be used to examine the distribution of distances for each taxon, its fit to lognormal distribution, and cutoff value placed on each OTU given a cutoff.
 
-An example of distances plot is below. The header is the name of the OTU. The x-axis indicates distance to other OTUs, ranging from `0` to `window_size`. The x-axis is limited to the maximum distance that was found for the OTU. The y-axis specifies relative number of windows. Blue bars comprise the histogram of distances. Orange line is the fitted lognormal distribution (only shown when using the `lognorm` criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.
+An example of distances plot is below. The header is the name of the OTU. The x-axis indicates distance to other OTUs, ranging from `0` to the maximum distance that was found for the OTU. The y-axis specifies relative number of windows. Blue bars comprise the histogram of distances. Orange line is the fitted lognormal distribution (only shown when using the `lognorm` criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.
 
 The first example plot below shows an OTU with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than `0.2`. You may not be able to see individual window distances as visible histogram bars since the distributions comprise thousands (in this small example) to hundreds of thousands of distances.
 
@@ -116,7 +116,9 @@ The following plot shows an OTU with less smooth distribution, overall sequences
 
 Both examples have the same cutoff value, `0.97` quantile of fitted lognormal distribution. These plots, combined with visual examinaton of report files and alignments should serve you as a guide on what criterion and cutoff values make most sense for your dataset.
 
-4. Log file (to-do)
+4. Log file 
+
+This is a log file that will contain the same information that appears on the terminal screen, excluding progress bar. It will log what  steps were taken by the program, their timing, show information about how many/what proportion of sites were trimmed at each cutoff and output file names that were written. 
 
 5. Distances Python object file
 

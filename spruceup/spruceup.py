@@ -2,6 +2,7 @@
 
 # coding: utf-8
 import configparser
+import logging
 import os
 import random
 import json
@@ -21,7 +22,6 @@ import aln_parsing, aln_writing
 
 plt.switch_backend('agg')
 
-
 def read_config(config_file_name):
     try:
         with open(config_file_name) as cf:
@@ -33,12 +33,12 @@ def read_config(config_file_name):
 
 
 def distances_wrapper(
-    parsed_alignments, cores, data_type, method='p-distance', fraction=1
+    parsed_alignments, cores, data_type, method='uncorrected', fraction=1
 ):
-    """Use multiple cores to get p-distances from list of alignment dicts.
+    """Use multiple cores to get distances from list of alignment dicts.
     
     Keyword args:
-    method (str) -- 'p-distance', 'jc69', or 'missing' (default 'p-distance')"""
+    method (str) -- 'uncorrected' or 'jc' (default 'uncorrected')"""
     if int(cores) == 1:
         for aln_tuple in tqdm(parsed_alignments, desc='Calculating distances'):
             yield get_distances(aln_tuple, method, fraction, data_type)
@@ -64,7 +64,7 @@ def distances_wrapper(
 
 
 def p_distance(seq1, seq2):
-    """Calculate p-distance for two sequences.
+    """Calculate Hamming/p-distance for two sequences.
 
     Return the Hamming distance between equal-length sequences
     divided by seq length excluding missing data."""
@@ -80,16 +80,25 @@ def p_distance(seq1, seq2):
         )
     else:
         p_distance = 0
-    return p_distance
+    return (eff_len1, p_distance)
+
+
+def get_scaled_distance(distance_tpl):
+    eff_seq_len, distance = distance_tpl
+    if eff_seq_len > 0 and distance > 0:
+        scaled_distance = distance / eff_seq_len
+    else:
+        scaled_distance = 0
+    return scaled_distance
 
 
 def get_distances(aln_tuple, method, fraction, data_type):
-    """Calculate distances or p-distances for alignment.
+    """Calculate uncorrected or JC-corrected distances for alignment.
 
     Given tuple (alignment name, alignment distances dict)
     return tuple of (alignment name, list of pairwise distances).
     Keyword args:
-    method (str) -- 'p-distance' or 'jc69'
+    method (str) -- 'uncorrected' or 'jc'
     """
 
     aln_name, aln_dict = aln_tuple
@@ -97,31 +106,32 @@ def get_distances(aln_tuple, method, fraction, data_type):
         aln_dict.items(), int(len(aln_dict.items()) * fraction)
     )
 
-    if method == 'p-distance':
+    if method == 'uncorrected':
         distances = [
-            (sp1, sp2, p_distance(seq1, seq2))
+            (sp1, sp2, get_scaled_distance(p_distance(seq1, seq2)))
             for sp2, seq2 in seqs_to_compare_to
             for sp1, seq1 in aln_dict.items()
         ]
-    elif method == 'jc69':
+    elif method == 'jc':
         distances = [
-            (sp1, sp2, jc69_correction(p_distance(seq1, seq2), data_type))
+            (sp1, sp2, get_scaled_distance(jc_correction(p_distance(seq1, seq2), data_type)))
             for sp2, seq2 in seqs_to_compare_to
             for sp1, seq1 in aln_dict.items()
         ]
     return (aln_name, distances)
 
 
-def jc69_correction(p_distance, data_type):
+def jc_correction(distance_tpl, data_type):
     """Get Jukes-Cantor corrected distances."""
+    eff_seq_len, p_distance = distance_tpl
     if p_distance == 0:
-        jc69_corrected = 0
+        jc_corrected = 0
     else:
         if data_type == 'nt':
-            jc69_corrected = 3 / 4 * log(1 - 4 / 3 * -p_distance)
+            jc_corrected = 3 / 4 * log(1 - 4 / 3 * -p_distance)
         if data_type == 'aa':
-            jc69_corrected = 19 / 20 * log(1 - 20 / 19 * -p_distance)
-    return jc69_corrected
+            jc_corrected = 19 / 20 * log(1 - 20 / 19 * -p_distance)
+    return (eff_seq_len, jc_corrected)
 
 
 def dist_taxa_wrapper(dist_tuples):
@@ -231,7 +241,7 @@ def plot_taxon_dists(dists, taxon, criterion, cutoff, cutoff_line, fit_line=0):
     plt.xlim(0, np.nanmax(dists))
     plt.hist(dists[~np.isnan(dists)], bins=100, density=True)
     if fit_line is not 0:
-        x = np.linspace(0, np.nanmax(dists), 500)
+        x = np.linspace(0, 1, 500)
         plt.plot(x, fit_line)
     plt.title(taxon)
     plt.axvline(cutoff_line, color='k', linestyle='dashed', linewidth=1)
@@ -304,7 +314,7 @@ def get_lognorm_outliers(
     dists = dists[~np.isnan(dists)]
     shape, loc, scale = scp.lognorm.fit(dists, floc=0)
     logn_cutoff = scp.lognorm.ppf(cutoff, shape, loc, scale)
-    x = np.linspace(0, np.nanmax(dists), 500)
+    x = np.linspace(0, 1, 500)
     logn_fit_line = scp.lognorm.pdf(x, shape, loc, scale)
     outliers = []
     if manual_cutoffs:
@@ -404,9 +414,10 @@ def merge(ranges):
             saved[1] = en
 
 
-def get_windows(parsed_alignment, window_size, stride):
+def get_windows(parsed_alignment, window_size, overlap):
     # extract alignment windows of desired length and stride
-    print('Splitting into size-{} windows ...\n'.format(window_size))
+    logging.info('Splitting into size-{} windows with {} overlap ...\n'.format(window_size, overlap))
+    stride = get_stride(window_size, overlap)
     aln_len = len(next(iter(parsed_alignment.values())))  # random seq length
     # initiate list of window dicts
     list_of_windows = []
@@ -437,8 +448,7 @@ def replace_seq(text, start, end, replacement=''):
 def print_mem():
     process = psutil.Process(os.getpid())
     mem = process.memory_info().rss / 1_000_000
-    print('\n')
-    print('Used {0:.2f} MB memory\n'.format(mem))
+    logging.info('Used {0:.2f} MB memory\n'.format(mem))
 
 
 def remove_outliers(parsed_alignment, outliers_dict):
@@ -508,20 +518,17 @@ def write_report(report_string, report_file_name):
         rf.write(report_string)
 
 
-def write_distances_dict(mean_taxon_distances, window_size, overlap):
-    dist_fn = 'distances-{}window-{}overlap.json'.format(window_size, overlap)
+def write_distances_dict(mean_taxon_distances, distances_method, window_size, overlap):
+    dist_fn = '{}-distances-{}window-{}overlap.json'.format(distances_method, window_size, overlap)
     with open(dist_fn, 'w') as fp:
-        print('\n')
-        print('Writing distances to file {}'.format(dist_fn))
-        print('\n')
+        logging.info('Writing distances to file {} ...\n'.format(dist_fn))
         json.dump(mean_taxon_distances, fp)
 
 
 def read_distances_dict(distances_json):
     with open(distances_json, 'r') as fp:
-        print('\n')
-        print('Reading distances from file {}'.format(distances_json))
-        print('\n')
+        logging.info('Reading distances from file {} ...\n'.format(distances_json))
+
         mean_taxon_distances = json.load(fp)
         return mean_taxon_distances
 
@@ -536,18 +543,17 @@ def analyze(
     method,
     fraction,
 ):
-    print('Parsing alignment {} ...\n'.format(alignment_file_name))
+    logging.info('Parsing alignment {} ...\n'.format(alignment_file_name))
     aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
-    stride = get_stride(window_size, overlap)
     aln_name, aln_dict = aln_tuple
-    windows = get_windows(aln_dict, window_size, stride)
+    windows = get_windows(aln_dict, window_size, overlap)
     all_distances = distances_wrapper(
         windows, cores, data_type, method=method, fraction=fraction
     )
     taxa_distances = dist_taxa_wrapper(all_distances)
     mean_aln_distances = mean_distances_wrapper(taxa_distances)
     mean_taxon_distances = dists_per_taxon(mean_aln_distances)
-    write_distances_dict(mean_taxon_distances, window_size, overlap)
+    write_distances_dict(mean_taxon_distances, method, window_size, overlap)
     return (aln_tuple, mean_taxon_distances)
 
 
@@ -566,16 +572,16 @@ def output_loop(
     alignment_sites = get_alignment_size(untrimmed_alignment)
     for cutoff_string in cutoffs:
         cutoff = float(cutoff_string)
-        print('Finding outliers for {} {}s cutoff ...'.format(cutoff, criterion))
+        logging.info('Finding outliers for {} {}s cutoff ...'.format(cutoff, criterion))
         outliers = get_outliers_wrapper(
             distances, window_size, criterion, cutoff, manual_cutoffs
         )
         sites_removed, trimmed_alignment = remove_outliers(
             untrimmed_alignment, outliers
         )
-        print('Sites removed: {}'.format(sites_removed))
+        logging.info('Sites removed: {}'.format(sites_removed))
         percent_removed = get_removed_fraction(alignment_sites, sites_removed) * 100
-        print(
+        logging.info(
             'Removed {:.2f}% of sites at cutoff of {} {}s'.format(
                 percent_removed, cutoff_string, criterion
             )
@@ -590,11 +596,11 @@ def output_loop(
             print_report(outliers, criterion, cutoff, manual_cutoffs),
             cutoff_report_fname,
         )
-        print('Wrote report {} ...'.format(cutoff_report_fname))
+        logging.info('Wrote report {}'.format(cutoff_report_fname))
         aln_writing.write_alignment_file(
             trimmed_alignment, out_format, cutoff_trimmed_aln_fname, data_type
         )
-        print('Wrote trimmed alignment {} ...\n'.format(cutoff_trimmed_aln_fname))
+        logging.info('Wrote trimmed alignment {}\n'.format(cutoff_trimmed_aln_fname))
 
 
 def get_stride(window_size, overlap):
@@ -613,7 +619,6 @@ def main():
     method = conf.get('analysis', 'distance_method')
     window_size = conf.getint('analysis', 'window_size')
     overlap = conf.getint('analysis', 'overlap')
-    # include warning if large stride will result in non-overlapping windows
     fraction = conf.getfloat('analysis', 'fraction')
     cores = conf.getint('analysis', 'cores')
     criterion = conf.get('analysis', 'criterion')
@@ -630,8 +635,15 @@ def main():
     output_file_aln = conf.get('output', 'output_file_aln')
     output_format = conf.get('output', 'output_format')
     report = conf.get('output', 'report')
+    log_file_name = conf.get('output', 'log')
+    # logging
+    level = logging.INFO
+    log_format = '%(asctime)s - %(message)s'
+    handlers = [logging.FileHandler(log_file_name, 'w'), logging.StreamHandler()]
+    logging.basicConfig(level=level, format=log_format, handlers=handlers)
+    # check for existing distances file
     if distances_json:
-        print('Parsing alignment {} ...\n'.format(alignment_name))
+        logging.info('Parsing alignment {} ...\n'.format(alignment_name))
         alignment = aln_parsing.parse_alignment(alignment_name, file_format)
         mean_taxon_distances = read_distances_dict(distances_json)
     else:

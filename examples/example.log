@@ -1,0 +1,44 @@
+2019-02-07 10:02:07,363 - Parsing alignment test_aln_nt.fasta ...
+
+2019-02-07 10:02:07,414 - Splitting into size-20 windows with 15 overlap ...
+
+2019-02-07 10:02:37,349 - Writing distances to file jc-distances-20window-15overlap.json ...
+
+2019-02-07 10:02:40,517 - Used 221.35 MB memory
+
+2019-02-07 10:02:40,518 - Finding outliers for 10.0 means cutoff ...
+2019-02-07 10:02:48,828 - Sites removed: 327270
+2019-02-07 10:02:48,828 - Removed 14.52% of sites at cutoff of 10 means
+2019-02-07 10:02:48,841 - Wrote report 10.0_means-cutoff-example-report.txt
+2019-02-07 10:02:48,845 - Wrote trimmed alignment 10.0_means-cutoff-example-trimmed.phylip
+
+2019-02-07 10:02:48,845 - Finding outliers for 15.0 means cutoff ...
+2019-02-07 10:02:57,115 - Sites removed: 98715
+2019-02-07 10:02:57,115 - Removed 4.38% of sites at cutoff of 15 means
+2019-02-07 10:02:57,120 - Wrote report 15.0_means-cutoff-example-report.txt
+2019-02-07 10:02:57,124 - Wrote trimmed alignment 15.0_means-cutoff-example-trimmed.phylip
+
+2019-02-07 10:02:57,124 - Finding outliers for 18.0 means cutoff ...
+2019-02-07 10:03:05,369 - Sites removed: 60970
+2019-02-07 10:03:05,370 - Removed 2.70% of sites at cutoff of 18 means
+2019-02-07 10:03:05,374 - Wrote report 18.0_means-cutoff-example-report.txt
+2019-02-07 10:03:05,378 - Wrote trimmed alignment 18.0_means-cutoff-example-trimmed.phylip
+
+2019-02-07 10:03:05,378 - Finding outliers for 20.0 means cutoff ...
+2019-02-07 10:03:13,603 - Sites removed: 43885
+2019-02-07 10:03:13,603 - Removed 1.95% of sites at cutoff of 20 means
+2019-02-07 10:03:13,605 - Wrote report 20.0_means-cutoff-example-report.txt
+2019-02-07 10:03:13,609 - Wrote trimmed alignment 20.0_means-cutoff-example-trimmed.phylip
+
+2019-02-07 10:03:13,609 - Finding outliers for 25.0 means cutoff ...
+2019-02-07 10:03:22,036 - Sites removed: 21950
+2019-02-07 10:03:22,037 - Removed 0.97% of sites at cutoff of 25 means
+2019-02-07 10:03:22,038 - Wrote report 25.0_means-cutoff-example-report.txt
+2019-02-07 10:03:22,041 - Wrote trimmed alignment 25.0_means-cutoff-example-trimmed.phylip
+
+2019-02-07 10:03:22,041 - Finding outliers for 30.0 means cutoff ...
+2019-02-07 10:03:30,654 - Sites removed: 13225
+2019-02-07 10:03:30,654 - Removed 0.59% of sites at cutoff of 30 means
+2019-02-07 10:03:30,655 - Wrote report 30.0_means-cutoff-example-report.txt
+2019-02-07 10:03:30,658 - Wrote trimmed alignment 30.0_means-cutoff-example-trimmed.phylip
+
