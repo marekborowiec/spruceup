@@ -441,8 +441,8 @@ def get_windows(parsed_alignment, window_size, overlap):
 
 
 def replace_seq(text, start, end, replacement=''):
-    length = end - start + 1
-    return '{}{}{}'.format(text[:start], replacement * length, text[end + 1 :])
+    length = end - start
+    return '{}{}{}'.format(text[:start], replacement * length, text[end:])
 
 
 def print_mem():
