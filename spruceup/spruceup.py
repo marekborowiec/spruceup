@@ -32,12 +32,98 @@ def read_config(config_file_name):
     return config
 
 
+def p_distance(seq1, seq2):
+    """Calculate Hamming/p-distance for two sequences.
+
+    Return the Hamming distance between equal-length sequences
+    or return string NaN if comparing to empty sequence."""
+    if len(seq1) != len(seq2):
+        raise ValueError('Sequences are of unequal length. Did you align them?')
+    eff_len1 = len(seq1.strip('-').strip('?'))
+    eff_len2 = len(seq2.strip('-').strip('?'))
+    if eff_len1 != 0 and eff_len2 != 0:
+        p_distance = sum(
+            el1 != el2
+            for el1, el2 in zip(seq1, seq2)
+            if el1 is not '-' and el2 is not '-' and el1 is not '?' and el2 is not '?'
+        )
+    else:
+        p_distance = 'NaN'
+    return (eff_len1, p_distance)
+
+
+def get_scaled_distance(distance_tpl):
+    """Scale distances from 0 to 1.
+
+    Given tuple of (seq length, Hamming distance)
+    return proportion of different sites
+    unless one of the sequences was missing."""
+    eff_seq_len, distance = distance_tpl
+    if distance is not 'NaN':
+        if eff_seq_len > 0 and distance > 0:
+            scaled_distance = distance / eff_seq_len
+        else:
+            scaled_distance = 0
+    else:
+        scaled_distance = 'NaN'
+    return scaled_distance
+
+
+def jc_correction(distance_tpl, data_type):
+    """Get Jukes-Cantor corrected distances.
+
+    Given distance tuple and depending on data type
+    compute JC-corrected distance for DNA or proteins and
+    return tuple of (seq length, corrected distance)."""
+    eff_seq_len, p_distance = distance_tpl
+    if p_distance is not 'NaN':
+        if data_type == 'nt':
+            jc_corrected = 3 / 4 * log(1 - 4 / 3 * -p_distance)
+        elif data_type == 'aa':
+            jc_corrected = 19 / 20 * log(1 - 20 / 19 * -p_distance)
+    else:
+            jc_corrected = 'NaN'
+    return (eff_seq_len, jc_corrected)
+
+
+def get_distances(aln_tuple, method, fraction, data_type):
+    """Calculate uncorrected or JC-corrected distances for alignment.
+
+    Given tuple (alignment name, alignment distances dict),
+    return tuple of (alignment name, list of pairwise distances).
+    Args:
+    method (str) -- 'uncorrected' or 'jc'
+    fraction (int) -- 0 to 1
+    data_type (str) -- 'nt' or 'aa'
+    """
+
+    aln_name, aln_dict = aln_tuple
+    seqs_to_compare_to = random.sample(
+        aln_dict.items(), int(len(aln_dict.items()) * fraction)
+    )
+
+    if method == 'uncorrected':
+        distances = [
+            (sp1, sp2, get_scaled_distance(p_distance(seq1, seq2)))
+            for sp2, seq2 in seqs_to_compare_to
+            for sp1, seq1 in aln_dict.items()
+            if sp1 != sp2
+        ]
+    elif method == 'jc':
+        distances = [
+            (sp1, sp2, get_scaled_distance(jc_correction(p_distance(seq1, seq2), data_type)))
+            for sp2, seq2 in seqs_to_compare_to
+            for sp1, seq1 in aln_dict.items()
+            if sp1 != sp2
+        ]
+    return (aln_name, distances)
+
+
 def distances_wrapper(
-    parsed_alignments, cores, data_type, method='uncorrected', fraction=1
-):
+    parsed_alignments, cores, data_type, method='uncorrected', fraction=1):
     """Use multiple cores to get distances from list of alignment dicts.
     
-    Keyword args:
+    Args:
     method (str) -- 'uncorrected' or 'jc' (default 'uncorrected')"""
     if int(cores) == 1:
         for aln_tuple in tqdm(parsed_alignments, desc='Calculating distances'):
@@ -63,86 +149,6 @@ def distances_wrapper(
                     yield output
 
 
-def p_distance(seq1, seq2):
-    """Calculate Hamming/p-distance for two sequences.
-
-    Return the Hamming distance between equal-length sequences
-    divided by seq length excluding missing data."""
-    if len(seq1) != len(seq2):
-        raise ValueError('Sequences are of unequal length. Did you align them?')
-    eff_len1 = len(seq1.strip('-').strip('?'))
-    eff_len2 = len(seq2.strip('-').strip('?'))
-    if eff_len1 != 0 and eff_len2 != 0:
-        p_distance = sum(
-            el1 != el2
-            for el1, el2 in zip(seq1, seq2)
-            if el1 is not '-' and el2 is not '-' and el1 is not '?' and el2 is not '?'
-        )
-    else:
-        p_distance = 0
-    return (eff_len1, p_distance)
-
-
-def get_scaled_distance(distance_tpl):
-    eff_seq_len, distance = distance_tpl
-    if eff_seq_len > 0 and distance > 0:
-        scaled_distance = distance / eff_seq_len
-    else:
-        scaled_distance = 0
-    return scaled_distance
-
-
-def get_distances(aln_tuple, method, fraction, data_type):
-    """Calculate uncorrected or JC-corrected distances for alignment.
-
-    Given tuple (alignment name, alignment distances dict)
-    return tuple of (alignment name, list of pairwise distances).
-    Keyword args:
-    method (str) -- 'uncorrected' or 'jc'
-    """
-
-    aln_name, aln_dict = aln_tuple
-    seqs_to_compare_to = random.sample(
-        aln_dict.items(), int(len(aln_dict.items()) * fraction)
-    )
-
-    if method == 'uncorrected':
-        distances = [
-            (sp1, sp2, get_scaled_distance(p_distance(seq1, seq2)))
-            for sp2, seq2 in seqs_to_compare_to
-            for sp1, seq1 in aln_dict.items()
-        ]
-    elif method == 'jc':
-        distances = [
-            (sp1, sp2, get_scaled_distance(jc_correction(p_distance(seq1, seq2), data_type)))
-            for sp2, seq2 in seqs_to_compare_to
-            for sp1, seq1 in aln_dict.items()
-        ]
-    return (aln_name, distances)
-
-
-def jc_correction(distance_tpl, data_type):
-    """Get Jukes-Cantor corrected distances."""
-    eff_seq_len, p_distance = distance_tpl
-    if p_distance == 0:
-        jc_corrected = 0
-    else:
-        if data_type == 'nt':
-            jc_corrected = 3 / 4 * log(1 - 4 / 3 * -p_distance)
-        if data_type == 'aa':
-            jc_corrected = 19 / 20 * log(1 - 20 / 19 * -p_distance)
-    return (eff_seq_len, jc_corrected)
-
-
-def dist_taxa_wrapper(dist_tuples):
-    """Wrapper for getting aligned lists of taxa and distances.
-
-    Given list of tuples of multiple alignments
-    return tuple (alignment name : (taxa rows, distances list))."""
-    for aln_name, distances in dist_tuples:
-        yield (aln_name, get_dist_and_taxa_lists(distances))
-
-
 def get_dist_and_taxa_lists(distances):
     """Get aligned lists of taxa and distances.
 
@@ -152,6 +158,15 @@ def get_dist_and_taxa_lists(distances):
     taxa_rows = [sp2 for (sp1, sp2, dist) in distances]
     dists = [dist for (sp1, sp2, dist) in distances]
     return (taxa_rows, dists)
+
+
+def dist_taxa_wrapper(dist_tuples):
+    """Wrapper for getting aligned lists of taxa and distances.
+
+    Given list of tuples of multiple alignments
+    return tuple (alignment name : (taxa rows, distances list))."""
+    for aln_name, distances in dist_tuples:
+        yield (aln_name, get_dist_and_taxa_lists(distances))
 
 
 def get_dist_matrix(distances, taxa_no):
