@@ -45,7 +45,7 @@ def p_distance(seq1, seq2):
         p_distance = sum(
             el1 != el2
             for el1, el2 in zip(seq1, seq2)
-            if el1 is not '-' and el2 is not '-' and el1 is not '?' and el2 is not '?'
+            if el1 != '-' and el2 != '-' and el1 != '?' and el2 != '?'
         )
     else:
         p_distance = 'NaN'
@@ -59,7 +59,7 @@ def get_scaled_distance(distance_tpl):
     return proportion of different sites
     unless one of the sequences was missing."""
     eff_seq_len, distance = distance_tpl
-    if distance is not 'NaN':
+    if distance != 'NaN':
         if eff_seq_len > 0 and distance > 0:
             scaled_distance = distance / eff_seq_len
         else:
@@ -76,7 +76,7 @@ def jc_correction(distance_tpl, data_type):
     compute JC-corrected distance for DNA or proteins and
     return tuple of (seq length, corrected distance)."""
     eff_seq_len, p_distance = distance_tpl
-    if p_distance is not 'NaN':
+    if p_distance != 'NaN':
         if data_type == 'nt':
             jc_corrected = 3 / 4 * log(1 - 4 / 3 * -p_distance)
         elif data_type == 'aa':
@@ -107,14 +107,12 @@ def get_distances(aln_tuple, method, fraction, data_type):
             (sp1, sp2, get_scaled_distance(p_distance(seq1, seq2)))
             for sp2, seq2 in seqs_to_compare_to
             for sp1, seq1 in aln_dict.items()
-            if sp1 != sp2
         ]
     elif method == 'jc':
         distances = [
             (sp1, sp2, get_scaled_distance(jc_correction(p_distance(seq1, seq2), data_type)))
             for sp2, seq2 in seqs_to_compare_to
             for sp1, seq1 in aln_dict.items()
-            if sp1 != sp2
         ]
     return (aln_name, distances)
 
@@ -217,7 +215,11 @@ def get_mean_distances(dist_matrix, taxon_map):
 
 def get_list_mean(lst):
     """Return mean for all items in a list."""
-    list_mean = sum(lst) / float(len(lst))
+    clean_list = [i for i in lst if i != 'NaN']
+    try:
+        list_mean = abs(sum([i for i in clean_list]) / float(len(clean_list) - 1)) # - 1 ensures that distance to self does not count
+    except ZeroDivisionError: # when there is only one non-empty sequence in window
+        list_mean = 0
     return round(list_mean, 5)
 
 
