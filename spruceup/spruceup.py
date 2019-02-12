@@ -269,8 +269,8 @@ def means_per_taxon(taxa_dists):
     return taxa_means
 
 
-def plot_taxon_dists(dists, taxon, criterion, cutoff, cutoff_line, fit_line=0):
-    fname = '{}-{}{}.png'.format(taxon, cutoff, criterion)
+def plot_taxon_dists(dists, taxon, method, criterion, cutoff, cutoff_line, fit_line=0):
+    fname = '{}-{}-{}{}.png'.format(taxon, method, cutoff, criterion)
     plt.figure(num=None, figsize=(12, 6), dpi=150, facecolor='w', edgecolor='k')
     plt.xlim(0, np.nanmax(dists))
     plt.hist(dists[~np.isnan(dists)], bins=100, density=True)
@@ -289,7 +289,7 @@ def get_taxon_dists(taxa_dists, taxon):
 
 
 def get_outliers_wrapper(
-    all_taxa_dists, window_size, criterion, cutoff, manual_cutoffs
+    all_taxa_dists, window_size, method, criterion, cutoff, manual_cutoffs
 ):
     """Wrapper around outlier identification function.
 
@@ -303,6 +303,7 @@ def get_outliers_wrapper(
                 get_taxon_dists(all_taxa_dists, taxon),
                 taxon,
                 window_size,
+                method,
                 criterion,
                 cutoff,
                 manual_cutoffs,
@@ -315,6 +316,7 @@ def get_outliers_wrapper(
                 get_taxon_dists(all_taxa_dists, taxon),
                 taxon,
                 window_size,
+                method,
                 criterion,
                 cutoff,
                 manual_cutoffs,
@@ -333,7 +335,7 @@ def get_window_tuple(tpl, window_size):
 
 
 def get_lognorm_outliers(
-    taxon_dists, taxon, window_size, criterion, cutoff, manual_cutoffs
+    taxon_dists, taxon, window_size, method, criterion, cutoff, manual_cutoffs
 ):
     """Identify outlier windows in a taxon.
 
@@ -361,6 +363,7 @@ def get_lognorm_outliers(
             plot_taxon_dists(
                 dists,
                 taxon,
+                method,
                 criterion,
                 cutoff,
                 manual_dict[taxon],
@@ -371,14 +374,14 @@ def get_lognorm_outliers(
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
             plot_taxon_dists(
-                dists, taxon, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
+                dists, taxon, method, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
             )
             for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= logn_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
     else:
         plot_taxon_dists(
-            dists, taxon, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
+            dists, taxon, method, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
         )
         for tpl, dist in sorted(taxon_dists.items()):
             if dist >= logn_cutoff:
@@ -392,7 +395,7 @@ def get_lognorm_outliers(
 
 
 def get_mean_outliers(
-    taxon_dists, taxon, window_size, criterion, cutoff, manual_cutoffs
+    taxon_dists, taxon, window_size, method, criterion, cutoff, manual_cutoffs
 ):
     """Identify outlier windows in a taxon.
 
@@ -413,17 +416,17 @@ def get_mean_outliers(
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            plot_taxon_dists(dists, taxon, criterion, cutoff, manual_dict[taxon])
+            plot_taxon_dists(dists, taxon, method, criterion, cutoff, manual_dict[taxon])
             for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= manual_dict[taxon]:
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
-            plot_taxon_dists(dists, taxon, criterion, cutoff, mean_cutoff)
+            plot_taxon_dists(dists, taxon, method, criterion, cutoff, mean_cutoff)
             for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= mean_cutoff:
                     outliers.append(get_window_tuple(tpl, window_size))
     else:
-        plot_taxon_dists(dists, taxon, criterion, cutoff, mean_cutoff)
+        plot_taxon_dists(dists, taxon, method, criterion, cutoff, mean_cutoff)
         for tpl, dist in sorted(taxon_dists.items()):
             if dist >= mean_cutoff:
                 outliers.append(get_window_tuple(tpl, window_size))
@@ -477,7 +480,6 @@ def get_windows(parsed_alignment, window_size, overlap):
 def replace_seq(text, start, end, replacement=''):
     length = end - start
     return '{}{}{}'.format(text[:start], replacement * length, text[end:])
-
 
 def print_mem():
     process = psutil.Process(os.getpid())
@@ -596,6 +598,7 @@ def output_loop(
     untrimmed_alignment,
     distances,
     window_size,
+    method,
     criterion,
     cutoffs,
     manual_cutoffs,
@@ -609,7 +612,7 @@ def output_loop(
         cutoff = float(cutoff_string)
         logging.info('Finding outliers for {} {}s cutoff ...'.format(cutoff, criterion))
         outliers = get_outliers_wrapper(
-            distances, window_size, criterion, cutoff, manual_cutoffs
+            distances, window_size, method, criterion, cutoff, manual_cutoffs
         )
         sites_removed, trimmed_alignment = remove_outliers(
             untrimmed_alignment, outliers
@@ -697,6 +700,7 @@ def main():
         alignment,
         mean_taxon_distances,
         window_size,
+        method,
         criterion,
         cutoffs,
         manual_cutoffs,
