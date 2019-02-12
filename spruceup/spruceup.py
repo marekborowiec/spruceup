@@ -22,6 +22,23 @@ import aln_parsing, aln_writing
 
 plt.switch_backend('agg')
 
+
+def replace_missing_in_dict(parsed_aln_dict, data_type):
+    nt_missing_ambiguous_chars = ['K','M','R','Y','S','W','B','V','H','D','X', 'N', 'O']
+    aa_missing_ambiguous_chars = ['B','J','Z','X','.','*']
+    if data_type == 'aa':
+        new_dict = {taxon: replace_missing_ambiguous(seq, aa_missing_ambiguous_chars) for taxon, seq in parsed_aln_dict.items()}
+    elif data_type == 'nt':
+        new_dict = {taxon: replace_missing_ambiguous(seq, nt_missing_ambiguous_chars) for taxon, seq in parsed_aln_dict.items()}
+    return new_dict
+
+
+def replace_missing_ambiguous(seq, missing_ambiguous_list):
+    for char in missing_ambiguous_list:
+        seq = seq.replace(char, '?')
+    return seq
+
+
 def read_config(config_file_name):
     try:
         with open(config_file_name) as cf:
@@ -563,7 +580,8 @@ def analyze(
     logging.info('Parsing alignment {} ...\n'.format(alignment_file_name))
     aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
     aln_name, aln_dict = aln_tuple
-    windows = get_windows(aln_dict, window_size, overlap)
+    no_missing_ambiguous_dict = replace_missing_in_dict(aln_dict, data_type)
+    windows = get_windows(no_missing_ambiguous_dict, window_size, overlap)
     all_distances = distances_wrapper(
         windows, cores, data_type, method=method, fraction=fraction
     )
