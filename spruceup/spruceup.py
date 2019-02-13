@@ -12,6 +12,7 @@ import multiprocessing as mp
 from functools import partial
 from math import log
 
+from ete3 import Tree
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as scp
@@ -21,6 +22,27 @@ import psutil
 import aln_parsing, aln_writing
 
 plt.switch_backend('agg')
+
+def get_tree_dist_dict(tree_fn):
+    t = Tree(tree_fn)
+    taxa = t.get_leaf_names()
+    tree_dist_dict = {}
+    for sp1 in taxa:
+        for sp2 in taxa:
+            if sp1 != sp2:
+                tree_dist = get_tree_dist_between_two_leaves(t, sp1, sp2)
+            else:
+                tree_dist = 0
+            tree_dist_dict[(sp1, sp2)] = tree_dist
+    return tree_dist_dict
+
+
+def get_tree_dist_between_two_leaves(tree, spA, spB):
+    return tree.get_distance(spA, spB)
+
+
+def lookup_tree_dist(tree_dist_dict, sp1, sp2):
+    return tree_dist_dict[(sp1, sp2)]
 
 
 def replace_missing_in_dict(parsed_aln_dict, data_type):
@@ -103,7 +125,23 @@ def jc_correction(distance_tpl, data_type):
     return (eff_seq_len, jc_corrected)
 
 
-def get_distances(aln_tuple, method, fraction, data_type):
+def get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, seq2):
+    if method == 'uncorrected':
+        scaled_distance = get_scaled_distance(p_distance(seq1, seq2))
+    elif method == 'jc':
+        scaled_distance = get_scaled_distance(jc_correction(p_distance(seq1, seq2), data_type))
+    tree_distance = lookup_tree_dist(tree_dists, sp1, sp2)
+    try:
+        if scaled_distance == 'NaN':
+            tree_scaled = 'NaN'
+        else:
+            tree_scaled = scaled_distance / tree_distance
+    except ZeroDivisionError:
+        tree_scaled = scaled_distance
+    return tree_scaled
+
+
+def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
     """Calculate uncorrected or JC-corrected distances for alignment.
 
     Given tuple (alignment name, alignment distances dict),
@@ -113,36 +151,27 @@ def get_distances(aln_tuple, method, fraction, data_type):
     fraction (int) -- 0 to 1
     data_type (str) -- 'nt' or 'aa'
     """
-
     aln_name, aln_dict = aln_tuple
     seqs_to_compare_to = random.sample(
         aln_dict.items(), int(len(aln_dict.items()) * fraction)
     )
-
-    if method == 'uncorrected':
-        distances = [
-            (sp1, sp2, get_scaled_distance(p_distance(seq1, seq2)))
-            for sp2, seq2 in seqs_to_compare_to
-            for sp1, seq1 in aln_dict.items()
-        ]
-    elif method == 'jc':
-        distances = [
-            (sp1, sp2, get_scaled_distance(jc_correction(p_distance(seq1, seq2), data_type)))
-            for sp2, seq2 in seqs_to_compare_to
-            for sp1, seq1 in aln_dict.items()
-        ]
+    distances = [
+                (sp1, sp2, get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, seq2))
+                for sp2, seq2 in seqs_to_compare_to
+                for sp1, seq1 in aln_dict.items()
+                ]
     return (aln_name, distances)
 
 
 def distances_wrapper(
-    parsed_alignments, cores, data_type, method='uncorrected', fraction=1):
+    parsed_alignments, tree_dists, cores, data_type, method='uncorrected', fraction=1):
     """Use multiple cores to get distances from list of alignment dicts.
     
     Args:
     method (str) -- 'uncorrected' or 'jc' (default 'uncorrected')"""
     if int(cores) == 1:
         for aln_tuple in tqdm(parsed_alignments, desc='Calculating distances'):
-            yield get_distances(aln_tuple, method, fraction, data_type)
+            yield get_distances(aln_tuple, tree_dists, method, fraction, data_type)
     elif int(cores) > 1:
         with mp.Pool(processes=cores) as pool:
             with tqdm(total=len(parsed_alignments)) as pbar:
@@ -151,6 +180,7 @@ def distances_wrapper(
                         pool.imap_unordered(
                             partial(
                                 get_distances,
+                                tree_dists=tree_dists,
                                 method=method,
                                 fraction=fraction,
                                 data_type=data_type,
@@ -275,7 +305,7 @@ def plot_taxon_dists(dists, taxon, method, criterion, cutoff, cutoff_line, fit_l
     plt.xlim(0, np.nanmax(dists))
     plt.hist(dists[~np.isnan(dists)], bins=100, density=True)
     if fit_line is not 0:
-        x = np.linspace(0, 1, 500)
+        x = np.linspace(0, np.nanmax(dists), 500)
         plt.plot(x, fit_line)
     plt.title(taxon)
     plt.axvline(cutoff_line, color='k', linestyle='dashed', linewidth=1)
@@ -350,7 +380,7 @@ def get_lognorm_outliers(
     dists = dists[~np.isnan(dists)]
     shape, loc, scale = scp.lognorm.fit(dists, floc=0)
     logn_cutoff = scp.lognorm.ppf(cutoff, shape, loc, scale)
-    x = np.linspace(0, 1, 500)
+    x = np.linspace(0, np.nanmax(dists), 500)
     logn_fit_line = scp.lognorm.pdf(x, shape, loc, scale)
     outliers = []
     if manual_cutoffs:
@@ -571,6 +601,7 @@ def read_distances_dict(distances_json):
 
 def analyze(
     alignment_file_name,
+    tree_file_name,
     input_file_format,
     data_type,
     window_size,
@@ -580,12 +611,14 @@ def analyze(
     fraction,
 ):
     logging.info('Parsing alignment {} ...\n'.format(alignment_file_name))
+    logging.info('Found guide tree {} ...\n'.format(tree_file_name))
     aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
     aln_name, aln_dict = aln_tuple
+    tree_dists = get_tree_dist_dict(tree_file_name)
     no_missing_ambiguous_dict = replace_missing_in_dict(aln_dict, data_type)
     windows = get_windows(no_missing_ambiguous_dict, window_size, overlap)
     all_distances = distances_wrapper(
-        windows, cores, data_type, method=method, fraction=fraction
+        windows, tree_dists, cores, data_type, method=method, fraction=fraction
     )
     taxa_distances = dist_taxa_wrapper(all_distances)
     mean_aln_distances = mean_distances_wrapper(taxa_distances)
@@ -653,6 +686,7 @@ def main():
     file_format = conf.get('input', 'input_format')
     data_type = conf.get('input', 'data_type')
     distances_json = conf.get('input', 'distances_object_file')
+    tree_file = conf.get('input', 'guide_tree')
     # analysis
     method = conf.get('analysis', 'distance_method')
     window_size = conf.getint('analysis', 'window_size')
@@ -687,6 +721,7 @@ def main():
     else:
         alignment, mean_taxon_distances = analyze(
             alignment_name,
+            tree_file,
             file_format,
             data_type,
             window_size,
