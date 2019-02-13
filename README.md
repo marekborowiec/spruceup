@@ -14,7 +14,7 @@ If you are using this program, please cite [this publication](link):
 ```
 ```
 
-This script uses [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/index.html), [matplotlib](https://matplotlib.org/), [psutil](https://pypi.org/project/psutil/) and [tqdm](https://pypi.org/project/tqdm/).
+This script uses [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/index.html), [matplotlib](https://matplotlib.org/), [psutil](https://pypi.org/project/psutil/), [tqdm](https://pypi.org/project/tqdm/), and [ete](https://etetoolkit.org/).
 
 ## Installation and requirements
 
@@ -29,15 +29,10 @@ pip install seq-spruceup
 sudo apt-get install python3.6
 ```
 
-
-```bash
-
-```
-
 ## Interface
-Once you successfully installed `seq-spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format and 2) a configuration file to run it. To run the program from the command line you can type:
+Once you successfully installed `seq-spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format, 2) (optional) a guide tree for your alignment in `NEWICK` format, and 3) configuration file to run the program. To run the program from the command line you can type:
 ```bash
-spruceup my-configuration-file.conf
+spruceup.py my-configuration-file.conf
 ```
 Directory `examples` contains a template configuration file. It has the following fields:
 
@@ -51,6 +46,8 @@ The `input` category defines parameters of the input alignment and its type.
 `data_type` tells the program whether your alignment contains amino acids (`aa`) or DNA nucleotides (`nt`).
 
 `distances_object_file` is the file name of an existing distance object. Because sometimes you will want to adjust cutoffs or cutoff criterion and computing distances is the most time-consuming part of the analysis, `spruceup` saves a `json` format file with distances from each analysis. By default this is blank, but if you do have a distance file from a previous analysis and you want to trim your alignment with new cutoffs, supply the `json` file name here. `spruceup` will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.
+
+`guide_tree` is a phylogram or cladogram `NEWICK` format file to be used as a guide tree. The tree can be inferred using any method and can be fully resolved or contain polytomies. If you do not supply a guide tree the program will still run but without phylogeny it will have less information to identify misaligned sequences. This is particularly important in vartiable algnments with distantly related samples, where it is more difficult to distinguish genuinely variable sequences from misaligned fragments. In cases where you suspect and are mainly concerned with samples with spuriously long terminal branches it is adivsable to supply topology-only (cladogram) guide tree and/or run the program without a guide tree. 
 
 ### [analysis]
 The `analysis` category defines parameters used to analyze and clean up your alignment.

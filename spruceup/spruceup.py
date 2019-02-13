@@ -23,7 +23,10 @@ import aln_parsing, aln_writing
 
 plt.switch_backend('agg')
 
+
 def get_tree_dist_dict(tree_fn):
+    """Make a dict of all-by-all distances from
+    input guide tree."""
     t = Tree(tree_fn)
     taxa = t.get_leaf_names()
     tree_dist_dict = {}
@@ -38,30 +41,57 @@ def get_tree_dist_dict(tree_fn):
 
 
 def get_tree_dist_between_two_leaves(tree, spA, spB):
+    """Given ete phylogenetic tree, get distance between leaves."""
     return tree.get_distance(spA, spB)
 
 
 def lookup_tree_dist(tree_dist_dict, sp1, sp2):
+    """Fast lookup of tree distance from dict of all guide tree distances."""
     return tree_dist_dict[(sp1, sp2)]
 
 
 def replace_missing_in_dict(parsed_aln_dict, data_type):
-    nt_missing_ambiguous_chars = ['K','M','R','Y','S','W','B','V','H','D','X', 'N', 'O']
-    aa_missing_ambiguous_chars = ['B','J','Z','X','.','*']
+    """Checking data type (aa or nt) and converting ambiguous and missing data
+    with '?' before calculating distances."""
+    nt_missing_ambiguous_chars = [
+        'K',
+        'M',
+        'R',
+        'Y',
+        'S',
+        'W',
+        'B',
+        'V',
+        'H',
+        'D',
+        'X',
+        'N',
+        'O',
+    ]
+    aa_missing_ambiguous_chars = ['B', 'J', 'Z', 'X', '.', '*']
     if data_type == 'aa':
-        new_dict = {taxon: replace_missing_ambiguous(seq, aa_missing_ambiguous_chars) for taxon, seq in parsed_aln_dict.items()}
+        new_dict = {
+            taxon: replace_missing_ambiguous(seq, aa_missing_ambiguous_chars)
+            for taxon, seq in parsed_aln_dict.items()
+        }
     elif data_type == 'nt':
-        new_dict = {taxon: replace_missing_ambiguous(seq, nt_missing_ambiguous_chars) for taxon, seq in parsed_aln_dict.items()}
+        new_dict = {
+            taxon: replace_missing_ambiguous(seq, nt_missing_ambiguous_chars)
+            for taxon, seq in parsed_aln_dict.items()
+        }
     return new_dict
 
 
 def replace_missing_ambiguous(seq, missing_ambiguous_list):
+    """Given sequence and list of missing or ambiguous characters,
+    replace them in sequence with '?'."""
     for char in missing_ambiguous_list:
         seq = seq.replace(char, '?')
     return seq
 
 
 def read_config(config_file_name):
+    """Read in configuration file if it exists."""
     try:
         with open(config_file_name) as cf:
             config = configparser.RawConfigParser()
@@ -121,7 +151,7 @@ def jc_correction(distance_tpl, data_type):
         elif data_type == 'aa':
             jc_corrected = 19 / 20 * log(1 - 20 / 19 * -p_distance)
     else:
-            jc_corrected = 'NaN'
+        jc_corrected = 'NaN'
     return (eff_seq_len, jc_corrected)
 
 
@@ -129,7 +159,9 @@ def get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, 
     if method == 'uncorrected':
         scaled_distance = get_scaled_distance(p_distance(seq1, seq2))
     elif method == 'jc':
-        scaled_distance = get_scaled_distance(jc_correction(p_distance(seq1, seq2), data_type))
+        scaled_distance = get_scaled_distance(
+            jc_correction(p_distance(seq1, seq2), data_type)
+        )
     tree_distance = lookup_tree_dist(tree_dists, sp1, sp2)
     try:
         if scaled_distance == 'NaN':
@@ -139,6 +171,16 @@ def get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, 
     except ZeroDivisionError:
         tree_scaled = scaled_distance
     return tree_scaled
+
+
+def get_distances_scaled(method, data_type, seq1, seq2):
+    if method == 'uncorrected':
+        scaled_distance = get_scaled_distance(p_distance(seq1, seq2))
+    elif method == 'jc':
+        scaled_distance = get_scaled_distance(
+            jc_correction(p_distance(seq1, seq2), data_type)
+        )
+    return scaled_distance
 
 
 def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
@@ -155,16 +197,30 @@ def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
     seqs_to_compare_to = random.sample(
         aln_dict.items(), int(len(aln_dict.items()) * fraction)
     )
-    distances = [
-                (sp1, sp2, get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, seq2))
-                for sp2, seq2 in seqs_to_compare_to
-                for sp1, seq1 in aln_dict.items()
-                ]
+    if tree_dists == None:
+        distances = [
+            (sp1, sp2, get_distances_scaled(method, data_type, seq1, seq2))
+            for sp2, seq2 in seqs_to_compare_to
+            for sp1, seq1 in aln_dict.items()
+        ]
+    elif tree_dists != None:
+        distances = [
+            (
+                sp1,
+                sp2,
+                get_distances_scaled_by_tree(
+                    method, data_type, tree_dists, sp1, sp2, seq1, seq2
+                ),
+            )
+            for sp2, seq2 in seqs_to_compare_to
+            for sp1, seq1 in aln_dict.items()
+        ]
     return (aln_name, distances)
 
 
 def distances_wrapper(
-    parsed_alignments, tree_dists, cores, data_type, method='uncorrected', fraction=1):
+    parsed_alignments, tree_dists, cores, data_type, method='uncorrected', fraction=1
+):
     """Use multiple cores to get distances from list of alignment dicts.
     
     Args:
@@ -264,8 +320,10 @@ def get_list_mean(lst):
     """Return mean for all items in a list."""
     clean_list = [i for i in lst if i != 'NaN']
     try:
-        list_mean = abs(sum([i for i in clean_list]) / float(len(clean_list) - 1)) # - 1 ensures that distance to self does not count
-    except ZeroDivisionError: # when there is only one non-empty sequence in window
+        list_mean = abs(
+            sum([i for i in clean_list]) / float(len(clean_list) - 1)
+        )  # - 1 ensures that distance to self does not count
+    except ZeroDivisionError:  # when there is only one non-empty sequence in window
         list_mean = 0
     return round(list_mean, 5)
 
@@ -404,7 +462,13 @@ def get_lognorm_outliers(
                     outliers.append(get_window_tuple(tpl, window_size))
         else:
             plot_taxon_dists(
-                dists, taxon, method, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
+                dists,
+                taxon,
+                method,
+                criterion,
+                cutoff,
+                logn_cutoff,
+                fit_line=logn_fit_line,
             )
             for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= logn_cutoff:
@@ -446,7 +510,9 @@ def get_mean_outliers(
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            plot_taxon_dists(dists, taxon, method, criterion, cutoff, manual_dict[taxon])
+            plot_taxon_dists(
+                dists, taxon, method, criterion, cutoff, manual_dict[taxon]
+            )
             for tpl, dist in sorted(taxon_dists.items()):
                 if dist >= manual_dict[taxon]:
                     outliers.append(get_window_tuple(tpl, window_size))
@@ -483,7 +549,11 @@ def merge(ranges):
 
 def get_windows(parsed_alignment, window_size, overlap):
     # extract alignment windows of desired length and stride
-    logging.info('Splitting into size-{} windows with {} overlap ...\n'.format(window_size, overlap))
+    logging.info(
+        'Splitting into size-{} windows with {} overlap ...\n'.format(
+            window_size, overlap
+        )
+    )
     stride = get_stride(window_size, overlap)
     aln_len = len(next(iter(parsed_alignment.values())))  # random seq length
     # initiate list of window dicts
@@ -510,6 +580,7 @@ def get_windows(parsed_alignment, window_size, overlap):
 def replace_seq(text, start, end, replacement=''):
     length = end - start
     return '{}{}{}'.format(text[:start], replacement * length, text[end:])
+
 
 def print_mem():
     process = psutil.Process(os.getpid())
@@ -585,7 +656,9 @@ def write_report(report_string, report_file_name):
 
 
 def write_distances_dict(mean_taxon_distances, distances_method, window_size, overlap):
-    dist_fn = '{}-distances-{}window-{}overlap.json'.format(distances_method, window_size, overlap)
+    dist_fn = '{}-distances-{}window-{}overlap.json'.format(
+        distances_method, window_size, overlap
+    )
     with open(dist_fn, 'w') as fp:
         logging.info('Writing distances to file {} ...\n'.format(dist_fn))
         json.dump(mean_taxon_distances, fp)
@@ -611,11 +684,15 @@ def analyze(
     fraction,
 ):
     logging.info('Parsing alignment {} ...\n'.format(alignment_file_name))
-    logging.info('Found guide tree {} ...\n'.format(tree_file_name))
     aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
     aln_name, aln_dict = aln_tuple
-    tree_dists = get_tree_dist_dict(tree_file_name)
     no_missing_ambiguous_dict = replace_missing_in_dict(aln_dict, data_type)
+    if tree_file_name == None:
+        logging.info('Did not find guide tree, continuing ...\n')
+        tree_dists = None
+    else:
+        logging.info('Found guide tree {} ...\n'.format(tree_file_name))
+        tree_dists = get_tree_dist_dict(tree_file_name)
     windows = get_windows(no_missing_ambiguous_dict, window_size, overlap)
     all_distances = distances_wrapper(
         windows, tree_dists, cores, data_type, method=method, fraction=fraction
@@ -687,6 +764,8 @@ def main():
     data_type = conf.get('input', 'data_type')
     distances_json = conf.get('input', 'distances_object_file')
     tree_file = conf.get('input', 'guide_tree')
+    if not tree_file:
+        tree_file = None
     # analysis
     method = conf.get('analysis', 'distance_method')
     window_size = conf.getint('analysis', 'window_size')
@@ -749,7 +828,6 @@ def main():
 if __name__ == '__main__':
 
     main()
-
 ### To do:
 
 # 1) add docstrings to all functions

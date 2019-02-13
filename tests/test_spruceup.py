@@ -46,23 +46,49 @@ fractions = [0, 0.5, 1]
 
 data_types = ['aa', 'nt']
 
-def test_get_taxon_map():
-    assert_equal()
+tree_dists = {
+('sp1', 'sp1'): 0.0,
+('sp1', 'sp2'): 0.1,
+('sp1', 'sp3'): 3,
+('sp1', 'sp4'): 0.5,
+('sp1', 'sp5'): 0.0,
+('sp2', 'sp1'): 0.1,
+('sp2', 'sp2'): 0.0,
+('sp2', 'sp3'): 0.5,
+('sp2', 'sp4'): 0.1,
+('sp2', 'sp5'): 0.1,
+('sp3', 'sp1'): 3,
+('sp3', 'sp2'): 2.5,
+('sp3', 'sp3'): 0.0,
+('sp3', 'sp4'): 0.9,
+('sp3', 'sp5'): 1,
+('sp4', 'sp1'): 0.5,
+('sp4', 'sp2'): 0.1,
+('sp4', 'sp3'): 0.9,
+('sp4', 'sp4'): 0.0,
+('sp4', 'sp5'): 0.7,
+('sp5', 'sp1'): 0.0,
+('sp5', 'sp2'): 0.1,
+('sp5', 'sp3'): 1,
+('sp5', 'sp4'): 0.7,
+('sp5', 'sp5'): 0.0,
+}
+
 
 def test_get_uncorrected_no_nt_distances():
-    assert_equal(len(get_distances(alns_tpls[0], methods[0], fractions[0], data_types[1])), 2)
+    assert_equal(len(get_distances(alns_tpls[0], tree_dists, methods[0], fractions[0], data_types[1])), 2)
 
 def test_get_uncorrected_half_nt_distances():
-    assert_equal(len(get_distances(alns_tpls[0], methods[0], fractions[1], data_types[1])), 2)
+    assert_equal(len(get_distances(alns_tpls[0], tree_dists, methods[0], fractions[1], data_types[1])), 2)
 
 def test_get_uncorrected_all_aa_distances():
-    assert_equal(len(get_distances(alns_tpls[0], methods[1], fractions[2], data_types[0])), 2)
+    assert_equal(len(get_distances(alns_tpls[0], tree_dists, methods[1], fractions[2], data_types[0])), 2)
 
 def test_get_jc_all_nt_distances():
-    assert_equal(len(get_distances(alns_tpls[0], methods[1], fractions[2], data_types[1])), 2)
+    assert_equal(len(get_distances(alns_tpls[0], tree_dists, methods[1], fractions[2], data_types[1])), 2)
 
 def test_get_uncorrected_all_nt_distances():
-    assert_equal(len(get_distances(alns_tpls[0], methods[0], fractions[2], data_types[1])), 2)
+    assert_equal(len(get_distances(alns_tpls[0], tree_dists, methods[0], fractions[2], data_types[1])), 2)
 
 def test_jc_nt_zero():
     assert_equal(jc_correction((10, 0), data_types[1]), (10, 0))

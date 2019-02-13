@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>README.md - Grip</title>
+  <link rel="icon" href="http://localhost:6419/__/grip/static/favicon.ico">
+  <link rel="stylesheet" href="README_files/frameworks-a3b8a10d4a9e37a78f033ef4a4f525f5.css">
+  <link rel="stylesheet" href="README_files/github-a842d1324eb4ab086590be512b951c4c.css">
+  <link rel="stylesheet" href="README_files/site-bdd55e67f0ed3e8974c7c941589e8c6a.css">
+  <link rel="stylesheet" href="README_files/octicons.css">
+  <style>
+    /* Page tweaks */
+    .preview-page {
+      margin-top: 64px;
+    }
+    /* User-content tweaks */
+    .timeline-comment-wrapper > .timeline-comment:after,
+    .timeline-comment-wrapper > .timeline-comment:before {
+      content: none;
+    }
+    /* User-content overrides */
+    .discussion-timeline.wide {
+      width: 920px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div id="preview-page" class="preview-page" data-autorefresh-url="/__/grip/refresh/">
+
+    
+
+      <div role="main" class="main-content">
+        <div class="container new-discussion-timeline experiment-repo-nav">
+          <div class="repository-content">
+            <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
+              
+                <h3>
+                  <span class="octicon octicon-book"></span>
+                  README.md
+                </h3>
+              
+              <article class="markdown-body entry-content" itemprop="text" id="grip-content">
+                <p><a href="https://zenodo.org/badge/latestdoi/@@@" rel="nofollow"><img src="README_files/a.html" alt="DOI" data-canonical-src="https://zenodo.org/badge/@@@.svg" style="max-width:100%;"></a></p>
+<h1>
+<a id="user-content-seq-spruceup" class="anchor" href="#seq-spruceup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>seq-spruceup</h1>
+<pre><code>        A  
+       TCG  
+      ACGTA  
+        T 
+</code></pre>
+<p>Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments.</p>
+<p>If you are using this program, please cite <a href="http://localhost:6419/link">this publication</a>:</p>
+<pre><code></code></pre>
+<p>This script uses <a href="http://www.numpy.org/" rel="nofollow">numpy</a>, <a href="https://www.scipy.org/index.html" rel="nofollow">scipy</a>, <a href="https://matplotlib.org/" rel="nofollow">matplotlib</a>, <a href="https://pypi.org/project/psutil/" rel="nofollow">psutil</a>, <a href="https://pypi.org/project/tqdm/" rel="nofollow">tqdm</a>, and <a href="https://etetoolkit.org/" rel="nofollow">ete</a>.</p>
+<h2>
+<a id="user-content-installation-and-requirements" class="anchor" href="#installation-and-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation and requirements</h2>
+<p>You can download a zipped GitHub repository, clone it if you have <code>git</code> installed on your system, or install using <a href="https://pip.pypa.io/en/latest/installing.html" rel="nofollow">pip</a> (recommended) from the <a href="https://pypi.python.org/pypi/seq-spruceup/" rel="nofollow">Python Package Index</a> (to-do):</p>
+<div class="highlight highlight-source-shell"><pre>pip install seq-spruceup</pre></div>
+<p><code>seq-spruceup</code> requires you have Python version 3.6 or 
+newer. Dependencies should be installed automatically. If your system 
+does not have Python version 3.6 or newer you will need to <a href="http://www.python.org/downloads/" rel="nofollow">download and install it</a>. On Linux-like systems (including Ubuntu) you can install it from the command line using</p>
+<div class="highlight highlight-source-shell"><pre>sudo apt-get install python3.6</pre></div>
+<h2>
+<a id="user-content-interface" class="anchor" href="#interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interface</h2>
+<p>Once you successfully installed <code>seq-spruceup</code> you will need 1) an alignment in <code>FASTA</code>, <code>PHYLIP</code> or <code>NEXUS</code> format, 2) (optional) a guide tree for your alignment in <code>NEWICK</code> format, and 3) configuration file to run the program. To run the program from the command line you can type:</p>
+<div class="highlight highlight-source-shell"><pre>spruceup.py my-configuration-file.conf</pre></div>
+<p>Directory <code>examples</code> contains a template configuration file. It has the following fields:</p>
+<h3>
+<a id="user-content-input" class="anchor" href="#input" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[input]</h3>
+<p>The <code>input</code> category defines parameters of the input alignment and its type.</p>
+<p><code>input_file_name</code> is the file path of the alignment to be processed.</p>
+<p><code>input_format</code> indicates which format the alignment file is in. It can be one of five popular formats: <code>fasta</code>, <code>phylip</code>, <code>phylip-int</code> (interleaved PHYLIP), <code>nexus</code>, and <code>nexus-int</code>.</p>
+<p><code>data_type</code> tells the program whether your alignment contains amino acids (<code>aa</code>) or DNA nucleotides (<code>nt</code>).</p>
+<p><code>distances_object_file</code> is the file name of an existing 
+distance object. Because sometimes you will want to adjust cutoffs or 
+cutoff criterion and computing distances is the most time-consuming part
+ of the analysis, <code>spruceup</code> saves a <code>json</code> format
+ file with distances from each analysis. By default this is blank, but 
+if you do have a distance file from a previous analysis and you want to 
+trim your alignment with new cutoffs, supply the <code>json</code> file name here. <code>spruceup</code> will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.</p>
+<p><code>guide_tree</code> is a phylogram or cladogram <code>NEWICK</code>
+ format file to be used as a guide tree. The tree can be inferred using 
+any method and can be fully resolved or contain polytomies. If you do 
+not supply a guide tree the program will still run but without phylogeny
+ it will have less information to identify misaligned sequences. This is
+ particularly important in vartiable algnments with distantly related 
+samples, where it is more difficult to distinguish genuinely variable 
+sequences from misaligned fragments. In cases where you suspect and are 
+mainly concerned with samples with spuriously long terminal branches it 
+is adivsable to supply topology-only (cladogram) guide tree and/or run 
+the program without a guide tree.</p>
+<h3>
+<a id="user-content-analysis" class="anchor" href="#analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[analysis]</h3>
+<p>The <code>analysis</code> category defines parameters used to analyze and clean up your alignment.</p>
+<p><code>cores</code> how many CPU cores to use for distance calculations.</p>
+<p><code>distance_method</code> chooses to compute uncorrected p-distance with <code>uncorrected</code> or Jukes-Cantor-corrected distance with <code>jc</code>.</p>
+<p><code>window_size</code> chooses how many characters (aa/nt) to 
+include in a window in which distances will be calculated. Default value
+ that works well for most alignments is <code>20</code>.</p>
+<p><code>overlap</code> indicates how many characters (aa/nt) each 
+sliding window will be overlapping with preceding window. Stride of 15 
+and window size of 20 means that each new window will move 5 positions 
+down the alignment and overlap by 15 characters with the preceding 
+window. Increasing overlap will decrease computational burden because 
+fewer windows will be created. Default value is <code>15</code> (two thirds of default window size of <code>20</code>) but you may want to go lower, to half of window size or even <code>0</code>
+ (non-overlapping windows) if your alignment is very large and you want 
+to decrease compute time and memory usage and don't mind sacrificing 
+some precision.</p>
+<p><code>fraction</code> signifies proportion of OTUs/samples that will be used to calculate average distance in each window. With fraction set to <code>1.0</code> distances for each OTU will be calculated against all other OTUs in the alignment. With fraction set to <code>0.5</code>
+ distances for each OTU will be calculated against a random sample 
+representing 50% of OTUs in the alignment. Lowering this number will 
+help to speed up calculations in alignments with large numbers of taxa.</p>
+<p><code>criterion</code> chooses how outlier distances will be determined. If you are using <code>mean</code> (recommended), simple multiple of those values computed for each OTU will be considered cutoffs for identifying outliers. <code>lognorm</code> means that a <a href="https://en.wikipedia.org/wiki/Log-normal_distribution" rel="nofollow">lognormal distribution</a>
+ will be fitted to your distance data for each OTU and cutoffs will be 
+determined by specifying quantile of observations above which sequence 
+will be considered outliers.</p>
+<p><code>cutoffs</code> specifies multiple values considered as cutoffs. If you are using <code>mean</code> as your criterion, use multiples of those values, for example <code>5,30</code> etc. For <code>lognorm</code> criterion use fractions of <code>1</code>, for example <code>0.9,0.995</code> etc.  Default values that should work for most alignments are <code>0.9,0.95,0.97,0.99,0.995,0.999</code> for <code>lognorm</code> and <code>5,10,15,18,20,25,30</code> for <code>mean</code>.
+ You can always trim with additional criteria and cutoffs after the 
+initial analysis (see point 5 below under Interpreting the output). If 
+the alignment contains many saturated or poorly aligned sites, a low 
+setting may result in huge amount of data being trimmed from the 
+original alignment. This is time-consuming and you may want to trim your
+ alignment with a more stringent 'block' method before using <code>spruceup</code> or remove lower cutoff values from the list.</p>
+<p><code>manual_cutoffs</code> is an optional setting that allows manual
+ modifications to cutoffs for individual OTUs. It may prove useful if 
+only one or a few samples have a significant proportion of poorly 
+aligned sequences, skewing their overall cutoff such that they are not 
+being flagged. If you find that this is case, however, you should 
+probably rather be checking your data and pipeline for errors!</p>
+<h3>
+<a id="user-content-output" class="anchor" href="#output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[output]</h3>
+<p>The <code>output</code> category tells the program how and where to save your analysis results.</p>
+<p><code>output_file_aln</code> is the name for your trimmed output 
+alignment(s). The actual name saved on your machine will have a prefix 
+signifying cutoff value used.</p>
+<p><code>output_format</code> file format for the trimmed alignment. Choose from <code>fasta</code>, <code>phylip</code>, <code>phylip-int</code>, <code>nexus</code>, or <code>nexus-int</code>.</p>
+<p><code>report</code> name of files containing information on which 
+sequences were flagged as outliers. The actual name will have a prefix 
+signifying cutoff value used.</p>
+<p><code>log</code> is the name of the log with all analysis screen output.</p>
+<h2>
+<a id="user-content-examples-and-interpretation-of-results" class="anchor" href="#examples-and-interpretation-of-results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples and interpretation of results</h2>
+<p>To use <code>seq-spruceup</code> you will need to run the <code>spruceup</code> script from the command line and provide the name of your configuration file as the argument:</p>
+<div class="highlight highlight-source-shell"><pre>spruceup.py ./examples/config_example.conf</pre></div>
+<p>Once you run the script, your sequence alignment will be divided into
+ a number of windows of the size and overlap you specified. The script 
+will then compute distances for each OTU (sample/taxon) in each window. 
+This is done all-by-all by default or all-by-fraction of OTUs, if 
+specified. You will see some messages along the way, including a 
+progress bar that will display the number of iterations (windows) and 
+remaining time, as we as the maximum amount of memory used for distance 
+calculation.</p>
+<p><a href="http://localhost:6419/progress-bar.png" target="_blank" rel="noopener noreferrer"><img src="README_files/progress-bar.png" alt="progress-bar" style="max-width:100%;"></a></p>
+<p>Once all distances are calculated, <code>criterion</code> and <code>cutoffs</code> settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the <code>lognorm</code> criterion, specifying a quantile of <code>0.99</code>
+ means that any sequence window that lies above 99th percentile of 
+distances of a given OTU to other OUTs in that window will be deemed an 
+outlier and should be removed. In theory, setting of <code>0.99</code> 
+should mean that 1% of all sequence windows will be removed from each 
+OTU. In practice, this is not true because real-life sequence data does 
+not perfectly fit into lognormal distribution. Cutoff being constant, 
+certain OTUs may have many outlier (misaligned) sequence fragments and 
+more than 1% of sequence data removed, while others may have no 
+misaligned fragments and no outliers.</p>
+<h3>
+<a id="user-content-interpreting-the-output" class="anchor" href="#interpreting-the-output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interpreting the output</h3>
+<p><code>spruceup</code> produces several types of output:</p>
+<ol>
+<li>
+<p>Report files ending with suffix <code>-report.txt</code>, one of which is written for each cutoff specified, which indicated by the prefix (e.g <code>0.95</code>, <code>0.99</code>
+ and so forth). These files contain the distance cutoff value for each 
+OTU and which sequence windows were determined to be outliers and 
+removed.</p>
+</li>
+<li>
+<p>Trimmed alignment files ending with suffix <code>-trimmed.fas/phylip/nexus</code>, again, one for each cutoff value. These are the alignments with outlier windows removed.</p>
+</li>
+<li>
+<p>Distance distribution <code>png</code> plots, one for each OTU and 
+cutoff value. These images can be used to examine the distribution of 
+distances for each taxon, its fit to lognormal distribution, and cutoff 
+value placed on each OTU given a cutoff.</p>
+</li>
+</ol>
+<p>An example of distances plot is below. The header is the name of the 
+OTU. The x-axis indicates distance to other OTUs, ranging from <code>0</code>
+ to the maximum distance that was found for the OTU. The y-axis 
+specifies relative number of windows. Blue bars comprise the histogram 
+of distances. Orange line is the fitted lognormal distribution (only 
+shown when using the <code>lognorm</code> criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.</p>
+<p>The first example plot below shows an OTU with relatively smooth 
+distance distribution and few sequence windows with extreme values, none
+ of which are greater than <code>0.2</code>. You may not be able to see 
+individual window distances as visible histogram bars since the 
+distributions comprise thousands (in this small example) to hundreds of 
+thousands of distances.</p>
+<p><a href="http://localhost:6419/example-plot-good.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-good.png" alt="example-plot-good" style="max-width:100%;"></a></p>
+<p>The following plot shows an OTU with less smooth distribution, 
+overall sequences fewer sequences due to missing data, as indicated by 
+the heigth of the histogram bars, and many outlier windows.</p>
+<p><a href="http://localhost:6419/example-plot-poor.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-poor.png" alt="example-plot-poor" style="max-width:100%;"></a></p>
+<p>Both examples have the same cutoff value, <code>0.97</code> quantile 
+of fitted lognormal distribution. These plots, combined with visual 
+examinaton of report files and alignments should serve you as a guide on
+ what criterion and cutoff values make most sense for your dataset.</p>
+<ol start="4">
+<li>Log file</li>
+</ol>
+<p>This is a log file that will contain the same information that 
+appears on the terminal screen, excluding progress bar. It will log what
+  steps were taken by the program, their timing, show information about 
+how many/what proportion of sites were trimmed at each cutoff and output
+ file names that were written.</p>
+<ol start="5">
+<li>Distances Python object file</li>
+</ol>
+<p>Calculating distances with <code>spruceup</code> is often the most 
+time- and memory-consuming part of the process, although trimming very 
+large numbers of positions from the alignment can also take a long time.
+ Because of this <code>spruceup</code> writes a <code>json</code> format
+ file each time you run an analysis from scratch, allowing you to load 
+it up later and trim with different criterion or cutoff values. Note 
+that distances will be specific for each window size, overlap, and taxon
+ fraction and you will need to re-run the whole analysis if you want to 
+adjust these parameters.</p>
+
+              </article>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    
+
+  </div>
+  <div>&nbsp;</div>
+  </div><script>
+    function showCanonicalImages() {
+      var images = document.getElementsByTagName('img');
+      if (!images) {
+        return;
+      }
+      for (var index = 0; index < images.length; index++) {
+        var image = images[index];
+        if (image.getAttribute('data-canonical-src') && image.src !== image.getAttribute('data-canonical-src')) {
+          image.src = image.getAttribute('data-canonical-src');
+        }
+      }
+    }
+
+    function scrollToHash() {
+      if (location.hash && !document.querySelector(':target')) {
+        var element = document.getElementById('user-content-' + location.hash.slice(1));
+        if (element) {
+           element.scrollIntoView();
+        }
+      }
+    }
+
+    function autorefreshContent(eventSourceUrl) {
+      var initialTitle = document.title;
+      var contentElement = document.getElementById('grip-content');
+      var source = new EventSource(eventSourceUrl);
+      var isRendering = false;
+
+      source.onmessage = function(ev) {
+        var msg = JSON.parse(ev.data);
+        if (msg.updating) {
+          isRendering = true;
+          document.title = '(Rendering) ' + document.title;
+        } else {
+          isRendering = false;
+          document.title = initialTitle;
+          contentElement.innerHTML = msg.content;
+          showCanonicalImages();
+        }
+      }
+
+      source.onerror = function(e) {
+        if (e.readyState === EventSource.CLOSED && isRendering) {
+          isRendering = false;
+          document.title = initialTitle;
+        }
+      }
+    }
+
+    window.onhashchange = function() {
+      scrollToHash();
+    }
+
+    window.onload = function() {
+      scrollToHash();
+    }
+
+    showCanonicalImages();
+
+    var autorefreshUrl = document.getElementById('preview-page').getAttribute('data-autorefresh-url');
+    if (autorefreshUrl) {
+      autorefreshContent(autorefreshUrl);
+    }
+  </script>
+
+</body></html>
