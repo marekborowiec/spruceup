@@ -14,7 +14,7 @@ If you are using this program, please cite [this publication](link):
 ```
 ```
 
-This script uses [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/index.html), [matplotlib](https://matplotlib.org/), [psutil](https://pypi.org/project/psutil/), [tqdm](https://pypi.org/project/tqdm/), and [ete](https://etetoolkit.org/).
+This script uses [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/index.html), [matplotlib](https://matplotlib.org/), [psutil](https://pypi.org/project/psutil/), [tqdm](https://pypi.org/project/tqdm/), and [treeswift](https://pypi.org/project/treeswift/).
 
 ## Installation and requirements
 

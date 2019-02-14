@@ -12,7 +12,7 @@ import multiprocessing as mp
 from functools import partial
 from math import log
 
-from ete3 import Tree
+import treeswift
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as scp
@@ -23,26 +23,32 @@ import aln_parsing, aln_writing
 
 plt.switch_backend('agg')
 
-
 def get_tree_dist_dict(tree_fn):
     """Make a dict of all-by-all distances from
     input guide tree."""
-    t = Tree(tree_fn)
-    taxa = t.get_leaf_names()
+    t = treeswift.read_tree_newick(tree_fn)
+    taxa_nodes = t.label_to_node()
     tree_dist_dict = {}
-    for sp1 in taxa:
-        for sp2 in taxa:
+    for sp1, node1 in taxa_nodes.items():
+        for sp2, node2 in taxa_nodes.items():
             if sp1 != sp2:
-                tree_dist = get_tree_dist_between_two_leaves(t, sp1, sp2)
+                tree_dist = get_tree_dist_between_two_leaves(t, node1, node2)
             else:
                 tree_dist = 0
             tree_dist_dict[(sp1, sp2)] = tree_dist
+    to_remove = []
+    for tpl, distance in tree_dist_dict.items():
+        sp1, sp2 = tpl
+        if sp1 == '' or sp2 == '':
+            to_remove.append(tpl)
+    for tpl in to_remove:
+        tree_dist_dict.pop(tpl)
     return tree_dist_dict
 
 
-def get_tree_dist_between_two_leaves(tree, spA, spB):
+def get_tree_dist_between_two_leaves(tree, nodeA, nodeB):
     """Given ete phylogenetic tree, get distance between leaves."""
-    return tree.get_distance(spA, spB)
+    return tree.distance_between(nodeA, nodeB)
 
 
 def lookup_tree_dist(tree_dist_dict, sp1, sp2):
