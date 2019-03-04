@@ -394,7 +394,7 @@ def get_outliers_wrapper(
     if criterion == 'lognorm':
         outliers_dict = {
             taxon: get_lognorm_outliers(
-                get_taxon_dists(all_taxa_dists, taxon),
+                all_taxa_dists,
                 taxon,
                 window_size,
                 method,
@@ -407,7 +407,7 @@ def get_outliers_wrapper(
     if criterion == 'mean':
         outliers_dict = {
             taxon: get_mean_outliers(
-                get_taxon_dists(all_taxa_dists, taxon),
+                all_taxa_dists,
                 taxon,
                 window_size,
                 method,
@@ -421,15 +421,19 @@ def get_outliers_wrapper(
 
 
 def get_window_tuple(tpl, window_size):
-    taxon, aln = tpl
+    aln, distance = tpl
     aln_start = aln
     aln_end = aln_start + window_size
     aln_tpl = (aln_start, aln_end)
     return aln_tpl
 
 
+def get_outliers_list(window_dist_list, cutoff):
+    return [window for window in window_dist_list if window[1] >= cutoff]
+
+
 def get_lognorm_outliers(
-    taxon_dists, taxon, window_size, method, criterion, cutoff, manual_cutoffs
+    all_dists, taxon, window_size, method, criterion, cutoff, manual_cutoffs
 ):
     """Identify outlier windows in a taxon.
 
@@ -437,16 +441,14 @@ def get_lognorm_outliers(
     return tuple of lognormal fit cutoff for taxon 
     and list of ranges in sequence that are outliers.
     """
-    from scipy.optimize import curve_fit
-
-    dists = np.asarray(list(taxon_dists.values()))
+    dist_list = [window[1] for window in all_dists[taxon]]
+    dists = np.asarray(dist_list)
     dists[dists == 0] = np.nan
     dists = dists[~np.isnan(dists)]
     shape, loc, scale = scp.lognorm.fit(dists, floc=0)
     logn_cutoff = scp.lognorm.ppf(cutoff, shape, loc, scale)
     x = np.linspace(0, np.nanmax(dists), 500)
     logn_fit_line = scp.lognorm.pdf(x, shape, loc, scale)
-    outliers = []
     if manual_cutoffs:
         manual_dict = {}
         for group in manual_cutoffs:
@@ -463,9 +465,8 @@ def get_lognorm_outliers(
                 manual_dict[taxon],
                 fit_line=logn_fit_line,
             )
-            for tpl, dist in sorted(taxon_dists.items()):
-                if dist >= manual_dict[taxon]:
-                    outliers.append(get_window_tuple(tpl, window_size))
+            outliers_list = sorted(get_outliers_list(all_dists[taxon], manual_dict[taxon]))
+            outliers = [get_window_tuple(window, window_size) for window in outliers_list]
         else:
             plot_taxon_dists(
                 dists,
@@ -476,16 +477,14 @@ def get_lognorm_outliers(
                 logn_cutoff,
                 fit_line=logn_fit_line,
             )
-            for tpl, dist in sorted(taxon_dists.items()):
-                if dist >= logn_cutoff:
-                    outliers.append(get_window_tuple(tpl, window_size))
+            outliers_list = sorted(get_outliers_list(all_dists[taxon], logn_cutoff))
+            outliers = [get_window_tuple(window, window_size) for window in outliers_list]
     else:
         plot_taxon_dists(
             dists, taxon, method, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
         )
-        for tpl, dist in sorted(taxon_dists.items()):
-            if dist >= logn_cutoff:
-                outliers.append(get_window_tuple(tpl, window_size))
+        outliers_list = sorted(get_outliers_list(all_dists[taxon], logn_cutoff))
+        outliers = [get_window_tuple(window, window_size) for window in outliers_list]
     if outliers:
         merged_outliers = merge(outliers)
     else:
@@ -495,7 +494,7 @@ def get_lognorm_outliers(
 
 
 def get_mean_outliers(
-    taxon_dists, taxon, window_size, method, criterion, cutoff, manual_cutoffs
+    all_dists, taxon, window_size, method, criterion, cutoff, manual_cutoffs
 ):
     """Identify outlier windows in a taxon.
 
@@ -503,12 +502,12 @@ def get_mean_outliers(
     return tuple of mean cutoff distance for taxon 
     and list of ranges in sequence that are outliers.
     """
-    dists = np.asarray(list(taxon_dists.values()))
+    dist_list = [window[1] for window in all_dists[taxon]]
+    dists = np.asarray(dist_list)
     dists[dists == 0] = np.nan
     dists = dists[~np.isnan(dists)]
-    mean = np.mean(list(taxon_dists.values()))
+    mean = np.mean(dist_list)
     mean_cutoff = round((mean * cutoff), 5)
-    outliers = []
     if manual_cutoffs:
         manual_dict = {}
         for group in manual_cutoffs:
@@ -519,19 +518,16 @@ def get_mean_outliers(
             plot_taxon_dists(
                 dists, taxon, method, criterion, cutoff, manual_dict[taxon]
             )
-            for tpl, dist in sorted(taxon_dists.items()):
-                if dist >= manual_dict[taxon]:
-                    outliers.append(get_window_tuple(tpl, window_size))
+            outliers_list = sorted(get_outliers_list(all_dists[taxon], manual_dict[taxon]))
+            outliers = [get_window_tuple(window, window_size) for window in outliers_list]
         else:
             plot_taxon_dists(dists, taxon, method, criterion, cutoff, mean_cutoff)
-            for tpl, dist in sorted(taxon_dists.items()):
-                if dist >= mean_cutoff:
-                    outliers.append(get_window_tuple(tpl, window_size))
+            outliers_list = sorted(get_outliers_list(all_dists[taxon], mean_cutoff))
+            outliers = [get_window_tuple(window, window_size) for window in outliers_list]
     else:
         plot_taxon_dists(dists, taxon, method, criterion, cutoff, mean_cutoff)
-        for tpl, dist in sorted(taxon_dists.items()):
-            if dist >= mean_cutoff:
-                outliers.append(get_window_tuple(tpl, window_size))
+        outliers_list = sorted(get_outliers_list(all_dists[taxon], mean_cutoff))
+        outliers = [get_window_tuple(window, window_size) for window in outliers_list]
     if outliers:
         merged_outliers = merge(outliers)
     else:
