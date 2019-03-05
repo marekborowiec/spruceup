@@ -393,6 +393,8 @@ def plotting_wrapper(all_taxa_dists, window_size, method, criterion, cutoffs, ma
     taxa = sorted(all_taxa_dists.keys())
     for taxon in taxa:
         if criterion == 'lognorm':
+            dist_list = [window[1] for window in all_taxa_dists[taxon]]
+            dists = get_np_dists(dist_list)
             shape, loc, scale = get_shape_loc_scale(dists)
             logn_fit_line = get_lognorm_fit_line(dists, shape, loc, scale)
             plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, fit_line=logn_fit_line)
@@ -552,15 +554,18 @@ def get_mean_outliers(
 
 def merge(ranges):
     """Merge a list of overlapping ranges."""
-    saved = list(ranges[0])
-    for st, en in sorted([sorted(t) for t in ranges]):
-        if st <= saved[1]:
-            saved[1] = max(saved[1], en)
-            yield tuple(saved)
+    merged = []
+    for higher in ranges:
+        if not merged:
+            merged.append(higher)
         else:
-            yield tuple(saved)
-            saved[0] = st
-            saved[1] = en
+            lower = merged[-1]
+            if higher[0] <= lower[1]:
+                upper_bound = max(lower[1], higher[1])
+                merged[-1] = (lower[0], upper_bound)
+            else:
+                merged.append(higher)
+    return merged
 
 
 def get_windows(parsed_alignment, window_size, overlap):
