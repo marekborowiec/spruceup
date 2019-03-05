@@ -9,6 +9,7 @@ import json
 import pdb
 from sys import argv, exit
 import multiprocessing as mp
+import time
 from functools import partial
 from math import log
 
@@ -363,8 +364,46 @@ def means_per_taxon(taxa_dists):
     return taxa_means
 
 
-def plot_taxon_dists(dists, taxon, method, criterion, cutoff, cutoff_line, fit_line=0):
-    fname = '{}-{}-{}{}.png'.format(taxon, method, cutoff, criterion)
+def get_np_dists(dist_list):
+    dists = np.asarray(dist_list)
+    dists[dists == 0] = np.nan
+    return dists[~np.isnan(dists)]
+
+
+def get_shape_loc_scale(dists):
+    return scp.lognorm.fit(dists, floc=0)
+
+
+def get_lognorm_fit_line(dists, shape, loc, scale):
+    x = np.linspace(0, np.nanmax(dists), 500)
+    return scp.lognorm.pdf(x, shape, loc, scale)
+
+
+def get_lognorm_cutoff(cutoff, shape, loc, scale):
+    logn_cutoff = scp.lognorm.ppf(cutoff, shape, loc, scale)
+    return logn_cutoff
+
+
+def get_mean_cutoff(dist_list, cutoff):
+    mean = np.mean(dist_list)
+    return round((mean * cutoff), 5)
+
+
+def plotting_wrapper(all_taxa_dists, window_size, method, criterion, cutoffs, manual_cutoffs):
+    taxa = sorted(all_taxa_dists.keys())
+    for taxon in taxa:
+        if criterion == 'lognorm':
+            shape, loc, scale = get_shape_loc_scale(dists)
+            logn_fit_line = get_lognorm_fit_line(dists, shape, loc, scale)
+            plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, fit_line=logn_fit_line)
+        if criterion == 'mean':
+            plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs)
+
+
+def plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, fit_line=0):
+    fname = '{}-{}-{}.png'.format(taxon, method, criterion)
+    dist_list = [window[1] for window in all_taxa_dists[taxon]]
+    dists = get_np_dists(dist_list)
     plt.figure(num=None, figsize=(12, 6), dpi=150, facecolor='w', edgecolor='k')
     plt.xlim(0, np.nanmax(dists))
     plt.hist(dists[~np.isnan(dists)], bins=100, density=True)
@@ -372,7 +411,16 @@ def plot_taxon_dists(dists, taxon, method, criterion, cutoff, cutoff_line, fit_l
         x = np.linspace(0, np.nanmax(dists), 500)
         plt.plot(x, fit_line)
     plt.title(taxon)
-    plt.axvline(cutoff_line, color='k', linestyle='dashed', linewidth=1)
+    colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(cutoffs))))
+    for cutoff in cutoffs:
+        if criterion == 'lognorm':
+            shape, loc, scale = get_shape_loc_scale(dists)
+            cutoff_line = get_lognorm_cutoff(float(cutoff), shape, loc, scale)
+        if criterion == 'mean':
+            cutoff_line = get_mean_cutoff(dist_list, float(cutoff))
+        color = next(colors)
+        plt.axvline(cutoff_line, color=color, label=str(cutoff), linestyle='dashed', linewidth=1)
+    plt.legend(loc='upper right')
     plt.savefig(fname)
     plt.close()
 
@@ -442,13 +490,9 @@ def get_lognorm_outliers(
     and list of ranges in sequence that are outliers.
     """
     dist_list = [window[1] for window in all_dists[taxon]]
-    dists = np.asarray(dist_list)
-    dists[dists == 0] = np.nan
-    dists = dists[~np.isnan(dists)]
-    shape, loc, scale = scp.lognorm.fit(dists, floc=0)
-    logn_cutoff = scp.lognorm.ppf(cutoff, shape, loc, scale)
-    x = np.linspace(0, np.nanmax(dists), 500)
-    logn_fit_line = scp.lognorm.pdf(x, shape, loc, scale)
+    dists = get_np_dists(dist_list)
+    shape, loc, scale = get_shape_loc_scale(dists)
+    logn_cutoff = get_lognorm_cutoff(cutoff, shape, loc, scale)
     if manual_cutoffs:
         manual_dict = {}
         for group in manual_cutoffs:
@@ -456,33 +500,12 @@ def get_lognorm_outliers(
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            plot_taxon_dists(
-                dists,
-                taxon,
-                method,
-                criterion,
-                cutoff,
-                manual_dict[taxon],
-                fit_line=logn_fit_line,
-            )
             outliers_list = sorted(get_outliers_list(all_dists[taxon], manual_dict[taxon]))
             outliers = [get_window_tuple(window, window_size) for window in outliers_list]
         else:
-            plot_taxon_dists(
-                dists,
-                taxon,
-                method,
-                criterion,
-                cutoff,
-                logn_cutoff,
-                fit_line=logn_fit_line,
-            )
             outliers_list = sorted(get_outliers_list(all_dists[taxon], logn_cutoff))
             outliers = [get_window_tuple(window, window_size) for window in outliers_list]
     else:
-        plot_taxon_dists(
-            dists, taxon, method, criterion, cutoff, logn_cutoff, fit_line=logn_fit_line
-        )
         outliers_list = sorted(get_outliers_list(all_dists[taxon], logn_cutoff))
         outliers = [get_window_tuple(window, window_size) for window in outliers_list]
     if outliers:
@@ -503,11 +526,7 @@ def get_mean_outliers(
     and list of ranges in sequence that are outliers.
     """
     dist_list = [window[1] for window in all_dists[taxon]]
-    dists = np.asarray(dist_list)
-    dists[dists == 0] = np.nan
-    dists = dists[~np.isnan(dists)]
-    mean = np.mean(dist_list)
-    mean_cutoff = round((mean * cutoff), 5)
+    mean_cutoff = get_mean_cutoff(dist_list, cutoff)
     if manual_cutoffs:
         manual_dict = {}
         for group in manual_cutoffs:
@@ -515,17 +534,12 @@ def get_mean_outliers(
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            plot_taxon_dists(
-                dists, taxon, method, criterion, cutoff, manual_dict[taxon]
-            )
             outliers_list = sorted(get_outliers_list(all_dists[taxon], manual_dict[taxon]))
             outliers = [get_window_tuple(window, window_size) for window in outliers_list]
         else:
-            plot_taxon_dists(dists, taxon, method, criterion, cutoff, mean_cutoff)
             outliers_list = sorted(get_outliers_list(all_dists[taxon], mean_cutoff))
             outliers = [get_window_tuple(window, window_size) for window in outliers_list]
     else:
-        plot_taxon_dists(dists, taxon, method, criterion, cutoff, mean_cutoff)
         outliers_list = sorted(get_outliers_list(all_dists[taxon], mean_cutoff))
         outliers = [get_window_tuple(window, window_size) for window in outliers_list]
     if outliers:
@@ -720,8 +734,8 @@ def output_loop(
     data_type,
 ):
     alignment_sites = get_alignment_size(untrimmed_alignment)
-    for cutoff_string in cutoffs:
-        cutoff = float(cutoff_string)
+    cutoff_floats = [float(cutoff_string) for cutoff_string in cutoffs]
+    for cutoff in cutoff_floats:
         logging.info('Finding outliers for {} {}s cutoff ...'.format(cutoff, criterion))
         outliers = get_outliers_wrapper(
             distances, window_size, method, criterion, cutoff, manual_cutoffs
@@ -733,7 +747,7 @@ def output_loop(
         percent_removed = get_removed_fraction(alignment_sites, sites_removed) * 100
         logging.info(
             'Removed {:.2f}% of sites at cutoff of {} {}s'.format(
-                percent_removed, cutoff_string, criterion
+                percent_removed, cutoff, criterion
             )
         )
         cutoff_report_fname = '{}_{}s-cutoff-{}'.format(
@@ -751,6 +765,8 @@ def output_loop(
             trimmed_alignment, out_format, cutoff_trimmed_aln_fname, data_type
         )
         logging.info('Wrote trimmed alignment {}\n'.format(cutoff_trimmed_aln_fname))
+    logging.info('Plotting distance distributions and cutoffs')
+    plotting_wrapper(distances, window_size, method, criterion, cutoffs, manual_cutoffs)
 
 
 def get_stride(window_size, overlap):
@@ -758,6 +774,7 @@ def get_stride(window_size, overlap):
 
 
 def main():
+    start = time.time()
     script, config_file_name = argv
     conf = read_config(config_file_name)
     # input
@@ -825,7 +842,7 @@ def main():
         output_file_aln,
         data_type,
     )
-
+    logging.info('Finished in {:.2f} seconds'.format(time.time() - start))
 
 if __name__ == '__main__':
 
