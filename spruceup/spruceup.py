@@ -419,7 +419,7 @@ def plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, fit_line
             shape, loc, scale = get_shape_loc_scale(dists)
             cutoff_line = get_lognorm_cutoff(float(cutoff), shape, loc, scale)
         if criterion == 'mean':
-            cutoff_line = get_mean_cutoff(dist_list, float(cutoff))
+            cutoff_line = get_mean_cutoff(dists, float(cutoff))
         color = next(colors)
         plt.axvline(cutoff_line, color=color, label=str(cutoff), linestyle='dashed', linewidth=1)
     plt.legend(loc='upper right')
@@ -528,7 +528,8 @@ def get_mean_outliers(
     and list of ranges in sequence that are outliers.
     """
     dist_list = [window[1] for window in all_dists[taxon]]
-    mean_cutoff = get_mean_cutoff(dist_list, cutoff)
+    dists = get_np_dists(dist_list)
+    mean_cutoff = get_mean_cutoff(dists, cutoff)
     if manual_cutoffs:
         manual_dict = {}
         for group in manual_cutoffs:
