@@ -1,0 +1,7 @@
+matplotlib == 3.0.2
+numpy == 1.15.4
+numpy-base == 1.15.4
+scipy == 1.2.0
+psutil >= 5.4.8
+tqdm >= 4.29.1
+treeswift >= 1.0.100

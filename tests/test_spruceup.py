@@ -5,8 +5,7 @@ from math import log
 
 from nose.tools import assert_equal, assert_raises
 
-import aln_parsing
-import aln_writing
+import aln_parsing, aln_writing
 from spruceup import jc_correction, p_distance, get_scaled_distance, get_distances, get_taxon_map
 
 empty_seq = '-' * 10
