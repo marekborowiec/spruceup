@@ -4,10 +4,6 @@ here = path.abspath(path.dirname(__file__))
 
 with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
-
-with open('requirements.txt') as fr:
-    requirements = fr.read()
-
 setup(
     name='example-pkg-your-username',
     version='2019.1.0',
@@ -17,8 +13,18 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/marekborowiec/seq-spruceup',
+    keywords='alignment trimming outliers phylogenetics phylogenomics genomics bioinformatics',
     packages=find_packages(),
-    install_requires=requirements,
+    include_package_data=True,
+    python_requires='>=3.6',
+    install_requires=[
+        'matplotlib>=3.0.2',
+        'numpy>=1.15.4',
+        'numpy-base>=1.15.4' 'scipy>=1.2.0',
+        'psutil>=5.4.8',
+        'tqdm>=4.29.1',
+        'treeswift>=1.0.100',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Science/Research'
