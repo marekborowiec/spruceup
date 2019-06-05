@@ -111,7 +111,7 @@ The following plot shows an OTU with less smooth distribution, overall sequences
 
 ![example-plot-poor](example-plot-poor.png)
 
-Both examples have the same cutoff value, `0.97` quantile of fitted lognormal distribution. These plots, combined with visual examinaton of report files and alignments should serve you as a guide on what criterion and cutoff values make most sense for your dataset.
+Both examples have been processed under the same cutoffs values, `0.95,0.97,0.99` quantiles of fitted lognormal distribution but in the poorly aligned data the last falls outside of computed distance values. These plots, combined with visual examinaton of report files and alignments should serve you as a guide on what criterion and cutoff values make most sense for your dataset.
 
 4. Log file 
 
