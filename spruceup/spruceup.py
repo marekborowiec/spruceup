@@ -577,16 +577,17 @@ def get_windows(parsed_alignment, window_size, overlap):
         )
     )
     stride = get_stride(window_size, overlap)
-    aln_len = len(next(iter(parsed_alignment.values())))  # random seq length
+    aln_len = len(next(iter(parsed_alignment.values()))) # random seq length
+    aln_len_window = aln_len + window_size # for iteration
     # initiate list of window dicts
     list_of_windows = []
     add_to_list_of_windows = list_of_windows.append
-    for i in range(0, aln_len, stride):
+    for i in range(0, aln_len_window, stride):
         # loop over all parsed partitions, adding taxa and sliced sequences
         start = i
         stop = i + window_size
         new_dict = {}
-        if stop < aln_len:
+        if stop <= aln_len:
             for taxon, seq in parsed_alignment.items():
                 new_seq = '{}'.format(seq[start:stop])
                 new_dict[taxon] = new_seq
