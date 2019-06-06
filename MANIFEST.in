@@ -5,6 +5,8 @@ include examples/test_aln_nt.fasta
 include examples/test_aln_nt.fasta
 include examples/test_guide_cladogram.newick
 include README.md
+include README.html
+include README_files/*
 include LICENSE
 include requirements.txt
 include example-plot-good.png
