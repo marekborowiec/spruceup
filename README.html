@@ -98,12 +98,11 @@ the program without a guide tree.</p>
 <p><code>window_size</code> chooses how many characters (aa/nt) to 
 include in a window in which distances will be calculated. Default value
  that works well for most alignments is <code>20</code>.</p>
-<p><code>overlap</code> indicates how many characters (aa/nt) each 
-sliding window will be overlapping with preceding window. Stride of 15 
-and window size of 20 means that each new window will move 5 positions 
-down the alignment and overlap by 15 characters with the preceding 
-window. Increasing overlap will decrease computational burden because 
-fewer windows will be created. Default value is <code>15</code> (two thirds of default window size of <code>20</code>) but you may want to go lower, to half of window size or even <code>0</code>
+<p><code>overlap</code> indicates how many characters (aa/nt) each sliding window will be overlapping with preceding window. Overlap of <code>15</code> and window size of <code>20</code>
+ means that each new window will move 5 positions down the alignment and
+ overlap by 15 characters with the preceding window. Decreasing the 
+overlap will decrease computational burden because fewer windows will be
+ created. Default value is <code>15</code> (two thirds of default window size of <code>20</code>) but you may want to go lower, to half of window size or even <code>0</code>
  (non-overlapping windows) if your alignment is very large and you want 
 to decrease compute time and memory usage and don't mind sacrificing 
 some precision.</p>
@@ -199,10 +198,12 @@ thousands of distances.</p>
 overall sequences fewer sequences due to missing data, as indicated by 
 the heigth of the histogram bars, and many outlier windows.</p>
 <p><a href="http://localhost:6419/example-plot-poor.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-poor.png" alt="example-plot-poor" style="max-width:100%;"></a></p>
-<p>Both examples have the same cutoff value, <code>0.97</code> quantile 
-of fitted lognormal distribution. These plots, combined with visual 
-examinaton of report files and alignments should serve you as a guide on
- what criterion and cutoff values make most sense for your dataset.</p>
+<p>Both examples have been processed under the same cutoffs values, <code>0.95,0.97,0.99</code>
+ quantiles of fitted lognormal distribution but in the poorly aligned 
+data the last falls outside of computed distance values. These plots, 
+combined with visual examinaton of report files and alignments should 
+serve you as a guide on what criterion and cutoff values make most sense
+ for your dataset.</p>
 <ol start="4">
 <li>Log file</li>
 </ol>

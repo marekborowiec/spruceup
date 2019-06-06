@@ -23,14 +23,14 @@ You can download a zipped GitHub repository, clone it if you have `git` installe
 pip install seq-spruceup
 ```
 
-`seq-spruceup` requires you have Python version 3.6 or newer. Dependencies should be installed automatically. If your system does not have Python version 3.6 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using
+`seq-spruceup` requires you have Python version 3.7 or newer. Dependencies should be installed automatically. If your system does not have Python version 3.7 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using
 
 ```bash
-sudo apt-get install python3.6
+sudo apt-get install python3.7
 ```
 
 ## Interface
-Once you successfully installed `seq-spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format, 2) (optional) a guide tree for your alignment in `NEWICK` format, and 3) configuration file to run the program. To run the program from the command line you can type:
+Once you successfully installed `seq-spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format, 2) (optional) a guide tree for your alignment in `NEWICK` format, and 3) configuration file to run the program. To run the program from the command line you can type (you need to provide path to spruceup.py script):
 ```bash
 spruceup.py my-configuration-file.conf
 ```
