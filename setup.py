@@ -1,11 +1,13 @@
+from os import path
+
 from setuptools import setup, find_packages
 
 here = path.abspath(path.dirname(__file__))
 
-with open(path.join(here, 'README.md'), encoding='utf-8') as f:
+with open(path.join(here, 'README.md')) as f:
     long_description = f.read()
 setup(
-    name='example-pkg-your-username',
+    name='spruceup',
     version='2019.1.0',
     author='Marek Borowiec',
     author_email='petiolus@gmail.com',
@@ -16,14 +18,14 @@ setup(
     keywords='alignment trimming outliers phylogenetics phylogenomics genomics bioinformatics',
     packages=find_packages(),
     include_package_data=True,
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     install_requires=[
-        'matplotlib>=3.0.2',
-        'numpy>=1.15.4',
-        'numpy-base>=1.15.4' 'scipy>=1.2.0',
-        'psutil>=5.4.8',
-        'tqdm>=4.29.1',
-        'treeswift>=1.0.100',
+        'matplotlib==3.0.2',
+        'numpy==1.15.4',
+        'scipy==1.2.0',
+        'psutil==5.4.8',
+        'tqdm==4.29.1',
+        'treeswift==1.0.100',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -34,4 +36,6 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
     ],
+    test_suite='nose.collector',
+    tests_require=['nose'],
 )
