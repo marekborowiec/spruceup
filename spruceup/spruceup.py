@@ -25,8 +25,7 @@ import aln_parsing, aln_writing
 plt.switch_backend('agg')
 
 def get_tree_dist_dict(tree_fn):
-    """Make a dict of all-by-all distances from
-    input guide tree."""
+    """Make a dict of all-by-all distances from input guide tree."""
     t = treeswift.read_tree_newick(tree_fn)
     taxa_nodes = t.label_to_node()
     tree_dist_dict = {}
@@ -59,7 +58,8 @@ def lookup_tree_dist(tree_dist_dict, sp1, sp2):
 
 def replace_missing_in_dict(parsed_aln_dict, data_type):
     """Checking data type (aa or nt) and converting ambiguous and missing data
-    with '?' before calculating distances."""
+    with '?' before calculating distances.
+    """
     nt_missing_ambiguous_chars = [
         'K',
         'M',
@@ -91,7 +91,8 @@ def replace_missing_in_dict(parsed_aln_dict, data_type):
 
 def replace_missing_ambiguous(seq, missing_ambiguous_list):
     """Given sequence and list of missing or ambiguous characters,
-    replace them in sequence with '?'."""
+    replace them in sequence with '?'.
+    """
     for char in missing_ambiguous_list:
         seq = seq.replace(char, '?')
     return seq
@@ -112,7 +113,8 @@ def p_distance(seq1, seq2):
     """Calculate Hamming/p-distance for two sequences.
 
     Return the Hamming distance between equal-length sequences
-    or return string NaN if comparing to empty sequence."""
+    or return string NaN if comparing to empty sequence.
+    """
     if len(seq1) != len(seq2):
         raise ValueError('Sequences are of unequal length. Did you align them?')
     eff_len1 = len(seq1.strip('-').strip('?'))
@@ -133,7 +135,8 @@ def get_scaled_distance(distance_tpl):
 
     Given tuple of (seq length, Hamming distance)
     return proportion of different sites
-    unless one of the sequences was missing."""
+    unless one of the sequences was missing.
+    """
     eff_seq_len, distance = distance_tpl
     if distance != 'NaN':
         if eff_seq_len > 0 and distance > 0:
@@ -150,7 +153,8 @@ def jc_correction(distance_tpl, data_type):
 
     Given distance tuple and depending on data type
     compute JC-corrected distance for DNA or proteins and
-    return tuple of (seq length, corrected distance)."""
+    return tuple of (seq length, corrected distance).
+    """
     eff_seq_len, p_distance = distance_tpl
     if p_distance != 'NaN':
         if data_type == 'nt':
@@ -166,7 +170,8 @@ def get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, 
     """Given a tree, scale computed distances by tree distances.
 
     This is done by dividing each spruceup distance 
-    by distance between same OTUs on the guide tree."""
+    by distance between same OTUs on the guide tree.
+    """
     if method == 'uncorrected':
         scaled_distance = get_scaled_distance(p_distance(seq1, seq2))
     elif method == 'jc':
@@ -187,7 +192,8 @@ def get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, 
 def get_distances_scaled(method, data_type, seq1, seq2):
     """Given raw distance between two sequences, 
     scale them from 0 to 1 and in case of Jukes-Cantor distances also
-    depending on whether the sequences are nucleotides or amino acids."""
+    depending on whether the sequences are nucleotides or amino acids.
+    """
     if method == 'uncorrected':
         scaled_distance = get_scaled_distance(p_distance(seq1, seq2))
     elif method == 'jc':
@@ -238,7 +244,8 @@ def distances_wrapper(
     """Use multiple cores to get distances from list of alignment dicts.
     
     Args:
-    method (str) -- 'uncorrected' or 'jc' (default 'uncorrected')"""
+    method (str) -- 'uncorrected' or 'jc' (default 'uncorrected').
+    """
     if int(cores) == 1:
         for aln_tuple in tqdm(parsed_alignments, desc='Calculating distances'):
             yield get_distances(aln_tuple, tree_dists, method, fraction, data_type)
@@ -269,7 +276,8 @@ def get_dist_and_taxa_lists(distances):
 
     Given pairwise distances tuples of 
     (taxon1, taxon2, pairwise distance between the two)
-    return tuple of (taxa, distances)."""
+    return tuple of (taxa, distances).
+    """
     taxa_rows = [sp2 for (sp1, sp2, dist) in distances]
     dists = [dist for (sp1, sp2, dist) in distances]
     return (taxa_rows, dists)
@@ -279,7 +287,8 @@ def dist_taxa_wrapper(dist_tuples):
     """Wrapper for getting aligned lists of taxa and distances.
 
     Given list of tuples of multiple alignments
-    return tuple (alignment name : (taxa rows, distances list))."""
+    return tuple (alignment name : (taxa rows, distances list)).
+    """
     for aln_name, distances in dist_tuples:
         yield (aln_name, get_dist_and_taxa_lists(distances))
 
@@ -452,7 +461,7 @@ def get_outliers_wrapper(
     """Wrapper around outlier identification function.
 
     Given dict of {taxon : alignment_name, mean_distance}
-    return dict of tuples {taxon : (taxon_mean_distance, outlier_sequence_ranges) }
+    return dict of tuples {taxon : (taxon_mean_distance, outlier_sequence_ranges)}
     """
     taxa = sorted(all_taxa_dists.keys())
     if criterion == 'lognorm':
@@ -485,8 +494,7 @@ def get_outliers_wrapper(
 
 
 def get_window_tuple(tpl, window_size):
-    """Given a tuple (window_name, window_size) 
-    parse start and end to that window sequence."""
+    """Given a tuple (window_name, window_size) parse start and end to that window sequence."""
     aln, distance = tpl
     aln_start = aln
     aln_end = aln_start + window_size
@@ -495,8 +503,7 @@ def get_window_tuple(tpl, window_size):
 
 
 def get_outliers_list(window_dist_list, cutoff):
-    """List comprehension to get all windows above certain threshold.
-    """
+    """List comprehension to get all windows above certain threshold."""
     return [window for window in window_dist_list if window[1] >= cutoff]
 
 
@@ -505,7 +512,7 @@ def get_lognorm_outliers(
 ):
     """Identify outlier windows in a taxon.
 
-    Given dict of _(taxon, aln_name) : dist}
+    Given dict of {(taxon, aln_name) : dist}
     return tuple of lognormal fit cutoff for taxon 
     and list of ranges in sequence that are outliers.
     """
@@ -541,7 +548,7 @@ def get_mean_outliers(
 ):
     """Identify outlier windows in a taxon.
 
-    Given dict of _(taxon, aln_name) : dist}
+    Given dict of {(taxon, aln_name) : dist}
     return tuple of mean cutoff distance for taxon 
     and list of ranges in sequence that are outliers.
     """
@@ -572,7 +579,10 @@ def get_mean_outliers(
 
 
 def merge(ranges):
-    """Merge a list of overlapping ranges."""
+    """Merge a list of overlapping ranges.
+
+    e.g. given [[0,20], [5,25], [30,50]] return [[0,25], [30,50]]
+    """
     merged = []
     for higher in ranges:
         if not merged:
@@ -588,6 +598,10 @@ def merge(ranges):
 
 
 def get_windows(parsed_alignment, window_size, overlap):
+    """Split alignment into sequence windows.
+
+    Given dict {taxon: sequence} return list of tuples (window_name, {taxon: window_seq}).
+    """
     # extract alignment windows of desired length and stride
     logging.info(
         'Splitting into size-{} windows with {} overlap ...\n'.format(
@@ -619,17 +633,26 @@ def get_windows(parsed_alignment, window_size, overlap):
 
 
 def replace_seq(text, start, end, replacement=''):
+    """Replace slice of string given coordinates and replacement character."""
     length = end - start
     return '{}{}{}'.format(text[:start], replacement * length, text[end:])
 
 
 def print_mem():
+    """Print memory usage using psutil module."""
     process = psutil.Process(os.getpid())
     mem = process.memory_info().rss / 1_000_000
     logging.info('Used {0:.2f} MB memory\n'.format(mem))
 
 
 def remove_outliers(parsed_alignment, outliers_dict):
+    """Remove outlier sequences and return trimmed alignment.
+
+    Given parsed alignmend dict {taxon : sequence} 
+    and outliers dict {taxon : (taxon_mean_distance, outlier_sequence_ranges)}
+    trim out sequence identified as outlier 
+    and return tuple with count of removed sites and dict {taxon : trimmed_sequence}.
+    """
     aln_name, aln_dict = parsed_alignment
     total_sites_removed = 0
     if outliers_dict:
@@ -649,11 +672,12 @@ def remove_outliers(parsed_alignment, outliers_dict):
             trimmed_aln_dict[taxon] = new_seq
     else:
         trimmed_aln_dict = aln_dict
-        # print a warning message?
     return (total_sites_removed, trimmed_aln_dict)
 
 
 def get_alignment_size(alignment_tuple):
+    """Get alignment length from alignment tuple {aln_name, aln_dict}
+    by getting len of random sequence in {taxon: sequence} alignment dict."""
     alignment_name, alignment_dict = alignment_tuple
     seq_length = len(next(iter(alignment_dict.values())))
     total_alignment_size = seq_length * len(alignment_dict.values())
@@ -661,11 +685,16 @@ def get_alignment_size(alignment_tuple):
 
 
 def get_removed_fraction(untrimmed_alignment_size, no_sites_trimmed):
+    """Calculate percentage of sites removed given alignment size and number of sites trimmed."""
     removed_fraction = no_sites_trimmed / untrimmed_alignment_size
     return removed_fraction
 
 
 def print_report(outliers, criterion, cutoff, manual_cutoffs):
+    """Report per-taxon cutoff value and no of removed alignment positions.
+
+    Construct report string given outliers dict 
+    {taxon : (taxon_mean_distance, outlier_sequence_ranges)}."""
     report_string = ''
     for taxon, tpl in sorted(outliers.items()):
         cutoff_value, outliers_list = tpl
@@ -692,11 +721,16 @@ def print_report(outliers, criterion, cutoff, manual_cutoffs):
 
 
 def write_report(report_string, report_file_name):
+    """Write report string to file."""
     with open(report_file_name, 'w') as rf:
         rf.write(report_string)
 
 
 def write_distances_dict(mean_taxon_distances, distances_method, window_size, overlap):
+    """Write json file with per-taxon windows and their distances.
+
+    The format is: {"taxon": [[window0, mean_distance_in_window], [window1, dist] ...]}.
+    """
     dist_fn = '{}-distances-{}window-{}overlap.json'.format(
         distances_method, window_size, overlap
     )
@@ -706,6 +740,7 @@ def write_distances_dict(mean_taxon_distances, distances_method, window_size, ov
 
 
 def read_distances_dict(distances_json):
+    """Parse json file with distances."""
     with open(distances_json, 'r') as fp:
         logging.info('Reading distances from file {} ...\n'.format(distances_json))
 
@@ -724,6 +759,7 @@ def analyze(
     method,
     fraction,
 ):
+    """Load, parse, and analyze the data."""
     logging.info('Parsing alignment {} ...\n'.format(alignment_file_name))
     aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
     aln_name, aln_dict = aln_tuple
@@ -758,6 +794,7 @@ def output_loop(
     out_file_name,
     data_type,
 ):
+    """Write and plot output files from analysis."""
     alignment_sites = get_alignment_size(untrimmed_alignment)
     cutoff_floats = [float(cutoff_string) for cutoff_string in cutoffs]
     for cutoff in cutoff_floats:
@@ -795,6 +832,7 @@ def output_loop(
 
 
 def get_stride(window_size, overlap):
+    """Convert window overlap to stride for use in slicing."""
     return window_size - overlap
 
 
@@ -874,7 +912,5 @@ if __name__ == '__main__':
     main()
 ### To do:
 
-# 1) add docstrings to all functions
-# 2) input validation
-# 3) tests
-# 4) setup.py
+# 1) input validation
+# 2) metamorphic tests
