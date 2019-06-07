@@ -153,7 +153,7 @@ specified. You will see some messages along the way, including a
 progress bar that will display the number of iterations (windows) and 
 remaining time, as we as the maximum amount of memory used for distance 
 calculation.</p>
-<p><a href="http://localhost:6419/progress-bar.png" target="_blank" rel="noopener noreferrer"><img src="README_files/progress-bar.png" alt="progress-bar" style="max-width:100%;"></a></p>
+<p><a href="http://localhost:6419/README_files/progress-bar.png" target="_blank" rel="noopener noreferrer"><img src="README_files/progress-bar.png" alt="progress-bar" style="max-width:100%;"></a></p>
 <p>Once all distances are calculated, <code>criterion</code> and <code>cutoffs</code> settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the <code>lognorm</code> criterion, specifying a quantile of <code>0.99</code>
  means that any sequence window that lies above 99th percentile of 
 distances of a given OTU to other OUTs in that window will be deemed an 
@@ -199,11 +199,11 @@ distance distribution and few sequence windows with extreme values, none
 individual window distances as visible histogram bars since the 
 distributions comprise thousands (in this small example) to hundreds of 
 thousands of distances.</p>
-<p><a href="http://localhost:6419/example-plot-good.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-good.png" alt="example-plot-good" style="max-width:100%;"></a></p>
+<p><a href="http://localhost:6419/README_files/example-plot-good.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-good.png" alt="example-plot-good" style="max-width:100%;"></a></p>
 <p>The following plot shows an OTU with less smooth distribution, 
 overall sequences fewer sequences due to missing data, as indicated by 
 the heigth of the histogram bars, and many outlier windows.</p>
-<p><a href="http://localhost:6419/example-plot-poor.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-poor.png" alt="example-plot-poor" style="max-width:100%;"></a></p>
+<p><a href="http://localhost:6419/README_files/example-plot-poor.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-poor.png" alt="example-plot-poor" style="max-width:100%;"></a></p>
 <p>Both examples have been processed under the same cutoffs values, <code>0.95,0.97,0.99</code>
  quantiles of fitted lognormal distribution but in the poorly aligned 
 data the last falls outside of computed distance values. These plots, 

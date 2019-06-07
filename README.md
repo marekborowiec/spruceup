@@ -87,7 +87,7 @@ spruceup.py ./examples/config_example.conf
 ```
 Once you run the script, your sequence alignment will be divided into a number of windows of the size and overlap you specified. The script will then compute distances for each OTU (sample/taxon) in each window. This is done all-by-all by default or all-by-fraction of OTUs, if specified. You will see some messages along the way, including a progress bar that will display the number of iterations (windows) and remaining time, as we as the maximum amount of memory used for distance calculation.
 
-![progress-bar](progress-bar.png) 
+![progress-bar](./README_files/progress-bar.png) 
  
 Once all distances are calculated, `criterion` and `cutoffs` settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the `lognorm` criterion, specifying a quantile of `0.99` means that any sequence window that lies above 99th percentile of distances of a given OTU to other OUTs in that window will be deemed an outlier and should be removed. In theory, setting of `0.99` should mean that 1% of all sequence windows will be removed from each OTU. In practice, this is not true because real-life sequence data does not perfectly fit into lognormal distribution. Cutoff being constant, certain OTUs may have many outlier (misaligned) sequence fragments and more than 1% of sequence data removed, while others may have no misaligned fragments and no outliers.
 
@@ -107,11 +107,11 @@ An example of distances plot is below. The header is the name of the OTU. The x-
 
 The first example plot below shows an OTU with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than `0.2`. You may not be able to see individual window distances as visible histogram bars since the distributions comprise thousands (in this small example) to hundreds of thousands of distances.
 
-![example-plot-good](example-plot-good.png)
+![example-plot-good](./README_files/example-plot-good.png)
 
 The following plot shows an OTU with less smooth distribution, overall sequences fewer sequences due to missing data, as indicated by the heigth of the histogram bars, and many outlier windows.
 
-![example-plot-poor](example-plot-poor.png)
+![example-plot-poor](./README_files/example-plot-poor.png)
 
 Both examples have been processed under the same cutoffs values, `0.95,0.97,0.99` quantiles of fitted lognormal distribution but in the poorly aligned data the last falls outside of computed distance values. These plots, combined with visual examinaton of report files and alignments should serve you as a guide on what criterion and cutoff values make most sense for your dataset.
 
