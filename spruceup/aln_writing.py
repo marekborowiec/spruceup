@@ -1,8 +1,9 @@
-### DESCRIPTION ###
+# Functions to write popular multiple sequence alignment file formats
+# from  dict {taxon: sequence}
 
 
 def print_fasta(source_dict):
-    # print fasta-formatted string from a dictionary
+    """Print fasta-formatted string from {taxon: seq} dict."""
     fasta_string = ""
     # each sequence line will have 80 characters
     n = 80
@@ -18,7 +19,7 @@ def print_fasta(source_dict):
 
 
 def print_phylip(source_dict):
-    # print phylip-formatted string from a dictionary
+    """Print phylip-formatted string from {taxon: seq} dict."""
     taxa_list = list(source_dict.keys())
     no_taxa = len(taxa_list)
     # figure out the max length of a taxon for nice padding of sequences
@@ -35,7 +36,7 @@ def print_phylip(source_dict):
 
 
 def print_phylip_int(source_dict):
-    # print phylip interleaved-formatted string from a dictionary
+    """Print phylip interleaved-formatted string from {taxon: seq} dict."""
     taxa_list = list(source_dict.keys())
     no_taxa = len(taxa_list)
     pad_longest_name = len(max(taxa_list, key=len)) + 3
@@ -64,7 +65,7 @@ def print_phylip_int(source_dict):
 
 
 def print_nexus(source_dict, data_type):
-    # print nexus-formatted string from a dictionary
+    """Print nexus-formatted string from {taxon: seq} dict."""
     if data_type == "aa" or command == "translate":
         data_type = "PROTEIN"
     elif data_type == "nt":
@@ -91,7 +92,7 @@ def print_nexus(source_dict, data_type):
 
 
 def print_nexus_int(source_dict, data_type):
-    # print nexus interleaved-formatted string from a dictionary
+    """Print nexus interleaved-formatted string from {taxon: seq} dict."""
     if data_type == "aa":
         data_type = "PROTEIN"
     elif data_type == "nt":
@@ -133,7 +134,7 @@ def print_nexus_int(source_dict, data_type):
 
 
 def write_alignment_file(alignment_dict, file_format, out_file_name, data_type):
-    # write the correct format string into a file
+    """Write the correct format string to file."""
     with open(out_file_name, 'w') as of:
         if file_format == 'phylip':
             of.write(print_phylip(alignment_dict))
