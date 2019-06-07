@@ -24,6 +24,7 @@ import aln_parsing, aln_writing
 
 plt.switch_backend('agg')
 
+
 def get_tree_dist_dict(tree_fn):
     """Make a dict of all-by-all distances from input guide tree."""
     t = treeswift.read_tree_newick(tree_fn)
@@ -166,7 +167,9 @@ def jc_correction(distance_tpl, data_type):
     return (eff_seq_len, jc_corrected)
 
 
-def get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, seq2):
+def get_distances_scaled_by_tree(
+    method, data_type, tree_dists, sp1, sp2, seq1, seq2
+):
     """Given a tree, scale computed distances by tree distances.
 
     This is done by dividing each spruceup distance 
@@ -239,7 +242,12 @@ def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
 
 
 def distances_wrapper(
-    parsed_alignments, tree_dists, cores, data_type, method='uncorrected', fraction=1
+    parsed_alignments,
+    tree_dists,
+    cores,
+    data_type,
+    method='uncorrected',
+    fraction=1,
 ):
     """Use multiple cores to get distances from list of alignment dicts.
     
@@ -248,7 +256,9 @@ def distances_wrapper(
     """
     if int(cores) == 1:
         for aln_tuple in tqdm(parsed_alignments, desc='Calculating distances'):
-            yield get_distances(aln_tuple, tree_dists, method, fraction, data_type)
+            yield get_distances(
+                aln_tuple, tree_dists, method, fraction, data_type
+            )
     elif int(cores) > 1:
         with mp.Pool(processes=cores) as pool:
             with tqdm(total=len(parsed_alignments)) as pbar:
@@ -295,7 +305,9 @@ def dist_taxa_wrapper(dist_tuples):
 
 def get_dist_matrix(distances, taxa_no):
     """Create distance matrix for alignment."""
-    matrix = [distances[x : x + taxa_no] for x in range(0, len(distances), taxa_no)]
+    matrix = [
+        distances[x : x + taxa_no] for x in range(0, len(distances), taxa_no)
+    ]
     return matrix
 
 
@@ -410,7 +422,9 @@ def get_mean_cutoff(dist_list, cutoff):
     return round((mean * cutoff), 5)
 
 
-def plotting_wrapper(all_taxa_dists, window_size, method, criterion, cutoffs, manual_cutoffs):
+def plotting_wrapper(
+    all_taxa_dists, window_size, method, criterion, cutoffs, manual_cutoffs
+):
     """This is a wrapper for plot_taxon_dists() function to work across all OTUs and windows."""
     taxa = sorted(all_taxa_dists.keys())
     for taxon in taxa:
@@ -419,12 +433,21 @@ def plotting_wrapper(all_taxa_dists, window_size, method, criterion, cutoffs, ma
             dists = get_np_dists(dist_list)
             shape, loc, scale = get_shape_loc_scale(dists)
             logn_fit_line = get_lognorm_fit_line(dists, shape, loc, scale)
-            plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, fit_line=logn_fit_line)
+            plot_taxon_dists(
+                all_taxa_dists,
+                taxon,
+                method,
+                criterion,
+                cutoffs,
+                fit_line=logn_fit_line,
+            )
         if criterion == 'mean':
             plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs)
 
 
-def plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, fit_line=0):
+def plot_taxon_dists(
+    all_taxa_dists, taxon, method, criterion, cutoffs, fit_line=0
+):
     """Get a histogram plot of distance distribution across windows."""
     fname = '{}-{}-{}.png'.format(taxon, method, criterion)
     dist_list = [window[1] for window in all_taxa_dists[taxon]]
@@ -444,7 +467,13 @@ def plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, fit_line
         if criterion == 'mean':
             cutoff_line = get_mean_cutoff(dists, float(cutoff))
         color = next(colors)
-        plt.axvline(cutoff_line, color=color, label=str(cutoff), linestyle='dashed', linewidth=1)
+        plt.axvline(
+            cutoff_line,
+            color=color,
+            label=str(cutoff),
+            linestyle='dashed',
+            linewidth=1,
+        )
     plt.legend(loc='upper right')
     plt.savefig(fname)
     plt.close()
@@ -527,14 +556,26 @@ def get_lognorm_outliers(
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            outliers_list = sorted(get_outliers_list(all_dists[taxon], manual_dict[taxon]))
-            outliers = [get_window_tuple(window, window_size) for window in outliers_list]
+            outliers_list = sorted(
+                get_outliers_list(all_dists[taxon], manual_dict[taxon])
+            )
+            outliers = [
+                get_window_tuple(window, window_size)
+                for window in outliers_list
+            ]
         else:
-            outliers_list = sorted(get_outliers_list(all_dists[taxon], logn_cutoff))
-            outliers = [get_window_tuple(window, window_size) for window in outliers_list]
+            outliers_list = sorted(
+                get_outliers_list(all_dists[taxon], logn_cutoff)
+            )
+            outliers = [
+                get_window_tuple(window, window_size)
+                for window in outliers_list
+            ]
     else:
         outliers_list = sorted(get_outliers_list(all_dists[taxon], logn_cutoff))
-        outliers = [get_window_tuple(window, window_size) for window in outliers_list]
+        outliers = [
+            get_window_tuple(window, window_size) for window in outliers_list
+        ]
     if outliers:
         merged_outliers = merge(outliers)
     else:
@@ -562,14 +603,26 @@ def get_mean_outliers(
             manual_cutoff = float(manual_cutoff_value)
             manual_dict[manual_taxon_name] = manual_cutoff
         if taxon in manual_dict.keys():
-            outliers_list = sorted(get_outliers_list(all_dists[taxon], manual_dict[taxon]))
-            outliers = [get_window_tuple(window, window_size) for window in outliers_list]
+            outliers_list = sorted(
+                get_outliers_list(all_dists[taxon], manual_dict[taxon])
+            )
+            outliers = [
+                get_window_tuple(window, window_size)
+                for window in outliers_list
+            ]
         else:
-            outliers_list = sorted(get_outliers_list(all_dists[taxon], mean_cutoff))
-            outliers = [get_window_tuple(window, window_size) for window in outliers_list]
+            outliers_list = sorted(
+                get_outliers_list(all_dists[taxon], mean_cutoff)
+            )
+            outliers = [
+                get_window_tuple(window, window_size)
+                for window in outliers_list
+            ]
     else:
         outliers_list = sorted(get_outliers_list(all_dists[taxon], mean_cutoff))
-        outliers = [get_window_tuple(window, window_size) for window in outliers_list]
+        outliers = [
+            get_window_tuple(window, window_size) for window in outliers_list
+        ]
     if outliers:
         merged_outliers = merge(outliers)
     else:
@@ -609,8 +662,8 @@ def get_windows(parsed_alignment, window_size, overlap):
         )
     )
     stride = get_stride(window_size, overlap)
-    aln_len = len(next(iter(parsed_alignment.values()))) # random seq length
-    aln_len_window = aln_len + window_size # for iteration
+    aln_len = len(next(iter(parsed_alignment.values())))  # random seq length
+    aln_len_window = aln_len + window_size  # for iteration
     # initiate list of window dicts
     list_of_windows = []
     add_to_list_of_windows = list_of_windows.append
@@ -715,7 +768,9 @@ def print_report(outliers, criterion, cutoff, manual_cutoffs):
             '{}:\n'
             'Cutoff: {}\n'
             'Removed {} positions\n'
-            '{}\n\n'.format(taxon, cutoff_value, total_seq_removed_from_taxon, ranges)
+            '{}\n\n'.format(
+                taxon, cutoff_value, total_seq_removed_from_taxon, ranges
+            )
         )
     return report_string
 
@@ -726,7 +781,9 @@ def write_report(report_string, report_file_name):
         rf.write(report_string)
 
 
-def write_distances_dict(mean_taxon_distances, distances_method, window_size, overlap):
+def write_distances_dict(
+    mean_taxon_distances, distances_method, window_size, overlap
+):
     """Write json file with per-taxon windows and their distances.
 
     The format is: {"taxon": [[window0, mean_distance_in_window], [window1, dist] ...]}.
@@ -742,7 +799,9 @@ def write_distances_dict(mean_taxon_distances, distances_method, window_size, ov
 def read_distances_dict(distances_json):
     """Parse json file with distances."""
     with open(distances_json, 'r') as fp:
-        logging.info('Reading distances from file {} ...\n'.format(distances_json))
+        logging.info(
+            'Reading distances from file {} ...\n'.format(distances_json)
+        )
 
         mean_taxon_distances = json.load(fp)
         return mean_taxon_distances
@@ -761,7 +820,9 @@ def analyze(
 ):
     """Load, parse, and analyze the data."""
     logging.info('Parsing alignment {} ...\n'.format(alignment_file_name))
-    aln_tuple = aln_parsing.parse_alignment(alignment_file_name, input_file_format)
+    aln_tuple = aln_parsing.parse_alignment(
+        alignment_file_name, input_file_format
+    )
     aln_name, aln_dict = aln_tuple
     no_missing_ambiguous_dict = replace_missing_in_dict(aln_dict, data_type)
     if tree_file_name == None:
@@ -798,7 +859,9 @@ def output_loop(
     alignment_sites = get_alignment_size(untrimmed_alignment)
     cutoff_floats = [float(cutoff_string) for cutoff_string in cutoffs]
     for cutoff in cutoff_floats:
-        logging.info('Finding outliers for {} {}s cutoff ...'.format(cutoff, criterion))
+        logging.info(
+            'Finding outliers for {} {}s cutoff ...'.format(cutoff, criterion)
+        )
         outliers = get_outliers_wrapper(
             distances, window_size, method, criterion, cutoff, manual_cutoffs
         )
@@ -806,7 +869,9 @@ def output_loop(
             untrimmed_alignment, outliers
         )
         logging.info('Sites removed: {}'.format(sites_removed))
-        percent_removed = get_removed_fraction(alignment_sites, sites_removed) * 100
+        percent_removed = (
+            get_removed_fraction(alignment_sites, sites_removed) * 100
+        )
         logging.info(
             'Removed {:.2f}% of sites at cutoff of {} {}s'.format(
                 percent_removed, cutoff, criterion
@@ -826,9 +891,13 @@ def output_loop(
         aln_writing.write_alignment_file(
             trimmed_alignment, out_format, cutoff_trimmed_aln_fname, data_type
         )
-        logging.info('Wrote trimmed alignment {}\n'.format(cutoff_trimmed_aln_fname))
+        logging.info(
+            'Wrote trimmed alignment {}\n'.format(cutoff_trimmed_aln_fname)
+        )
     logging.info('Plotting distance distributions and cutoffs')
-    plotting_wrapper(distances, window_size, method, criterion, cutoffs, manual_cutoffs)
+    plotting_wrapper(
+        distances, window_size, method, criterion, cutoffs, manual_cutoffs
+    )
 
 
 def get_stride(window_size, overlap):
@@ -862,7 +931,9 @@ def main():
     else:
         manual_cutoffs = [
             tuple(taxon_cutoff.split(','))
-            for taxon_cutoff in conf.get('analysis', 'manual_cutoffs').split(';')
+            for taxon_cutoff in conf.get('analysis', 'manual_cutoffs').split(
+                ';'
+            )
         ]
     # output
     output_file_aln = conf.get('output', 'output_file_aln')
@@ -872,7 +943,10 @@ def main():
     # logging
     level = logging.INFO
     log_format = '%(asctime)s - %(message)s'
-    handlers = [logging.FileHandler(log_file_name, 'w'), logging.StreamHandler()]
+    handlers = [
+        logging.FileHandler(log_file_name, 'w'),
+        logging.StreamHandler(),
+    ]
     logging.basicConfig(level=level, format=log_format, handlers=handlers)
     # check for existing distances file
     if distances_json:
@@ -906,6 +980,7 @@ def main():
         data_type,
     )
     logging.info('Finished in {:.2f} seconds'.format(time.time() - start))
+
 
 if __name__ == '__main__':
 
