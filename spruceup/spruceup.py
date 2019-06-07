@@ -163,6 +163,10 @@ def jc_correction(distance_tpl, data_type):
 
 
 def get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, seq2):
+    """Given a tree, scale computed distances by tree distances.
+
+    This is done by dividing each spruceup distance 
+    by distance between same OTUs on the guide tree."""
     if method == 'uncorrected':
         scaled_distance = get_scaled_distance(p_distance(seq1, seq2))
     elif method == 'jc':
@@ -181,6 +185,9 @@ def get_distances_scaled_by_tree(method, data_type, tree_dists, sp1, sp2, seq1, 
 
 
 def get_distances_scaled(method, data_type, seq1, seq2):
+    """Given raw distance between two sequences, 
+    scale them from 0 to 1 and in case of Jukes-Cantor distances also
+    depending on whether the sequences are nucleotides or amino acids."""
     if method == 'uncorrected':
         scaled_distance = get_scaled_distance(p_distance(seq1, seq2))
     elif method == 'jc':
@@ -365,31 +372,37 @@ def means_per_taxon(taxa_dists):
 
 
 def get_np_dists(dist_list):
+    """Get numpy distances array in which zeros are NaN."""
     dists = np.asarray(dist_list)
     dists[dists == 0] = np.nan
     return dists[~np.isnan(dists)]
 
 
 def get_shape_loc_scale(dists):
+    """Given distances fit lognormal distribution."""
     return scp.lognorm.fit(dists, floc=0)
 
 
 def get_lognorm_fit_line(dists, shape, loc, scale):
+    """Get parameters for lognorm distribution plotting."""
     x = np.linspace(0, np.nanmax(dists), 500)
     return scp.lognorm.pdf(x, shape, loc, scale)
 
 
 def get_lognorm_cutoff(cutoff, shape, loc, scale):
+    """Get cutoff values for plotting."""
     logn_cutoff = scp.lognorm.ppf(cutoff, shape, loc, scale)
     return logn_cutoff
 
 
 def get_mean_cutoff(dist_list, cutoff):
+    """Get mean from a list of distances."""
     mean = np.mean(dist_list)
     return round((mean * cutoff), 5)
 
 
 def plotting_wrapper(all_taxa_dists, window_size, method, criterion, cutoffs, manual_cutoffs):
+    """This is a wrapper for plot_taxon_dists() function to work across all OTUs and windows."""
     taxa = sorted(all_taxa_dists.keys())
     for taxon in taxa:
         if criterion == 'lognorm':
@@ -403,6 +416,7 @@ def plotting_wrapper(all_taxa_dists, window_size, method, criterion, cutoffs, ma
 
 
 def plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, fit_line=0):
+    """Get a histogram plot of distance distribution across windows."""
     fname = '{}-{}-{}.png'.format(taxon, method, criterion)
     dist_list = [window[1] for window in all_taxa_dists[taxon]]
     dists = get_np_dists(dist_list)
@@ -471,6 +485,8 @@ def get_outliers_wrapper(
 
 
 def get_window_tuple(tpl, window_size):
+    """Given a tuple (window_name, window_size) 
+    parse start and end to that window sequence."""
     aln, distance = tpl
     aln_start = aln
     aln_end = aln_start + window_size
@@ -479,6 +495,8 @@ def get_window_tuple(tpl, window_size):
 
 
 def get_outliers_list(window_dist_list, cutoff):
+    """List comprehension to get all windows above certain threshold.
+    """
     return [window for window in window_dist_list if window[1] >= cutoff]
 
 
