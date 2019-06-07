@@ -1,4 +1,6 @@
-### DESCRIPTION ###
+# Functions to parse popular multiple sequence alignment file formats
+# into dict {taxon: sequence}.
+
 
 import re
 
