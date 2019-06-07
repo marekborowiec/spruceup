@@ -4,13 +4,14 @@ import re
 
 
 def read_in_file(in_file):
+    """Read input file."""
     with open(in_file, 'r') as f:
         file_lines = f.read().rstrip('\r\n')
     return file_lines
 
 
 def fasta_parse(in_file_lines):
-    # use regex to parse names and sequences in sequential fasta files
+    """Parse names and sequences in sequential fasta files using regex."""
     matches = re.finditer(r"^>(.*[^$])([^>]*)", in_file_lines, re.MULTILINE)
     records = {}
     for match in matches:
@@ -22,7 +23,7 @@ def fasta_parse(in_file_lines):
 
 
 def phylip_parse(in_file_lines):
-    # use regex to parse names and sequences in sequential phylip files
+    """Parse names and sequences in sequential phylip files using regex."""
     matches = re.finditer(
         r"^(\s+)?(\S+)\s+([A-Za-z*?.{}-]+)", in_file_lines, re.MULTILINE
     )
@@ -36,7 +37,7 @@ def phylip_parse(in_file_lines):
 
 
 def phylip_interleaved_parse(in_file_lines):
-    # use regex to parse names and sequences in interleaved phylip files
+    """Parse names and sequences in interleaved phylip files using regex."""
     tax_chars_matches = re.finditer(
         r"^(\s+)?([0-9]+)[ \t]+([0-9]+)", in_file_lines, re.MULTILINE
     )
@@ -70,7 +71,9 @@ def phylip_interleaved_parse(in_file_lines):
         taxa = []
         sequences = []
         matches = re.finditer(
-            r"(^(\s+)?(\S+)( ){2,}|^\s+)([ A-Za-z*?.{}-]+)", in_file_lines, re.MULTILINE
+            r"(^(\s+)?(\S+)( ){2,}|^\s+)([ A-Za-z*?.{}-]+)",
+            in_file_lines,
+            re.MULTILINE,
         )
         for match in matches:
             try:
@@ -92,7 +95,7 @@ def phylip_interleaved_parse(in_file_lines):
 
 
 def nexus_parse(in_file_lines):
-    # use regex to parse names and sequences in sequential nexus files
+    """Parse names and sequences in sequential nexus files using regex."""
     # find the matrix block
     matches = re.finditer(
         r"(\s+)?(MATRIX\n|matrix\n|MATRIX\r\n|matrix\r\n)(.*?;)",
@@ -117,7 +120,7 @@ def nexus_parse(in_file_lines):
 
 
 def nexus_interleaved_parse(in_file_lines):
-    # use regex to parse names and sequences in sequential nexus files
+    """Parse names and sequences in sequential nexus files using regex."""
     # find the matrix block
     matches = re.finditer(
         r"(\s+)?(MATRIX\n|matrix\n|MATRIX\r\n|matrix\r\n)(.*?;)",
@@ -148,7 +151,10 @@ def nexus_interleaved_parse(in_file_lines):
     counter = 0
     for taxon_no in range(len(taxa)):
         full_length_sequence = "".join(
-            [sequences[index] for index in range(counter, len(sequences), len(taxa))]
+            [
+                sequences[index]
+                for index in range(counter, len(sequences), len(taxa))
+            ]
         )
         records[taxa[taxon_no]] = (
             translate_ambiguous(full_length_sequence).replace("\n", "").upper()
@@ -158,9 +164,9 @@ def nexus_interleaved_parse(in_file_lines):
 
 
 def translate_ambiguous(seq):
-    # translate ambiguous characters from curly bracket format
-    # to single letter format
-    # also remove spaces from sequences
+    """Translate ambiguous characters from curly bracket format
+    to single letter format and remove spaces from sequences.
+    """
     seq = seq.replace('{GT}', 'K')
     seq = seq.replace('{AC}', 'M')
     seq = seq.replace('{AG}', 'R')
