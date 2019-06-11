@@ -1,11 +1,9 @@
 #! /usr/bin/env python3
 
-# coding: utf-8
 from math import log
 
 from nose.tools import assert_equal, assert_raises
 
-import aln_parsing, aln_writing
 from spruceup import (
     jc_correction,
     p_distance,
@@ -88,8 +86,7 @@ tree_dists = {
     ('sp5', 'sp5'): 0.0,
 }
 
-
-def test_get_uncorrected_no_nt_distances():
+def test_get_uncorrected_no_nt_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
@@ -100,7 +97,7 @@ def test_get_uncorrected_no_nt_distances():
     )
 
 
-def test_get_uncorrected_half_nt_distances():
+def test_get_uncorrected_half_nt_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
@@ -111,7 +108,7 @@ def test_get_uncorrected_half_nt_distances():
     )
 
 
-def test_get_uncorrected_all_aa_distances():
+def test_get_uncorrected_all_aa_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
@@ -122,7 +119,7 @@ def test_get_uncorrected_all_aa_distances():
     )
 
 
-def test_get_jc_all_nt_distances():
+def test_get_jc_all_nt_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
@@ -133,7 +130,7 @@ def test_get_jc_all_nt_distances():
     )
 
 
-def test_get_uncorrected_all_nt_distances():
+def test_get_uncorrected_all_nt_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
@@ -144,73 +141,108 @@ def test_get_uncorrected_all_nt_distances():
     )
 
 
-def test_jc_nt_zero():
+def test_jc_nt_returns_zero_if_dist_is_zero():
     assert_equal(jc_correction((10, 0), data_types[1]), (10, 0))
 
 
-def test_jc_nan():
+def test_jc_returns_nan_if_dist_is_nan():
     assert_equal(jc_correction((10, 'NaN'), data_types[1]), (10, 'NaN'))
 
 
-def test_jc_nt_min():
+def test_jc_returns_zero_if_nt_seqs_identical():
     assert_equal(
         jc_correction(p_distance(simple_seq, simple_seq), data_types[1]), (10, 0)
     )
 
 
-def test_jc_aa_min():
+def test_jc_returns_zero_if_aa_seqs_identical():
     assert_equal(
         jc_correction(p_distance(simple_aa_seq, simple_aa_seq), data_types[0]),
         (10, 0),
     )
 
 
-def test_jc_nt_max():
+def test_jc_returns_max_nt_dist_if_10_out_of_10_nt_diff():
     assert_equal(
         jc_correction((10, 10), data_types[1]),
         (10, (3 / 4 * log(1 - 4 / 3 * -10))),
     )
 
 
-def test_scaled_nan():
+def test_jc_returns_max_nt_dist_if_max_diff_nt():
+    dist = p_distance(simple_seq, different_seq)
+    assert_equal(
+        jc_correction(dist, data_types[1]),
+        (dist[0], (3 / 4 * log(1 - 4 / 3 * -dist[1]))),
+    )
+
+
+def test_jc_returns_max_aa_dist_if_10_out_of_10_nt_diff():
+    assert_equal(
+        jc_correction((10, 10), data_types[0]),
+        (10, (19 / 20 * log(1 - 20 / 19 * -10))),
+    )
+
+
+def test_jc_returns_max_aa_dist_if_max_diff_nt():
+    dist = p_distance(simple_aa_seq, different_aa_seq)
+    assert_equal(
+        jc_correction(dist, data_types[0]),
+        (dist[0], (19 / 20 * log(1 - 20 / 19 * -dist[1]))),
+    )
+
+
+def test_scaled_returns_nan_if_one_seq_empty():
     assert_equal(get_scaled_distance(p_distance(simple_seq, empty_seq)), 'NaN')
 
 
-def test_scaled_max():
+def test_scaled_returns_nan_if_both_seqs_empty():
+    assert_equal(get_scaled_distance(p_distance(empty_seq, empty_seq)), 'NaN')
+
+
+def test_scaled_returns_1_if_max_seq_difference():
     assert_equal(get_scaled_distance(p_distance(simple_seq, different_seq)), 1)
 
 
-def test_scaled_partial():
+def test_scaled_returns_01_if_10percent_seq_different():
     assert_equal(get_scaled_distance(p_distance(simple_seq, partly_gappy)), 0.1)
 
 
-def test_scaled_identical():
+def test_scaled_returns_0_if_seqs_identical1():
     assert_equal(get_scaled_distance(p_distance(partly_gappy, partly_gappy)), 0.0)
 
 
-def test_aa_distance():
+def test_scaled_returns_0_if_seqs_identical2():
+    assert_equal(get_scaled_distance(p_distance(simple_seq, simple_seq)), 0.0)
+
+
+def test_scaled_returns_0_if_seqs_identical3():
+    assert_equal(get_scaled_distance(p_distance(simple_aa_seq, simple_aa_seq)), 0.0)
+
+
+def test_aa_distance_if_both_sequences_max_different():
     assert_equal(p_distance(simple_aa_seq, different_aa_seq), (10, 10))
 
 
-def test_nt_distance():
+def test_nt_distance_if_both_sequences_max_different():
     assert_equal(p_distance(simple_seq, different_seq), (10, 10))
 
 
-def test_gappy():
+def test_returns_efflen0_and_nan_if_empty_seq_first():
     assert_equal(p_distance(empty_seq, simple_seq), (0, 'NaN'))
 
 
-def test_gappy_reverse():
+def test_returns_efflen10_and_nan_if_empty_seq_second():
     assert_equal(p_distance(simple_seq, empty_seq), (10, 'NaN'))
 
 
-def test_partly_gappy():
+def test_returns_efflen7_and_1differnce_if_partly_gappy_seq_first():
     assert_equal(p_distance(partly_gappy, simple_seq), (7, 1))
 
 
-def test_partly_gappy_reverse():
+def test_returns_efflen10_and_1differnce_if_partly_gappy_seq_second():
     assert_equal(p_distance(simple_seq, partly_gappy), (10, 1))
 
 
-def test_unaligned():
+def test_raises_error_if_seqs_unaligned():
     assert_raises(ValueError, p_distance, simple_seq, short_seq)
