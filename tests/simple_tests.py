@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+from statistics import mean 
 from math import log
 
 from nose.tools import assert_equal, assert_raises
@@ -10,6 +11,7 @@ from spruceup import (
     get_scaled_distance,
     get_distances,
     get_taxon_map,
+    get_list_mean
 )
 
 # some short mock sequences
@@ -21,7 +23,7 @@ short_seq = 'CAGTCG'
 simple_aa_seq = 'LNIWVNLAVC'
 different_aa_seq = 'DKVCTIVSTQ'
 
-# different dictsa represent different parsed alignments
+# different dicts represent different parsed alignments
 aln_dict1 = {
     'sp1': simple_seq,
     'sp2': simple_seq,
@@ -139,6 +141,39 @@ def test_get_uncorrected_all_nt_distances_returns_both_aln_name_dists():
         ),
         2,
     )
+
+
+
+def test_get_uncorrected_nt_distances_returns_zero_dist_on_ident_seqs():
+    aln_name, distances = get_distances(alns_tpls[0], tree_dists, methods[0], fractions[2], data_types[1])
+    dists_list = []
+    for dist_tpl in distances:
+        sp1, sp2, dist = dist_tpl
+        dists_list.append(dist)
+    avg_dist = get_list_mean(dists_list)
+    assert_equal(avg_dist, 0)
+
+
+def test_get_uncorrected_nt_distances_returns_non_zero_dist_on_different_seqs1():
+    aln_name, distances = get_distances(alns_tpls[1], tree_dists, methods[0], fractions[2], data_types[1])
+    dists_list = []
+    for dist_tpl in distances:
+        sp1, sp2, dist = dist_tpl
+        dists_list.append(dist)
+    print(dists_list)
+    avg_dist = get_list_mean(dists_list)
+    assert(avg_dist != 0)
+
+
+def test_get_uncorrected_nt_distances_returns_non_zero_dist_on_different_seqs2():
+    aln_name, distances = get_distances(alns_tpls[2], tree_dists, methods[0], fractions[2], data_types[1])
+    dists_list = []
+    for dist_tpl in distances:
+        sp1, sp2, dist = dist_tpl
+        dists_list.append(dist)
+    print(dists_list)
+    avg_dist = get_list_mean(dists_list)
+    assert(avg_dist != 0)
 
 
 def test_jc_nt_returns_zero_if_dist_is_zero():
