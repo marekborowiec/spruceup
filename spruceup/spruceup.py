@@ -253,6 +253,7 @@ def distances_wrapper(
     
     Args:
     method (str) -- 'uncorrected' or 'jc' (default 'uncorrected').
+    fraction (float) -- from 0 to 1 (default 1).
     """
     if int(cores) == 1:
         for aln_tuple in tqdm(parsed_alignments, desc='Calculating distances'):
@@ -284,9 +285,9 @@ def distances_wrapper(
 def get_dist_and_taxa_lists(distances):
     """Get aligned lists of taxa and distances.
 
-    Given pairwise distances tuples of 
+    Given pairwise distances tuples 
     (taxon1, taxon2, pairwise distance between the two)
-    return tuple of (taxa, distances).
+    return tuple (taxa list, distances list).
     """
     taxa_rows = [sp2 for (sp1, sp2, dist) in distances]
     dists = [dist for (sp1, sp2, dist) in distances]
@@ -304,7 +305,11 @@ def dist_taxa_wrapper(dist_tuples):
 
 
 def get_dist_matrix(distances, taxa_no):
-    """Create distance matrix for alignment."""
+    """Create distance matrix for alignment.
+
+    Split all distances list [sp1 to sp1 dist, sp1 to sp2 dist, sp1 to sp3 dist etc.]
+    to return list of lists [[sp1 dists to all other], [sp2 dists to all other], etc.]
+    """
     matrix = [
         distances[x : x + taxa_no] for x in range(0, len(distances), taxa_no)
     ]
