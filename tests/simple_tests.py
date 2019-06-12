@@ -1,9 +1,9 @@
 #! /usr/bin/env python3
 
-from statistics import mean 
+from statistics import mean
 from math import log
 
-from nose.tools import assert_equal, assert_raises
+from nose.tools import assert_true, assert_false, assert_equal, assert_raises
 
 from spruceup import (
     jc_correction,
@@ -11,7 +11,11 @@ from spruceup import (
     get_scaled_distance,
     get_distances,
     get_taxon_map,
-    get_list_mean
+    get_list_mean,
+    get_dist_and_taxa_lists,
+    get_dist_matrix,
+    get_taxon_map,
+    get_mean_distances,
 )
 
 # some short mock sequences
@@ -88,11 +92,16 @@ tree_dists = {
     ('sp5', 'sp5'): 0.0,
 }
 
+
 def test_get_uncorrected_no_nt_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
-                alns_tpls[0], tree_dists, methods[0], fractions[0], data_types[1]
+                alns_tpls[0],
+                tree_dists,
+                methods[0],
+                fractions[0],
+                data_types[1],
             )
         ),
         2,
@@ -103,7 +112,11 @@ def test_get_uncorrected_half_nt_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
-                alns_tpls[0], tree_dists, methods[0], fractions[1], data_types[1]
+                alns_tpls[0],
+                tree_dists,
+                methods[0],
+                fractions[1],
+                data_types[1],
             )
         ),
         2,
@@ -114,7 +127,11 @@ def test_get_uncorrected_all_aa_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
-                alns_tpls[0], tree_dists, methods[1], fractions[2], data_types[0]
+                alns_tpls[0],
+                tree_dists,
+                methods[1],
+                fractions[2],
+                data_types[0],
             )
         ),
         2,
@@ -125,7 +142,11 @@ def test_get_jc_all_nt_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
-                alns_tpls[0], tree_dists, methods[1], fractions[2], data_types[1]
+                alns_tpls[0],
+                tree_dists,
+                methods[1],
+                fractions[2],
+                data_types[1],
             )
         ),
         2,
@@ -136,16 +157,21 @@ def test_get_uncorrected_all_nt_distances_returns_both_aln_name_dists():
     assert_equal(
         len(
             get_distances(
-                alns_tpls[0], tree_dists, methods[0], fractions[2], data_types[1]
+                alns_tpls[0],
+                tree_dists,
+                methods[0],
+                fractions[2],
+                data_types[1],
             )
         ),
         2,
     )
 
 
-
 def test_get_uncorrected_nt_distances_returns_zero_dist_on_ident_seqs():
-    aln_name, distances = get_distances(alns_tpls[0], tree_dists, methods[0], fractions[2], data_types[1])
+    aln_name, distances = get_distances(
+        alns_tpls[0], tree_dists, methods[0], fractions[2], data_types[1]
+    )
     dists_list = []
     for dist_tpl in distances:
         sp1, sp2, dist = dist_tpl
@@ -155,25 +181,94 @@ def test_get_uncorrected_nt_distances_returns_zero_dist_on_ident_seqs():
 
 
 def test_get_uncorrected_nt_distances_returns_non_zero_dist_on_different_seqs1():
-    aln_name, distances = get_distances(alns_tpls[1], tree_dists, methods[0], fractions[2], data_types[1])
+    aln_name, distances = get_distances(
+        alns_tpls[1], tree_dists, methods[0], fractions[2], data_types[1]
+    )
     dists_list = []
     for dist_tpl in distances:
         sp1, sp2, dist = dist_tpl
         dists_list.append(dist)
     print(dists_list)
     avg_dist = get_list_mean(dists_list)
-    assert(avg_dist != 0)
+    assert_false(avg_dist == 0)
 
 
 def test_get_uncorrected_nt_distances_returns_non_zero_dist_on_different_seqs2():
-    aln_name, distances = get_distances(alns_tpls[2], tree_dists, methods[0], fractions[2], data_types[1])
+    aln_name, distances = get_distances(
+        alns_tpls[2], tree_dists, methods[0], fractions[2], data_types[1]
+    )
     dists_list = []
     for dist_tpl in distances:
         sp1, sp2, dist = dist_tpl
         dists_list.append(dist)
     print(dists_list)
     avg_dist = get_list_mean(dists_list)
-    assert(avg_dist != 0)
+    assert_false(avg_dist == 0)
+
+
+def test_find_all_taxa_lists_on_simple_aln():
+    aln_name, distances = get_distances(
+        alns_tpls[2], tree_dists, methods[0], fractions[2], data_types[1]
+    )
+    taxa_rows, dists = get_dist_and_taxa_lists(distances)
+    assert_true(set(spp).issubset(taxa_rows))
+
+
+def test_find_all_dists_on_simple_aln():
+    aln_name, distances = get_distances(
+        alns_tpls[2], tree_dists, methods[0], fractions[2], data_types[1]
+    )
+    taxa_rows, dists = get_dist_and_taxa_lists(distances)
+    assert_equal(len(distances), len(dists))
+
+
+def test_dist_matrix_dimensions_on_simple_aln():
+    aln_name, distances = get_distances(
+        alns_tpls[2], tree_dists, methods[0], fractions[2], data_types[1]
+    )
+    taxa_rows, dists = get_dist_and_taxa_lists(distances)
+    aln_name, aln_dict = alns_tpls[2]
+    no_taxa = len(aln_dict.keys())
+    matrix = get_dist_matrix(dists, no_taxa)
+    assert_equal(len(matrix), no_taxa)
+    assert_equal(len(matrix[0]), no_taxa)
+
+
+def test_taxon_map_returns_all_taxa():
+    aln_name, distances = get_distances(
+        alns_tpls[2], tree_dists, methods[0], fractions[2], data_types[1]
+    )
+    taxa_rows, dists = get_dist_and_taxa_lists(distances)
+    aln_name, aln_dict = alns_tpls[2]
+    taxa = aln_dict.keys()
+    taxon_map = get_taxon_map(taxa_rows)
+    assert_true(set(taxa).issubset(taxa_rows))
+
+
+def test_mean_distances_returns_all_zeros_if_seqs_identical():
+    aln_name, distances = get_distances(
+        alns_tpls[0], tree_dists, methods[0], fractions[2], data_types[1]
+    )
+    taxa_rows, dists = get_dist_and_taxa_lists(distances)
+    aln_name, aln_dict = alns_tpls[0]
+    no_taxa = len(aln_dict.keys())
+    matrix = get_dist_matrix(dists, no_taxa)
+    taxon_map = get_taxon_map(taxa_rows)
+    mean_distances = get_mean_distances(matrix, taxon_map)
+    assert_true(all(mean_dist == 0 for mean_dist in mean_distances.values()))
+
+
+def test_mean_distances_returns_non_zeros_if_seqs_different():
+    aln_name, distances = get_distances(
+        alns_tpls[1], tree_dists, methods[0], fractions[2], data_types[1]
+    )
+    taxa_rows, dists = get_dist_and_taxa_lists(distances)
+    aln_name, aln_dict = alns_tpls[1]
+    no_taxa = len(aln_dict.keys())
+    matrix = get_dist_matrix(dists, no_taxa)
+    taxon_map = get_taxon_map(taxa_rows)
+    mean_distances = get_mean_distances(matrix, taxon_map)
+    assert_false(all(mean_dist == 0 for mean_dist in mean_distances.values()))
 
 
 def test_jc_nt_returns_zero_if_dist_is_zero():
@@ -186,7 +281,8 @@ def test_jc_returns_nan_if_dist_is_nan():
 
 def test_jc_returns_zero_if_nt_seqs_identical():
     assert_equal(
-        jc_correction(p_distance(simple_seq, simple_seq), data_types[1]), (10, 0)
+        jc_correction(p_distance(simple_seq, simple_seq), data_types[1]),
+        (10, 0),
     )
 
 
@@ -244,7 +340,9 @@ def test_scaled_returns_01_if_10percent_seq_different():
 
 
 def test_scaled_returns_0_if_seqs_identical1():
-    assert_equal(get_scaled_distance(p_distance(partly_gappy, partly_gappy)), 0.0)
+    assert_equal(
+        get_scaled_distance(p_distance(partly_gappy, partly_gappy)), 0.0
+    )
 
 
 def test_scaled_returns_0_if_seqs_identical2():
@@ -252,7 +350,9 @@ def test_scaled_returns_0_if_seqs_identical2():
 
 
 def test_scaled_returns_0_if_seqs_identical3():
-    assert_equal(get_scaled_distance(p_distance(simple_aa_seq, simple_aa_seq)), 0.0)
+    assert_equal(
+        get_scaled_distance(p_distance(simple_aa_seq, simple_aa_seq)), 0.0
+    )
 
 
 def test_aa_distance_if_both_sequences_max_different():
