@@ -27,7 +27,12 @@ plt.switch_backend('agg')
 
 def get_tree_dist_dict(tree_fn):
     """Make a dict of all-by-all distances from input guide tree."""
-    t = treeswift.read_tree_newick(tree_fn)
+    try:
+        with open(tree_fn) as f:
+            pass
+        t = treeswift.read_tree_newick(tree_fn)
+    except IOError as ex:
+        exit('Sorry, could not read file "{}": {}'.format(tree_fn, ex.strerror))
     taxa_nodes = t.label_to_node()
     tree_dist_dict = {}
     for sp1, node1 in taxa_nodes.items():
@@ -87,6 +92,8 @@ def replace_missing_in_dict(parsed_aln_dict, data_type):
             taxon: replace_missing_ambiguous(seq, nt_missing_ambiguous_chars)
             for taxon, seq in parsed_aln_dict.items()
         }
+    else:
+        exit('Invalid data type: "{}". Choose from: aa or nt.'.format(data_type))
     return new_dict
 
 
@@ -106,7 +113,7 @@ def read_config(config_file_name):
             config = configparser.RawConfigParser()
             config.read(config_file_name)
     except IOError as ex:
-        exit('Sorry, could not open the file: ' + ex.strerror)
+        exit('Sorry, could not open the configuration file "{}": {}'.format(config_file_name, ex.strerror))
     return config
 
 
@@ -206,6 +213,13 @@ def get_distances_scaled(method, data_type, seq1, seq2):
     return scaled_distance
 
 
+def check_method(method):
+    if method == 'uncorrected' or method == 'jc':
+        pass
+    else:
+        exit('Invalid distance method: "{}". Choose from: uncorrected or jc.'.format(method))
+
+
 def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
     """Calculate uncorrected or JC-corrected distances for alignment.
 
@@ -246,15 +260,19 @@ def distances_wrapper(
     tree_dists,
     cores,
     data_type,
-    method='uncorrected',
-    fraction=1,
+    method,
+    fraction,
 ):
     """Use multiple cores to get distances from list of alignment dicts.
     
     Args:
-    method (str) -- 'uncorrected' or 'jc' (default 'uncorrected').
-    fraction (float) -- from 0 to 1 (default 1).
+    method (str) -- 'uncorrected' or 'jc'.
+    fraction (float) -- from 0 to 1.
     """
+    available_cpus = mp.cpu_count()
+    if cores > available_cpus:
+        exit('You specified more ({}) compute cores than are available ({}). Exiting.'.format(cores, available_cpus))
+    check_method(method)
     if int(cores) == 1:
         for aln_tuple in tqdm(parsed_alignments, desc='Calculating distances'):
             yield get_distances(
@@ -803,11 +821,13 @@ def write_distances_dict(
 
 def read_distances_dict(distances_json):
     """Parse json file with distances."""
-    with open(distances_json, 'r') as fp:
-        logging.info(
-            'Reading distances from file {} ...\n'.format(distances_json)
-        )
-
+    try:
+        with open(distances_json, 'r') as fp:
+            logging.info(
+                'Reading distances from file {} ...\n'.format(distances_json)
+            )
+    except IOError as ex:
+        exit('Sorry, could not read distances file "{}": {}'.format(distances_json, ex.strerror))
         mean_taxon_distances = json.load(fp)
         return mean_taxon_distances
 
@@ -834,7 +854,7 @@ def analyze(
         logging.info('Did not find guide tree, continuing ...\n')
         tree_dists = None
     else:
-        logging.info('Found guide tree {} ...\n'.format(tree_file_name))
+        logging.info('Reading in guide tree {} ...\n'.format(tree_file_name))
         tree_dists = get_tree_dist_dict(tree_file_name)
     windows = get_windows(no_missing_ambiguous_dict, window_size, overlap)
     all_distances = distances_wrapper(

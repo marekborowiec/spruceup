@@ -3,12 +3,16 @@
 
 
 import re
+from sys import exit
 
 
 def read_in_file(in_file):
     """Read input file."""
-    with open(in_file, 'r') as f:
-        file_lines = f.read().rstrip('\r\n')
+    try:
+        with open(in_file, 'r') as f:
+            file_lines = f.read().rstrip('\r\n')
+    except IOError as ex:
+        exit('Sorry, could not read input alignment file: {}'.format(ex.strerror))
     return file_lines
 
 
@@ -197,4 +201,6 @@ def parse_alignment(alignment_file_name, in_format):
         parsed_aln = nexus_parse(alignment_file_lines)
     elif in_format == 'nexus-int':
         parsed_aln = nexus_interleaved_parse(alignment_file_lines)
+    else:
+        exit('Invalid input file format: "{}". Choose from: fasta, phylip, phylip-int, nexus, or nexus-int.'.format(in_format))
     return (alignment_file_name, parsed_aln)
