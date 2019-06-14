@@ -217,19 +217,26 @@ def check_method(method):
     if method == 'uncorrected' or method == 'jc':
         pass
     else:
-        exit('Invalid distance method: "{}". Choose from: uncorrected or jc.'.format(method))
+        exit('Invalid distance method: "{}". Choose between "uncorrected" or "jc".'.format(method))
 
+def check_fraction(fraction):
+    if fraction >= 0 and fraction <= 1:
+        pass
+    else:
+        exit('Invalid taxon fraction value "{}". Fraction must be a floating number between 0 and 1.'.format(fraction))
+
+def check_criterion(criterion):
+    if criterion == 'lognorm' or criterion == 'mean':
+        pass
+    else:
+        exit('Invalid criterion "{}". Choose between "lognorm" and "mean".'.format(criterion))
 
 def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
     """Calculate uncorrected or JC-corrected distances for alignment.
 
     Given tuple (alignment name, alignment distances dict),
     return tuple of (alignment name, list of pairwise distances).
-    Args:
-    method (str) -- 'uncorrected' or 'jc'
-    fraction (int) -- 0 to 1
-    data_type (str) -- 'nt' or 'aa'
-    """
+    """   
     aln_name, aln_dict = aln_tuple
     seqs_to_compare_to = random.sample(
         aln_dict.items(), int(len(aln_dict.items()) * fraction)
@@ -263,16 +270,12 @@ def distances_wrapper(
     method,
     fraction,
 ):
-    """Use multiple cores to get distances from list of alignment dicts.
-    
-    Args:
-    method (str) -- 'uncorrected' or 'jc'.
-    fraction (float) -- from 0 to 1.
-    """
+    """Use multiple cores to get distances from list of alignment dicts."""
     available_cpus = mp.cpu_count()
     if cores > available_cpus:
         exit('You specified more ({}) compute cores than are available ({}). Exiting.'.format(cores, available_cpus))
     check_method(method)
+    check_fraction(fraction)
     if int(cores) == 1:
         for aln_tuple in tqdm(parsed_alignments, desc='Calculating distances'):
             yield get_distances(
@@ -684,8 +687,14 @@ def get_windows(parsed_alignment, window_size, overlap):
             window_size, overlap
         )
     )
-    stride = get_stride(window_size, overlap)
     aln_len = len(next(iter(parsed_alignment.values())))  # random seq length
+    if window_size > 0 and window_size < aln_len:
+        if overlap >= 0 and overlap < window_size:
+            stride = get_stride(window_size, overlap)
+        else:
+            exit('Invalid overlap "{}" for window size "{}". Overlap has to be an integer smaller than window size.'.format(overlap, window_size))
+    else:
+        exit('Invalid window size: "{}". Window size has to be an integer greater than 0 and less than alignment length.'.format(window_size))
     aln_len_window = aln_len + window_size  # for iteration
     # initiate list of window dicts
     list_of_windows = []
@@ -930,6 +939,41 @@ def get_stride(window_size, overlap):
     return window_size - overlap
 
 
+def check_cutoff_value(criterion, cutoff_value):
+    if criterion == 'lognorm':
+        if cutoff_value > 0 and cutoff_value < 1:
+            pass
+        else:
+            exit('Invalid lognorm quantile cutoff value "{}". The cutoffs must be numbers greater than 0 and less than 1.'.format(cutoff_value))
+    elif criterion == 'mean':
+        if cutoff_value > 1:
+            pass
+        elif cutoff_value > 0 and cutoff_value < 1:
+            print('WARNING: cutoff value "{}" is less than 1 mean. Did you intend to specify "lognorm" as criterion?'.format(cutoff_value))
+        elif cutoff_value < 0:
+            exit('Invalid mean cutoff value "{}". Cutoffs must be greater than 0.')
+
+
+def check_cutoffs(criterion, cutoffs):
+    for cutoff in cutoffs:
+        try:
+            cutoff_value = float(cutoff)
+            check_cutoff_value(criterion, cutoff_value)
+        except ValueError as ex:
+            exit('Invalid cutoff value, cannot convert "{}" to number.'.format(cutoff))
+
+
+def check_manual_cutoffs(criterion, manual_cutoffs):
+    cutoffs = []
+    for cutoff_tuple in manual_cutoffs:
+        try:
+            taxon, cutoff = cutoff_tuple
+            cutoffs.append(cutoff)
+        except ValueError as ex:
+            exit('You set manual cutoffs that cannot be parsed. Make sure your configuration file is formatted correctly.')
+    check_cutoffs(criterion, cutoffs)
+
+
 def main():
     start = time.time()
     script, config_file_name = argv
@@ -944,14 +988,19 @@ def main():
         tree_file = None
     # analysis
     method = conf.get('analysis', 'distance_method')
-    window_size = conf.getint('analysis', 'window_size')
-    overlap = conf.getint('analysis', 'overlap')
-    fraction = conf.getfloat('analysis', 'fraction')
-    cores = conf.getint('analysis', 'cores')
+    try:
+        window_size = conf.getint('analysis', 'window_size')
+        overlap = conf.getint('analysis', 'overlap')
+        fraction = conf.getfloat('analysis', 'fraction')
+        cores = conf.getint('analysis', 'cores')
+    except ValueError as ex:
+        exit('Invalid number input in your analysis configuration: {}.'.format(ex))
     criterion = conf.get('analysis', 'criterion')
+    check_criterion(criterion)
     cutoffs = conf.get('analysis', 'cutoffs').split(',')
+    check_cutoffs(criterion, cutoffs)
     manual_cutoffs = conf.get('analysis', 'manual_cutoffs')
-    if not manual_cutoffs:  # this should be resolved differently
+    if not manual_cutoffs:
         manual_cutoffs = False
     else:
         manual_cutoffs = [
@@ -960,6 +1009,7 @@ def main():
                 ';'
             )
         ]
+        check_manual_cutoffs(criterion, manual_cutoffs)
     # output
     output_file_aln = conf.get('output', 'output_file_aln')
     output_format = conf.get('output', 'output_format')
