@@ -146,3 +146,5 @@ def write_alignment_file(alignment_dict, file_format, out_file_name, data_type):
             of.write(print_nexus(alignment_dict, data_type))
         elif file_format == 'nexus-int':
             of.write(print_nexus_int(alignment_dict, data_type))
+        else:
+            exit('Invalid input file format: "{}". Choose from: fasta, phylip, phylip-int, nexus, or nexus-int.'.format(file_format))
