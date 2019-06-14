@@ -1062,5 +1062,5 @@ if __name__ == '__main__':
     main()
 ### To do:
 
-# 1) input validation
+# 1) input validation: consolidate into one input-checking function ran before analysis, pull out format checking from alignment parsing and writing scripts 
 # 2) metamorphic tests
