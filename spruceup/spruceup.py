@@ -58,9 +58,7 @@ def lookup_tree_dist(tree_dist_dict, sp1, sp2):
 
 
 def replace_missing_in_dict(parsed_aln_dict, data_type):
-    """Checking data type (aa or nt) and converting ambiguous and missing data
-    with '?' before calculating distances.
-    """
+    """Convert ambiguous and missing data to '?' before calculating distances."""
     nt_missing_ambiguous_chars = [
         'K',
         'M',
@@ -193,7 +191,9 @@ def get_distances_scaled_by_tree(
 
 
 def get_distances_scaled(method, data_type, seq1, seq2):
-    """Given raw distance between two sequences, 
+    """Convert raw to scaled distances.
+
+    Given raw distance between two sequences, 
     scale them from 0 to 1 and in case of Jukes-Cantor distances also
     depending on whether the sequences are nucleotides or amino acids.
     """
@@ -630,7 +630,8 @@ def get_mean_outliers(
 def merge(ranges):
     """Merge a list of overlapping ranges.
 
-    e.g. given [[0,20], [5,25], [30,50]] return [[0,25], [30,50]]
+    e.g. given [[0,20], [5,25], [30,50]] 
+    return [[0,25], [30,50]].
     """
     merged = []
     for higher in ranges:
@@ -727,8 +728,9 @@ def remove_outliers(parsed_alignment, outliers_dict):
 
 
 def get_alignment_size(alignment_tuple):
-    """Get alignment length from alignment tuple {aln_name, aln_dict}
-    by getting len of random sequence in {taxon: sequence} alignment dict."""
+    """Get alignment length from alignment tuple.
+
+    Given tuple (aln_name, aln_dict) get len of random sequence in {taxon: sequence} alignment dict."""
     alignment_name, alignment_dict = alignment_tuple
     seq_length = len(next(iter(alignment_dict.values())))
     total_alignment_size = seq_length * len(alignment_dict.values())
@@ -903,6 +905,7 @@ def get_stride(window_size, overlap):
 
 
 def check_cutoff_value(criterion, cutoff_value):
+    """Validate single cutoff value from config file."""
     if criterion == 'lognorm':
         if cutoff_value > 0 and cutoff_value < 1:
             pass
@@ -918,6 +921,7 @@ def check_cutoff_value(criterion, cutoff_value):
 
 
 def check_cutoffs(criterion, cutoffs):
+    """Wrapper to validate multiple cutoffs from config."""
     for cutoff in cutoffs:
         try:
             cutoff_value = float(cutoff)
@@ -927,6 +931,7 @@ def check_cutoffs(criterion, cutoffs):
 
 
 def check_manual_cutoffs(criterion, manual_cutoffs):
+    """Wrapper to validate manual cutoffs from config."""
     if manual_cutoffs:
         cutoffs = []
         for cutoff_tuple in manual_cutoffs:
@@ -939,8 +944,12 @@ def check_manual_cutoffs(criterion, manual_cutoffs):
 
 
 def get_validated_input(parsed_config):
+    """Validate input from configuration file.
+
+    Given parameters in configuration file either exit or return dict of vetted input.
+    """
     valid_input_dict = {}
-    # input
+    # input config section
     try:
         alignment_name = parsed_config.get('input', 'input_file_name')
         with open(alignment_name) as f:
@@ -952,7 +961,7 @@ def get_validated_input(parsed_config):
     if file_format == 'fasta' or file_format == 'phylip' or file_format == 'phylip-int' or file_format == 'nexus' or file_format == 'nexus-int':
         valid_input_dict['file_format'] = file_format
     else:
-        exit('Invalid input file format: "{}". Choose from: fasta, phylip, phylip-int, nexus, or nexus-int.'.format(in_format))
+        exit('Invalid input file format: "{}". Choose from: fasta, phylip, phylip-int, nexus, or nexus-int.'.format(file_format))
     data_type = parsed_config.get('input', 'data_type')
     if data_type == 'aa' or data_type == 'nt':
         valid_input_dict['data_type'] = data_type
@@ -982,8 +991,8 @@ def get_validated_input(parsed_config):
     if method == 'uncorrected' or method == 'jc':
         valid_input_dict['method'] = method
     else:
-        exit('Invalid distance method: "{}". Choose between "uncorrected" or "jc".'.format(method))
-    # analysis
+        exit('Invalid distance method: "{}". Choose between "uncorrected" and "jc".'.format(method))
+    # analysis config section
     criterion = parsed_config.get('analysis', 'criterion')
     if criterion == 'lognorm' or criterion == 'mean':
         valid_input_dict['criterion'] = criterion
@@ -1028,7 +1037,7 @@ def get_validated_input(parsed_config):
         ]
     check_manual_cutoffs(criterion, manual_cutoffs)
     valid_input_dict['manual_cutoffs'] = manual_cutoffs
-    # output
+    # output config section
     output_format = parsed_config.get('output', 'output_format')
     if output_format == 'fasta' or output_format == 'phylip' or output_format == 'phylip-int' or output_format == 'nexus' or output_format == 'nexus-int':
         valid_input_dict['output_format'] = output_format
@@ -1096,7 +1105,4 @@ if __name__ == '__main__':
 
     main()
 ### To do:
-
-# 1) input validation: consolidate into one input-checking function ran before analysis, pull out format checking from alignment parsing and writing scripts ;
-# warn user when using combination of json and newick inputs
-# 2) metamorphic tests
+# metamorphic tests
