@@ -1,7 +1,6 @@
 from os import path
 from setuptools import setup, find_packages
 
-import spruceup
 
 here = path.abspath(path.dirname(__file__))
 

@@ -198,3 +198,9 @@ def parse_alignment(alignment_file_name, in_format):
     elif in_format == 'nexus-int':
         parsed_aln = nexus_interleaved_parse(alignment_file_lines)
     return (alignment_file_name, parsed_aln)
+
+def main():
+    pass
+
+if __name__ == '__main__':
+    main()
