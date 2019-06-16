@@ -104,7 +104,11 @@ def read_config(config_file_name):
             config = configparser.RawConfigParser()
             config.read(config_file_name)
     except IOError as ex:
-        exit('Sorry, could not open the configuration file "{}": {}'.format(config_file_name, ex.strerror))
+        exit(
+            'Sorry, could not open the configuration file "{}": {}'.format(
+                config_file_name, ex.strerror
+            )
+        )
     return config
 
 
@@ -211,7 +215,7 @@ def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
 
     Given tuple (alignment name, alignment distances dict),
     return tuple of (alignment name, list of pairwise distances).
-    """   
+    """
     aln_name, aln_dict = aln_tuple
     seqs_to_compare_to = random.sample(
         aln_dict.items(), int(len(aln_dict.items()) * fraction)
@@ -238,12 +242,7 @@ def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
 
 
 def distances_wrapper(
-    parsed_alignments,
-    tree_dists,
-    cores,
-    data_type,
-    method,
-    fraction,
+    parsed_alignments, tree_dists, cores, data_type, method, fraction
 ):
     """Use multiple cores to get distances from list of alignment dicts."""
     if int(cores) == 1:
@@ -660,7 +659,11 @@ def get_windows(parsed_alignment, window_size, overlap):
     )
     aln_len = len(next(iter(parsed_alignment.values())))  # random seq length
     if window_size > aln_len:
-        exit('Invalid window size: "{}" is greater than your alignment length ({}).'.format(window_size, aln_len))
+        exit(
+            'Invalid window size: "{}" is greater than your alignment length ({}).'.format(
+                window_size, aln_len
+            )
+        )
     stride = get_stride(window_size, overlap)
     aln_len_window = aln_len + window_size  # for iteration
     # initiate list of window dicts
@@ -910,14 +913,24 @@ def check_cutoff_value(criterion, cutoff_value):
         if cutoff_value > 0 and cutoff_value < 1:
             pass
         else:
-            exit('Invalid lognorm quantile cutoff value "{}". The cutoffs must be numbers greater than 0 and less than 1.'.format(cutoff_value))
+            exit(
+                'Invalid lognorm quantile cutoff value "{}". The cutoffs must be numbers greater than 0 and less than 1.'.format(
+                    cutoff_value
+                )
+            )
     elif criterion == 'mean':
         if cutoff_value > 1:
             pass
         elif cutoff_value > 0 and cutoff_value < 1:
-            print('WARNING: cutoff value "{}" is less than 1 mean. Did you intend to specify "lognorm" as criterion?'.format(cutoff_value))
+            print(
+                'WARNING: cutoff value "{}" is less than 1 mean. Did you intend to specify "lognorm" as criterion?'.format(
+                    cutoff_value
+                )
+            )
         elif cutoff_value < 0:
-            exit('Invalid mean cutoff value "{}". Cutoffs must be greater than 0.')
+            exit(
+                'Invalid mean cutoff value "{}". Cutoffs must be greater than 0.'
+            )
 
 
 def check_cutoffs(criterion, cutoffs):
@@ -927,7 +940,11 @@ def check_cutoffs(criterion, cutoffs):
             cutoff_value = float(cutoff)
             check_cutoff_value(criterion, cutoff_value)
         except ValueError as ex:
-            exit('Invalid cutoff value, cannot convert "{}" to number.'.format(cutoff))
+            exit(
+                'Invalid cutoff value, cannot convert "{}" to number.'.format(
+                    cutoff
+                )
+            )
 
 
 def check_manual_cutoffs(criterion, manual_cutoffs):
@@ -939,7 +956,9 @@ def check_manual_cutoffs(criterion, manual_cutoffs):
                 taxon, cutoff = cutoff_tuple
                 cutoffs.append(cutoff)
             except ValueError as ex:
-                exit('You set manual cutoffs that cannot be parsed. Make sure your configuration file is formatted correctly.')
+                exit(
+                    'You set manual cutoffs that cannot be parsed. Make sure your configuration file is formatted correctly.'
+                )
         check_cutoffs(criterion, cutoffs)
 
 
@@ -956,17 +975,33 @@ def get_validated_input(parsed_config):
             pass
         valid_input_dict['alignment_name'] = alignment_name
     except IOError as ex:
-        exit('Sorry, could not read input alignment file "{}": {}'.format(alignment_name, ex.strerror))
+        exit(
+            'Sorry, could not read input alignment file "{}": {}'.format(
+                alignment_name, ex.strerror
+            )
+        )
     file_format = parsed_config.get('input', 'input_format')
-    if file_format == 'fasta' or file_format == 'phylip' or file_format == 'phylip-int' or file_format == 'nexus' or file_format == 'nexus-int':
+    if (
+        file_format == 'fasta'
+        or file_format == 'phylip'
+        or file_format == 'phylip-int'
+        or file_format == 'nexus'
+        or file_format == 'nexus-int'
+    ):
         valid_input_dict['file_format'] = file_format
     else:
-        exit('Invalid input file format: "{}". Choose from: fasta, phylip, phylip-int, nexus, or nexus-int.'.format(file_format))
+        exit(
+            'Invalid input file format: "{}". Choose from: fasta, phylip, phylip-int, nexus, or nexus-int.'.format(
+                file_format
+            )
+        )
     data_type = parsed_config.get('input', 'data_type')
     if data_type == 'aa' or data_type == 'nt':
         valid_input_dict['data_type'] = data_type
     else:
-        exit('Invalid data type: "{}". Choose from: aa or nt.'.format(data_type))
+        exit(
+            'Invalid data type: "{}". Choose from: aa or nt.'.format(data_type)
+        )
     try:
         distances_json = parsed_config.get('input', 'distances_object_file')
         if distances_json:
@@ -976,7 +1011,11 @@ def get_validated_input(parsed_config):
         else:
             valid_input_dict['distances_json'] = None
     except IOError as ex:
-        exit('Sorry, could not read distances file "{}": {}'.format(distances_json, ex.strerror))
+        exit(
+            'Sorry, could not read distances file "{}": {}'.format(
+                distances_json, ex.strerror
+            )
+        )
     try:
         tree_file = parsed_config.get('input', 'guide_tree')
         if tree_file:
@@ -986,42 +1025,74 @@ def get_validated_input(parsed_config):
         else:
             valid_input_dict['tree_file'] = None
     except IOError as ex:
-        exit('Sorry, could not read tree file "{}": {}'.format(tree_file, ex.strerror))
+        exit(
+            'Sorry, could not read tree file "{}": {}'.format(
+                tree_file, ex.strerror
+            )
+        )
     method = parsed_config.get('analysis', 'distance_method')
     if method == 'uncorrected' or method == 'jc':
         valid_input_dict['method'] = method
     else:
-        exit('Invalid distance method: "{}". Choose between "uncorrected" and "jc".'.format(method))
+        exit(
+            'Invalid distance method: "{}". Choose between "uncorrected" and "jc".'.format(
+                method
+            )
+        )
     # analysis config section
     criterion = parsed_config.get('analysis', 'criterion')
     if criterion == 'lognorm' or criterion == 'mean':
         valid_input_dict['criterion'] = criterion
     else:
-        exit('Invalid criterion "{}". Choose between "lognorm" and "mean".'.format(criterion))
+        exit(
+            'Invalid criterion "{}". Choose between "lognorm" and "mean".'.format(
+                criterion
+            )
+        )
     try:
         window_size = parsed_config.getint('analysis', 'window_size')
         overlap = parsed_config.getint('analysis', 'overlap')
         if window_size < 0:
-            exit('Invalid window size "{}". Window size cannot be smaller than 0.'.format(window_size))
+            exit(
+                'Invalid window size "{}". Window size cannot be smaller than 0.'.format(
+                    window_size
+                )
+            )
         else:
             valid_input_dict['window_size'] = window_size
         if overlap >= 0 and overlap < window_size:
             valid_input_dict['overlap'] = overlap
         else:
-            exit('Invalid overlap "{}" for window size "{}". Overlap has to be integer smaller than window size.'.format(overlap, window_size))
+            exit(
+                'Invalid overlap "{}" for window size "{}". Overlap has to be integer smaller than window size.'.format(
+                    overlap, window_size
+                )
+            )
         fraction = parsed_config.getfloat('analysis', 'fraction')
         if fraction >= 0 and fraction <= 1:
             valid_input_dict['fraction'] = fraction
         else:
-            exit('Invalid taxon fraction value "{}". Fraction must be between 0 and 1.'.format(fraction))
+            exit(
+                'Invalid taxon fraction value "{}". Fraction must be between 0 and 1.'.format(
+                    fraction
+                )
+            )
         cores = parsed_config.getint('analysis', 'cores')
         available_cpus = mp.cpu_count()
         if cores > available_cpus:
-            exit('You specified more ({}) compute cores than are available ({}). Exiting.'.format(cores, available_cpus))
+            exit(
+                'You specified more ({}) compute cores than are available ({}). Exiting.'.format(
+                    cores, available_cpus
+                )
+            )
         else:
             valid_input_dict['cores'] = cores
     except ValueError as ex:
-        exit('Invalid number input somewhere in your analysis configuration: {}.'.format(ex))
+        exit(
+            'Invalid number input somewhere in your analysis configuration: {}.'.format(
+                ex
+            )
+        )
     cutoffs = parsed_config.get('analysis', 'cutoffs').split(',')
     check_cutoffs(criterion, cutoffs)
     valid_input_dict['cutoffs'] = cutoffs
@@ -1031,18 +1102,28 @@ def get_validated_input(parsed_config):
     else:
         manual_cutoffs = [
             tuple(taxon_cutoff.split(','))
-            for taxon_cutoff in parsed_config.get('analysis', 'manual_cutoffs').split(
-                ';'
-            )
+            for taxon_cutoff in parsed_config.get(
+                'analysis', 'manual_cutoffs'
+            ).split(';')
         ]
     check_manual_cutoffs(criterion, manual_cutoffs)
     valid_input_dict['manual_cutoffs'] = manual_cutoffs
     # output config section
     output_format = parsed_config.get('output', 'output_format')
-    if output_format == 'fasta' or output_format == 'phylip' or output_format == 'phylip-int' or output_format == 'nexus' or output_format == 'nexus-int':
+    if (
+        output_format == 'fasta'
+        or output_format == 'phylip'
+        or output_format == 'phylip-int'
+        or output_format == 'nexus'
+        or output_format == 'nexus-int'
+    ):
         valid_input_dict['output_format'] = output_format
     else:
-            exit('Invalid output file format: "{}". Choose from: fasta, phylip, phylip-int, nexus, or nexus-int.'.format(output_format))
+        exit(
+            'Invalid output file format: "{}". Choose from: fasta, phylip, phylip-int, nexus, or nexus-int.'.format(
+                output_format
+            )
+        )
     try:
         output_file_aln = parsed_config.get('output', 'output_file_aln')
         valid_input_dict['output_file_aln'] = output_file_aln
@@ -1069,9 +1150,17 @@ def main():
     logging.basicConfig(level=level, format=log_format, handlers=handlers)
     # check for existing distances file
     if valid_input_dict['distances_json']:
-        logging.info('Parsing alignment {} ...\n'.format(valid_input_dict['alignment_name']))
-        alignment = aln_parsing.parse_alignment(valid_input_dict['alignment_name'], valid_input_dict['file_format'])
-        mean_taxon_distances = read_distances_dict(valid_input_dict['distances_json'])
+        logging.info(
+            'Parsing alignment {} ...\n'.format(
+                valid_input_dict['alignment_name']
+            )
+        )
+        alignment = aln_parsing.parse_alignment(
+            valid_input_dict['alignment_name'], valid_input_dict['file_format']
+        )
+        mean_taxon_distances = read_distances_dict(
+            valid_input_dict['distances_json']
+        )
     else:
         alignment, mean_taxon_distances = analyze(
             valid_input_dict['alignment_name'],
