@@ -1138,7 +1138,10 @@ def get_validated_input(parsed_config):
 
 def main():
     start = time.time()
-    script, config_file_name = argv
+    try:
+        script, config_file_name = argv
+    except ValueError as ex:
+        exit('You need to provide a configuration file.\nUsage: spruceup.py <my_config_file>')
     conf = read_config(config_file_name)
     valid_input_dict = get_validated_input(conf)
     level = logging.INFO
