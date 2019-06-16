@@ -1,6 +1,7 @@
 from os import path
-
 from setuptools import setup, find_packages
+
+import spruceup
 
 here = path.abspath(path.dirname(__file__))
 
@@ -8,7 +9,7 @@ with open(path.join(here, 'README.md')) as f:
     long_description = f.read()
 setup(
     name='spruceup',
-    version='2019.1.0',
+    version='2019.1.1',
     author='Marek Borowiec',
     author_email='petiolus@gmail.com',
     description='A module for lexible identification, visualization, and removal of outliers from large multiple sequence alignments',
@@ -16,8 +17,11 @@ setup(
     long_description_content_type='text/markdown',
     url='https://github.com/marekborowiec/seq-spruceup',
     keywords='alignment trimming outliers phylogenetics phylogenomics genomics bioinformatics',
-    packages=find_packages(),
+    packages=['spruceup'],
+    package_dir={'spruceup':
+                 'spruceup'},
     include_package_data=True,
+    scripts=['./spruceup/spruceup.py', './spruceup/aln_parsing.py', './spruceup/aln_writing.py'],
     python_requires='>=3.7',
     install_requires=[
         'matplotlib==3.0.2',
@@ -26,6 +30,7 @@ setup(
         'psutil==5.4.8',
         'tqdm==4.29.1',
         'treeswift==1.0.100',
+        'nose==1.3.7',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
