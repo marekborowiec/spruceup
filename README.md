@@ -122,3 +122,7 @@ This is a log file that will contain the same information that appears on the te
 5. Distances Python object file
 
 Calculating distances with `spruceup` is often the most time- and memory-consuming part of the process, although trimming very large numbers of positions from the alignment can also take a long time. Because of this `spruceup` writes a `json` format file each time you run an analysis from scratch, allowing you to load it up later and trim with different criterion or cutoff values. Note that distances will be specific for each window size, overlap, and taxon fraction and you will need to re-run the whole analysis if you want to adjust these parameters. Note that the `json` file can be quite large at >150MB per 100,000 windows and 100 taxa.
+
+## Issues and development
+
+If you encounter bugs or problems running the code, [create a new issue on GitHub](https://help.github.com/en/articles/creating-an-issue). Everyone is encouraged to [contribute](https://github.com/firstcontributions/first-contributions).
