@@ -1,5 +1,3 @@
-[![DOI](https://zenodo.org/badge/@@@.svg)](https://zenodo.org/badge/latestdoi/@@@)
-
 # seq-spruceup
 ```
         A  
@@ -18,19 +16,29 @@ This script uses [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/i
 
 ## Installation and requirements
 
-You can download a zipped GitHub repository, clone it if you have `git` installed on your system, or install using [pip](https://pip.pypa.io/en/latest/installing.html) (recommended) from the [Python Package Index](https://pypi.python.org/pypi/seq-spruceup/) (to-do):
+You can download a zipped GitHub repository, clone it if you have `git` installed on your system, or install using [pip](https://pip.pypa.io/en/latest/installing.html) (recommended) from the [Python Package Index](https://pypi.python.org/pypi/seq-spruceup/).
+
+It is best to create a new environment before installing spruceup, either using `venv`:
 ```bash
-pip install seq-spruceup
+python3 -m venv spruceup
+```
+Or if you have `conda`:
+```bash
+conda create --name spruceup python=3.7
+```
+Now activate your environment (with `conda` you would type `conda source activate spruceup`) and install:
+```bash
+pip install spruceup
 ```
 
-`seq-spruceup` requires you have Python version 3.7 or newer. Dependencies should be installed automatically. If your system does not have Python version 3.7 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using
+`spruceup` requires you have Python version 3.7 or newer. Dependencies should be installed automatically. If your system does not have Python version 3.7 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using
 
 ```bash
 sudo apt-get install python3.7
 ```
 
 ## Interface
-Once you successfully installed `seq-spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format, 2) (optional) a guide tree for your alignment in `NEWICK` format, and 3) configuration file to run the program. To run the program from the command line you can type (you need to provide path to spruceup.py script):
+Once you successfully installed `spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format, 2) (optional) a guide tree for your alignment in `NEWICK` format, and 3) configuration file to run the program. To run the program from the command line you can type:
 ```bash
 spruceup.py my-configuration-file.conf
 ```
