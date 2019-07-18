@@ -29,7 +29,6 @@ setup(
         'psutil==5.4.8',
         'tqdm==4.29.1',
         'treeswift==1.0.100',
-        'nose==1.3.7',
     ],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -41,5 +40,5 @@ setup(
         'Operating System :: OS Independent',
     ],
     test_suite='nose.collector',
-    tests_require=['nose'],
+    tests_require='nose==1.3.7',
 )
