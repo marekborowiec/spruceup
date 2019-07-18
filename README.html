@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <title>README.md - Grip</title>
   <link rel="icon" href="http://localhost:6419/__/grip/static/favicon.ico">
-  <link rel="stylesheet" href="README_files/github-e3bff23d54e12a76d66b61023f1c8796.css">
-  <link rel="stylesheet" href="README_files/frameworks-41c2037bf12f1e46d8f08b88a04a8d8f.css">
-  <link rel="stylesheet" href="README_files/site-294181adec18ed639e160b96b45d17ac.css">
+  <link rel="stylesheet" href="README_files/frameworks-a3b8a10d4a9e37a78f033ef4a4f525f5.css">
+  <link rel="stylesheet" href="README_files/github-a842d1324eb4ab086590be512b951c4c.css">
+  <link rel="stylesheet" href="README_files/site-bdd55e67f0ed3e8974c7c941589e8c6a.css">
   <link rel="stylesheet" href="README_files/octicons.css">
   <style>
     /* Page tweaks */
@@ -41,8 +41,7 @@
                 </h3>
               
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
-                <p><a href="https://zenodo.org/badge/latestdoi/@@@" rel="nofollow"><img src="README_files/a.html" alt="DOI" data-canonical-src="https://zenodo.org/badge/@@@.svg" style="max-width:100%;"></a></p>
-<h1>
+                <h1>
 <a id="user-content-seq-spruceup" class="anchor" href="#seq-spruceup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>seq-spruceup</h1>
 <pre><code>        A  
        TCG  
@@ -55,18 +54,20 @@
 <p>This script uses <a href="http://www.numpy.org/" rel="nofollow">numpy</a>, <a href="https://www.scipy.org/index.html" rel="nofollow">scipy</a>, <a href="https://matplotlib.org/" rel="nofollow">matplotlib</a>, <a href="https://pypi.org/project/psutil/" rel="nofollow">psutil</a>, <a href="https://pypi.org/project/tqdm/" rel="nofollow">tqdm</a>, and <a href="https://pypi.org/project/treeswift/" rel="nofollow">treeswift</a>.</p>
 <h2>
 <a id="user-content-installation-and-requirements" class="anchor" href="#installation-and-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation and requirements</h2>
-<p>You can download a zipped GitHub repository, clone it if you have <code>git</code> installed on your system, or install using <a href="https://pip.pypa.io/en/latest/installing.html" rel="nofollow">pip</a> (recommended) from the <a href="https://pypi.python.org/pypi/seq-spruceup/" rel="nofollow">Python Package Index</a> (to-do):</p>
-<div class="highlight highlight-source-shell"><pre>pip install seq-spruceup</pre></div>
-<p><code>seq-spruceup</code> requires you have Python version 3.7 or 
-newer. Dependencies should be installed automatically. If your system 
-does not have Python version 3.7 or newer you will need to <a href="http://www.python.org/downloads/" rel="nofollow">download and install it</a>. On Linux-like systems (including Ubuntu) you can install it from the command line using</p>
+<p>You can download a zipped GitHub repository, clone it if you have <code>git</code> installed on your system, or install using <a href="https://pip.pypa.io/en/latest/installing.html" rel="nofollow">pip</a> (recommended) from the <a href="https://pypi.python.org/pypi/seq-spruceup/" rel="nofollow">Python Package Index</a>.</p>
+<p><code>spruceup</code> requires you have Python version 3.7 or newer. 
+Dependencies should be installed automatically. If your system does not 
+have Python version 3.7 or newer you will need to <a href="http://www.python.org/downloads/" rel="nofollow">download and install it</a>. On Linux-like systems (including Ubuntu) you can install it from the command line using</p>
 <div class="highlight highlight-source-shell"><pre>sudo apt-get install python3.7</pre></div>
+<p>It is best to create a new environment before installing spruceup, either using <code>venv</code>:</p>
+<div class="highlight highlight-source-shell"><pre>python3 -m venv spruceup</pre></div>
+<p>Or if you have <code>conda</code>:</p>
+<div class="highlight highlight-source-shell"><pre>conda create --name spruceup python=3.7</pre></div>
+<p>Now activate your environment (with <code>conda</code> you would type <code>conda source activate spruceup</code>) and install:</p>
+<div class="highlight highlight-source-shell"><pre>pip install spruceup</pre></div>
 <h2>
 <a id="user-content-interface" class="anchor" href="#interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interface</h2>
-<p>Once you successfully installed <code>seq-spruceup</code> you will need 1) an alignment in <code>FASTA</code>, <code>PHYLIP</code> or <code>NEXUS</code> format, 2) (optional) a guide tree for your alignment in <code>NEWICK</code>
- format, and 3) configuration file to run the program. To run the 
-program from the command line you can type (you need to provide path to 
-spruceup.py script):</p>
+<p>Once you successfully installed <code>spruceup</code> you will need 1) an alignment in <code>FASTA</code>, <code>PHYLIP</code> or <code>NEXUS</code> format, 2) (optional) a guide tree for your alignment in <code>NEWICK</code> format, and 3) configuration file to run the program. To run the program from the command line you can type:</p>
 <div class="highlight highlight-source-shell"><pre>spruceup.py my-configuration-file.conf</pre></div>
 <p>Directory <code>examples</code> contains a template configuration file. It has the following fields:</p>
 <h3>
@@ -230,6 +231,9 @@ it up later and trim with different criterion or cutoff values. Note
 that distances will be specific for each window size, overlap, and taxon
  fraction and you will need to re-run the whole analysis if you want to 
 adjust these parameters. Note that the <code>json</code> file can be quite large at &gt;150MB per 100,000 windows and 100 taxa.</p>
+<h2>
+<a id="user-content-issues-and-development" class="anchor" href="#issues-and-development" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Issues and development</h2>
+<p>If you encounter bugs or problems running the code, <a href="https://help.github.com/en/articles/creating-an-issue">create a new issue on GitHub</a>. Everyone is encouraged to <a href="https://github.com/firstcontributions/first-contributions">contribute</a>.</p>
 
               </article>
             </div>
