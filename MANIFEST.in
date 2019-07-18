@@ -9,7 +9,3 @@ include README.md
 include README.html
 include README_files/*
 include LICENSE
-include requirements.txt
-include example-plot-good.png
-include example-plot-poor.png
-include progress-bar.png
