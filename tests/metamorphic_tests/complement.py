@@ -3,7 +3,7 @@
 # coding: utf-8
 from sys import argv 
 
-import aln_parsing, aln_writing
+from spruceup import aln_parsing, aln_writing
 
 # load in alignments
 # for each taxon reverse complement 1 seq in all 5 different loci

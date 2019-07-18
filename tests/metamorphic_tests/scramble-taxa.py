@@ -4,7 +4,7 @@
 import random, string
 from sys import argv 
 
-import aln_parsing, aln_writing
+from spruceup import aln_parsing, aln_writing
 
 
 def add_letters(aln_dict):

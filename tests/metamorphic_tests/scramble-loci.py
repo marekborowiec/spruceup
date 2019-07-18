@@ -4,7 +4,7 @@
 import random
 from sys import argv 
 
-import aln_parsing, aln_writing
+from spruceup import aln_parsing, aln_writing
 
 # load in alignments
 # for each taxon reverse complement 1 seq in all 5 different loci
@@ -26,7 +26,7 @@ def scramble_alignment(aln_dict, chunk_size):
     # load in aln_dict
     # split each taxon's seq into 500 pieces
     # get a random list of 500 indices
-    scrambled_order = random.sample(range(500), k=500)
+    scrambled_order = random.sample(range(100), k=100)
     for taxon in aln_dict.keys():
         aln_dict[taxon] = split_seq(aln_dict[taxon], chunk_size)
     for taxon in aln_dict.keys():
