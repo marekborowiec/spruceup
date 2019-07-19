@@ -33,7 +33,7 @@ Or if you have `conda`:
 ```bash
 conda create --name spruceup python=3.7
 ```
-Now activate your environment (with `conda` you would type `conda source activate spruceup`) and install:
+Now activate your environment (with `conda` you would type `conda activate spruceup`) and install:
 ```bash
 pip install spruceup
 ```
