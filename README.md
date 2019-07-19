@@ -1,4 +1,4 @@
-# seq-spruceup
+# spruceup
 ```
         A  
        TCG  
