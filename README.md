@@ -90,7 +90,7 @@ The `output` category tells the program how and where to save your analysis resu
 
 ## Examples and interpretation of results
 
-To use `seq-spruceup` you will need to run the `spruceup` script from the command line and provide the name of your configuration file as the argument:
+To use `spruceup` you will need to run the `spruceup` script from the command line and provide the name of your configuration file as the argument:
 ```bash
 spruceup.py ./examples/config_example.conf
 ```
