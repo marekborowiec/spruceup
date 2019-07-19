@@ -102,7 +102,7 @@ Once all distances are calculated, `criterion` and `cutoffs` settings will deter
 
 You can now go back to your configuration file and try other cutoffs or methods without the need to re-calculate distances (unless you would like to use different correction or scaling). Simple load the generated `json` file (see below) with the `distances_object_file` option under `[input]` category.
 
-### Interpreting the output
+### Interpreting output
 
 `spruceup` produces several types of output:
 
