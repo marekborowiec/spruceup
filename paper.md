@@ -15,7 +15,7 @@ affiliations:
  - name: Department of Entomology, Plant Pathology and Nematology, University of Idaho
    index: 1
 date: 19 July 2019
-bibliography: master.bib
+bibliography: paper.bib
 ---
 
 # Summary
