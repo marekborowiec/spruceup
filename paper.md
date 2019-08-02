@@ -64,6 +64,4 @@ I would like to thank Philip S. Ward (UC Davis) for testing and valuable feedbac
 
 # Figure
 
-.center[
-
 ![Outlier removal from multiple sequence alignment by ``spruceup``. Divergent (complemented) sequence fragments were introduced into a simulated nucleotide data matrix (left panels), then trimmed using the ``spruceup`` workflow (right panels). Alignments visualized with AliView: https://ormbunkar.se/aliview/.](spruceup-fig1.png)
