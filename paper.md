@@ -58,10 +58,12 @@ The workflow of outlier detection and removal is as follows:
 
 ``spruceup`` is written in Python 3.7 and supported on Windows, Linux, and OSX operating systems. It is distributed under GNU GPLv3 license (https://www.gnu.org/licenses/gpl-3.0.en.html). It is available on and can be installed through the Python Package Index at (https://pypi.org/project/spruceup/). The source code, manual and tutorial are also available on GitHub: (https://github.com/marekborowiec/spruceup).
 
+# Figure
+
+![Outlier removal from multiple sequence alignment by ``spruceup``. Divergent (complemented) sequence fragments were introduced into a simulated nucleotide data matrix (left panels), then trimmed using the ``spruceup`` workflow (right panels). Alignments visualized with AliView: https://ormbunkar.se/aliview/.](spruceup-fig1.png)
+
 # Acknowledgements
 
 I would like to thank Philip S. Ward (UC Davis) for testing and valuable feedback on ``spruceup``.
 
-# Figure
-
-![Outlier removal from multiple sequence alignment by ``spruceup``. Divergent (complemented) sequence fragments were introduced into a simulated nucleotide data matrix (left panels), then trimmed using the ``spruceup`` workflow (right panels). Alignments visualized with AliView: https://ormbunkar.se/aliview/.](spruceup-fig1.png)
+# References
