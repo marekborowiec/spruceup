@@ -42,7 +42,7 @@
               
               <article class="markdown-body entry-content" itemprop="text" id="grip-content">
                 <h1>
-<a id="user-content-seq-spruceup" class="anchor" href="#seq-spruceup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>seq-spruceup</h1>
+<a id="user-content-spruceup" class="anchor" href="#spruceup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>spruceup</h1>
 <pre><code>        A  
        TCG  
       ACGTA  
@@ -55,15 +55,17 @@
 <h2>
 <a id="user-content-installation-and-requirements" class="anchor" href="#installation-and-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation and requirements</h2>
 <p>You can download a zipped GitHub repository, clone it if you have <code>git</code> installed on your system, or install using <a href="https://pip.pypa.io/en/latest/installing.html" rel="nofollow">pip</a> (recommended) from the <a href="https://pypi.python.org/pypi/seq-spruceup/" rel="nofollow">Python Package Index</a>.</p>
-<p><code>spruceup</code> requires you have Python version 3.7 or newer. 
+<p><code>spruceup</code> requires you have Python version 3.6 or newer. You can use <code>spruceup</code>
+ with early releases of Python 3.7, but as of today (12 August 2019), 
+you may experience trouble installing it if using Python 3.7.4. 
 Dependencies should be installed automatically. If your system does not 
-have Python version 3.7 or newer you will need to <a href="http://www.python.org/downloads/" rel="nofollow">download and install it</a>. On Linux-like systems (including Ubuntu) you can install it from the command line using</p>
-<div class="highlight highlight-source-shell"><pre>sudo apt-get install python3.7</pre></div>
+have Python version 3.6 or newer you will need to <a href="http://www.python.org/downloads/" rel="nofollow">download and install it</a>. On Linux-like systems (including Ubuntu) you can install it from the command line using</p>
+<div class="highlight highlight-source-shell"><pre>sudo apt-get install python3.6</pre></div>
 <p>It is best to create a new environment before installing spruceup, either using <code>venv</code>:</p>
 <div class="highlight highlight-source-shell"><pre>python3 -m venv spruceup</pre></div>
 <p>Or if you have <code>conda</code>:</p>
-<div class="highlight highlight-source-shell"><pre>conda create --name spruceup python=3.7</pre></div>
-<p>Now activate your environment (with <code>conda</code> you would type <code>conda source activate spruceup</code>) and install:</p>
+<div class="highlight highlight-source-shell"><pre>conda create --name spruceup python=3.6</pre></div>
+<p>Now activate your environment (with <code>conda</code> you would type <code>conda activate spruceup</code>) and install:</p>
 <div class="highlight highlight-source-shell"><pre>pip install spruceup</pre></div>
 <h2>
 <a id="user-content-interface" class="anchor" href="#interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interface</h2>
@@ -144,7 +146,7 @@ signifying cutoff value used.</p>
 <p><code>log</code> is the name of the log with all analysis screen output.</p>
 <h2>
 <a id="user-content-examples-and-interpretation-of-results" class="anchor" href="#examples-and-interpretation-of-results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples and interpretation of results</h2>
-<p>To use <code>seq-spruceup</code> you will need to run the <code>spruceup</code> script from the command line and provide the name of your configuration file as the argument:</p>
+<p>To use <code>spruceup</code> you will need to run the <code>spruceup</code> script from the command line and provide the name of your configuration file as the argument:</p>
 <div class="highlight highlight-source-shell"><pre>spruceup.py ./examples/config_example.conf</pre></div>
 <p>Once you run the script, your sequence alignment will be divided into
  a number of windows of the size and overlap you specified. The script 
@@ -169,7 +171,7 @@ misaligned fragments and no outliers.</p>
 or methods without the need to re-calculate distances (unless you would 
 like to use different correction or scaling). Simple load the generated <code>json</code> file (see below) with the <code>distances_object_file</code> option under <code>[input]</code> category.</p>
 <h3>
-<a id="user-content-interpreting-the-output" class="anchor" href="#interpreting-the-output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interpreting the output</h3>
+<a id="user-content-interpreting-output" class="anchor" href="#interpreting-output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interpreting output</h3>
 <p><code>spruceup</code> produces several types of output:</p>
 <ol>
 <li>
