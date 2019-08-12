@@ -8,7 +8,7 @@ with open(path.join(here, 'README.md')) as f:
     long_description = f.read()
 setup(
     name='spruceup',
-    version='2019.1.1b',
+    version='2019.1.2',
     author='Marek Borowiec',
     author_email='petiolus@gmail.com',
     description='A module for lexible identification, visualization, and removal of outliers from large multiple sequence alignments',
