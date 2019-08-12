@@ -8,7 +8,7 @@ with open(path.join(here, 'README.md')) as f:
     long_description = f.read()
 setup(
     name='spruceup',
-    version='2019.1.1',
+    version='2019.1.1b',
     author='Marek Borowiec',
     author_email='petiolus@gmail.com',
     description='A module for lexible identification, visualization, and removal of outliers from large multiple sequence alignments',
@@ -21,11 +21,11 @@ setup(
                  'spruceup'},
     include_package_data=True,
     scripts=['./spruceup/spruceup.py', './spruceup/aln_parsing.py', './spruceup/aln_writing.py'],
-    python_requires='>=3.7',
+    python_requires='>=3.6.0, !=3.7.4',
     install_requires=[
-        'matplotlib==3.0.2',
-        'numpy==1.15.4',
-        'scipy==1.2.0',
+        'matplotlib==3.0.3',
+        'numpy==1.17',
+        'scipy==1.3.1',
         'psutil==5.4.8',
         'tqdm==4.29.1',
         'treeswift==1.0.100',
