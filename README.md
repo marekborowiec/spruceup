@@ -19,10 +19,10 @@ This script uses [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/i
 You can download a zipped GitHub repository, clone it if you have `git` installed on your system, or install using [pip](https://pip.pypa.io/en/latest/installing.html) (recommended) from the [Python Package Index](https://pypi.python.org/pypi/seq-spruceup/).
 
 
-`spruceup` requires you have Python version 3.7 or newer. Dependencies should be installed automatically. If your system does not have Python version 3.7 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using
+`spruceup` requires you have Python version 3.6 or newer. You can use `spruceup` with early releases of Python 3.7, but as of today (12 August 2019), you may experience trouble installing it if using Python 3.7.4. Dependencies should be installed automatically. If your system does not have Python version 3.6 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using
 
 ```bash
-sudo apt-get install python3.7
+sudo apt-get install python3.6
 ```
 
 It is best to create a new environment before installing spruceup, either using `venv`:
@@ -31,8 +31,9 @@ python3 -m venv spruceup
 ```
 Or if you have `conda`:
 ```bash
-conda create --name spruceup python=3.7
+conda create --name spruceup python=3.6
 ```
+
 Now activate your environment (with `conda` you would type `conda activate spruceup`) and install:
 ```bash
 pip install spruceup
