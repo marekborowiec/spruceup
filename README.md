@@ -27,11 +27,7 @@ You can download a zipped GitHub repository, clone it if you have `git` installe
 sudo apt-get install python3.6
 ```
 
-It is best to create a new environment before installing spruceup, either using `venv`:
-```bash
-python3 -m venv spruceup
-```
-Or if you have `conda`:
+It is best to create a new environment before installing spruceup, either using `conda`:
 ```bash
 conda create --name spruceup python=3.6
 ```
@@ -39,6 +35,11 @@ conda create --name spruceup python=3.6
 Now activate your environment (with `conda` you would type `conda activate spruceup`) and install:
 ```bash
 pip install spruceup
+```
+
+You can also use a different environment manager, such as `venv`:
+```bash
+python3 -m venv spruceup
 ```
 
 ## Interface
