@@ -6,7 +6,9 @@
         T 
 ```
 
-Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments. 
+Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments.
+
+`Spruceup` is a Python tool for biologists (bioinformaticians, phylogeneticists, evolutionary biologists) doing inference on phylogenomic sequence alignments. It allows discovery and removal of individual poorly aligned sequences or sequence fragments (alignment rows), which is different from the problem of poorly aligned sequence blocks (alignment columns) commonly addressed by alignment trimming software.
 
 If you are using this program, please cite [this publication](link):
 ```
