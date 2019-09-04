@@ -1,6 +1,7 @@
 from os import path
 from setuptools import setup, find_packages
 
+from __init__ import __version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -8,7 +9,7 @@ with open(path.join(here, 'README.md')) as f:
     long_description = f.read()
 setup(
     name='spruceup',
-    version='2019.1.2',
+    version=__version__,
     author='Marek Borowiec',
     author_email='petiolus@gmail.com',
     description='A module for lexible identification, visualization, and removal of outliers from large multiple sequence alignments',
