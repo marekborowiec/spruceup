@@ -21,6 +21,7 @@ import scipy.stats as scp
 from tqdm import tqdm
 import psutil
 
+from __init__ import __version__
 import aln_parsing, aln_writing
 
 plt.switch_backend('agg')
@@ -31,6 +32,13 @@ parser.add_argument(
     'config_file_name',
     type = str,
     help = 'Configuration file with spruceup run parameters.'
+    )
+parser.add_argument(
+    '-v',
+    '--version', 
+    action='version',
+    version='%(prog)s {version}'.format(version=__version__),
+    help='show the version number and exit'
     )
 
 def get_tree_dist_dict(tree_fn):
