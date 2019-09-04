@@ -1,13 +1,14 @@
 #! /usr/bin/env python3
 
 # coding: utf-8
+import argparse
 import configparser
 import logging
 import os
 import random
 import json
 import pdb
-from sys import argv, exit
+from sys import exit
 import multiprocessing as mp
 import time
 from functools import partial
@@ -24,6 +25,13 @@ import aln_parsing, aln_writing
 
 plt.switch_backend('agg')
 
+parser = argparse.ArgumentParser(usage='spruceup.py <config_file_name>')
+
+parser.add_argument(
+    'config_file_name',
+    type = str,
+    help = 'Configuration file with spruceup run parameters.'
+    )
 
 def get_tree_dist_dict(tree_fn):
     """Make a dict of all-by-all distances from input guide tree."""
@@ -1138,10 +1146,8 @@ def get_validated_input(parsed_config):
 
 def main():
     start = time.time()
-    try:
-        script, config_file_name = argv
-    except ValueError as ex:
-        exit('You need to provide a configuration file.\nUsage: spruceup.py <my_config_file>')
+    args = parser.parse_args()
+    config_file_name = args.config_file_name
     conf = read_config(config_file_name)
     valid_input_dict = get_validated_input(conf)
     level = logging.INFO
