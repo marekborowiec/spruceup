@@ -74,7 +74,7 @@ def lookup_tree_dist(tree_dist_dict, sp1, sp2):
 
 
 def replace_missing_in_dict(parsed_aln_dict, data_type):
-    """Convert ambiguous and missing data to '?' before calculating distances."""
+    """Convert ambiguous and missing data to '-' before calculating distances."""
     nt_missing_ambiguous_chars = [
         'K',
         'M',
@@ -106,10 +106,10 @@ def replace_missing_in_dict(parsed_aln_dict, data_type):
 
 def replace_missing_ambiguous(seq, missing_ambiguous_list):
     """Given sequence and list of missing or ambiguous characters,
-    replace them in sequence with '?'.
+    replace them in sequence with '-'.
     """
     for char in missing_ambiguous_list:
-        seq = seq.replace(char, '?')
+        seq = seq.replace(char, '-')
     return seq
 
 
