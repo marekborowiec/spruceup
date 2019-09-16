@@ -60,7 +60,7 @@ The workflow of outlier detection and removal is as follows:
 
 # Figure
 
-![Outlier removal from multiple sequence alignment by ``spruceup``. This alignment was simulated under a phylogenetic tree taken from empirical dataset of Ultraconserved Elements in a genus of ants [@blaimer_2016acropyga] Divergent (complemented) sequence fragments were introduced into a simulated nucleotide data matrix (left panels), then trimmed using the ``spruceup`` workflow (right panels). Alignments visualized with AliView: https://ormbunkar.se/aliview/.](spruceup-fig1.png)
+![Outlier removal from multiple sequence alignment by ``spruceup``. This nucleotide alignment was simulated under a phylogenetic tree with topology and branch lengths taken from the empirical dataset of Ultraconserved Elements [@faircloth_2012uces] sequenced for a group of ants [@blaimer_2016acropyga]. 100 alignments of 500 nucleotides each were simulated under the general time-reversible model (GTR) with state change rates between 0.1 and 1.0, base frequencies ranging from 0.1 to 0.8, and branch length scaling between 0.1 and 50, each parameter selected randomly for each alignment. After the 100 alignments were concatenated, divergent (complemented) sequence fragments were introduced (left panels), and later trimmed using the ``spruceup`` workflow (right panels). The figure shows only a small window of the simulated concatenated alignment of 50,000 nucleotides. Alignments visualized with AliView: https://ormbunkar.se/aliview/.](spruceup-fig1.png)
 
 # Acknowledgements
 
