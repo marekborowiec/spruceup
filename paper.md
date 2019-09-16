@@ -48,7 +48,7 @@ The workflow of outlier detection and removal is as follows:
 
 4. Fit a lognormal curve to distances observed for each sample (optional).
 
-5. Using a user-defined cutoff, reject windows from the tail of the distribution in each sample. The cutoff can represent quantile of the fitted distribution or the mean of each sample's distances across windows. The cutoff defined this way varies across sample and ensures that genuinely divergent samples are not disproportionately affected (Figure 1).
+5. Using a user-defined cutoff, reject windows from the tail of the distribution in each sample. The cutoff can represent quantile of the fitted distribution or the mean of each sample's distances across windows. The cutoff defined this way varies across samples and ensures that genuinely divergent samples are not disproportionately affected (Figure 1).
 
 6. Plot and visualize distribution of distances and cutoffs for each sample.
 
@@ -56,11 +56,11 @@ The workflow of outlier detection and removal is as follows:
 
 # Availability and Implementation 
 
-``spruceup`` is written in Python 3 and supported on Windows, Linux, and OSX operating systems. It is distributed under GNU GPLv3 license (https://www.gnu.org/licenses/gpl-3.0.en.html). It is available on and can be installed through the Python Package Index at (https://pypi.org/project/spruceup/). The source code, manual and tutorial are also available on GitHub: (https://github.com/marekborowiec/spruceup).
+``spruceup`` is written in Python 3 and supported on Windows, Linux, and OSX operating systems. It is distributed under GNU GPLv3 license (https://www.gnu.org/licenses/gpl-3.0.en.html). It is available on and can be installed through the Python Package Index at (https://pypi.org/project/spruceup/). The source code, manual, tutorial, and example files are available on GitHub: (https://github.com/marekborowiec/spruceup).
 
 # Figure
 
-![Outlier removal from multiple sequence alignment by ``spruceup``. Divergent (complemented) sequence fragments were introduced into a simulated nucleotide data matrix (left panels), then trimmed using the ``spruceup`` workflow (right panels). Alignments visualized with AliView: https://ormbunkar.se/aliview/.](spruceup-fig1.png)
+![Outlier removal from multiple sequence alignment by ``spruceup``. This alignment was simulated under a phylogenetic tree taken from empirical dataset of Ultraconserved Elements in a genus of ants [@blaimer_2016acropyga] Divergent (complemented) sequence fragments were introduced into a simulated nucleotide data matrix (left panels), then trimmed using the ``spruceup`` workflow (right panels). Alignments visualized with AliView: https://ormbunkar.se/aliview/.](spruceup-fig1.png)
 
 # Acknowledgements
 
