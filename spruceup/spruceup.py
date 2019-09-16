@@ -735,9 +735,9 @@ def remove_outliers(parsed_alignment, outliers_dict):
                     start, end = r
                     total_sites_removed += end - start
                     if index == 0:
-                        new_seq = replace_seq(seq, start, end, '?')
+                        new_seq = replace_seq(seq, start, end, '-')
                     else:
-                        new_seq = replace_seq(new_seq, start, end, '?')
+                        new_seq = replace_seq(new_seq, start, end, '-')
             else:
                 new_seq = seq
             trimmed_aln_dict[taxon] = new_seq
