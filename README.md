@@ -18,7 +18,7 @@ This script uses [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/i
 
 ## Installation and requirements
 
-You can download a zipped GitHub repository, clone it if you have `git` installed on your system, or install using [pip](https://pip.pypa.io/en/latest/installing.html) (recommended) from the [Python Package Index](https://pypi.python.org/pypi/spruceup).
+You can download a zipped GitHub repository, clone it if you have `git` installed on your system, or install using [pip](https://pip.pypa.io/en/latest/installing.html) from the [Python Package Index](https://pypi.python.org/pypi/spruceup). Cloning the repository will also download example files used in the tutorial below. 
 
 
 `spruceup` requires you have Python version 3.6 or newer. You can use `spruceup` with early releases of Python 3.7, but as of today (12 August 2019), you may experience trouble installing it if using Python 3.7.4. Dependencies should be installed automatically. If your system does not have Python version 3.6 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using:
@@ -32,12 +32,22 @@ It is best to create a new environment before installing spruceup, either using 
 conda create --name spruceup python=3.6
 ```
 
-Now activate your environment (with `conda` you would type `conda activate spruceup`) and install:
+Now activate your environment (with `conda` you would type `conda activate spruceup`) and install. If you want to download example files, clone or download this repository with:
+```bash
+git clone https://github.com/marekborowiec/spruceup.git
+```
+
+You can then install `spruceup` from within this cloned repository:
+```bash
+python setup.py install
+```
+
+`spruceup` is also available on [Python Package Index](https://pypi.org/) and you can install it via `pip` without example files:
 ```bash
 pip install spruceup
 ```
 
-You can also use a different environment manager, such as `venv`:
+To set up the new environment you can also use a different environment manager, such as `venv`, instead of `conda`:
 ```bash
 python3 -m venv spruceup
 ```
@@ -60,7 +70,7 @@ The `input` category defines parameters of the input alignment and its type.
 
 `distances_object_file` is the file name of an existing distance object. Because sometimes you will want to adjust cutoffs or cutoff criterion and computing distances is the most time-consuming part of the analysis, `spruceup` saves a `json` format file with distances from each analysis. By default this is blank, but if you do have a distance file from a previous analysis and you want to trim your alignment with new cutoffs, supply the `json` file name here. `spruceup` will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.
 
-`guide_tree` is a phylogram or cladogram `NEWICK` format file to be used as a guide tree. The tree can be inferred using any method and can be fully resolved or contain polytomies. If you do not supply a guide tree the program will still run but without phylogeny it will have less information to identify misaligned sequences. This is particularly important in vartiable algnments with distantly related samples, where it is more difficult to distinguish genuinely variable sequences from misaligned fragments. In cases where you suspect and are mainly concerned with samples with spuriously long terminal branches it is adivsable to supply topology-only (cladogram) guide tree and/or run the program without a guide tree. 
+`guide_tree` is a phylogram or cladogram `NEWICK` format file to be used as a guide tree. The tree can be inferred using any method and can be fully resolved or contain polytomies. If you do not supply a guide tree the program will still run but without phylogeny it will have less information to identify misaligned sequences. This is particularly important in vartiable algnments with distantly related samples (individual sequences representing individual, taxon, OTU etc.), where it is more difficult to distinguish genuinely variable sequences from misaligned fragments. In cases where you suspect and are mainly concerned with samples with spuriously long terminal branches it is adivsable to supply topology-only (cladogram) guide tree and/or run the program without a guide tree. 
 
 ### [analysis]
 The `analysis` category defines parameters used to analyze and clean up your alignment.
@@ -73,13 +83,13 @@ The `analysis` category defines parameters used to analyze and clean up your ali
 
 `overlap` indicates how many characters (aa/nt) each sliding window will be overlapping with preceding window. Overlap of `15` and window size of `20` means that each new window will move 5 positions down the alignment and overlap by 15 characters with the preceding window. Decreasing the overlap will decrease computational burden because fewer windows will be created. Default value is `15` (two thirds of default window size of `20`) but you may want to go lower, to half of window size or even `0` (non-overlapping windows) if your alignment is very large and you want to decrease compute time and memory usage and don't mind sacrificing some precision. 
 
-`fraction` signifies proportion of OTUs/samples that will be used to calculate average distance in each window. With fraction set to `1.0` distances for each OTU will be calculated against all other OTUs in the alignment. With fraction set to `0.5` distances for each OTU will be calculated against a random sample representing 50% of OTUs in the alignment. Lowering this number will help to speed up calculations in alignments with large numbers of taxa.
+`fraction` signifies proportion of samples that will be used to calculate average distance in each window. With fraction set to `1.0` distances for each sample will be calculated against all other samples in the alignment. With fraction set to `0.5` distances for each sample will be calculated against a random draw representing 50% of samples in the alignment. Lowering this number will help to speed up calculations in alignments with large numbers of taxa.
 
-`criterion` chooses how outlier distances will be determined. `lognorm` means that a [lognormal distribution](https://en.wikipedia.org/wiki/Log-normal_distribution) will be fitted to your distance data for each OTU and cutoffs will be determined by specifying quantile of observations above which sequence will be considered outliers. If you are using `mean`, simple multiple of those values computed for each OTU will be considered cutoffs for identifying outliers.
+`criterion` chooses how outlier distances will be determined. `lognorm` means that a [lognormal distribution](https://en.wikipedia.org/wiki/Log-normal_distribution) will be fitted to your distance data for each sample and cutoffs will be determined by specifying quantile of observations above which sequence will be considered outliers. If you are using `mean`, simple multiple of those values computed for each sample will be considered cutoffs for identifying outliers.
 
 `cutoffs` specifies multiple values considered as cutoffs. If using `lognorm` criterion, use fractions of `1`, for example `0.9,0.995` etc. Default values that should work for most alignments are `0.9,0.95,0.97,0.99,0.995,0.999`. If you are using `mean` as your criterion, use multiples of those values, for example `5,30` etc. Defaults of `5,10,15,18,20,25,30` for `mean` criterion should be useful starting points for most datasets. You can always trim with additional criteria and cutoffs after the initial analysis (see point 5 below under Interpreting the output). If the alignment contains many saturated or poorly aligned sites, a low setting may result in huge amount of data being trimmed from the original alignment. This is time-consuming and you may want to trim your alignment with a more stringent 'block' method before using `spruceup` or remove lower cutoff values from the list.
 
-`manual_cutoffs` is an optional setting that allows manual modifications to cutoffs for individual OTUs. It may prove useful if only one or a few samples have a significant proportion of poorly aligned sequences, skewing their overall cutoff such that they are not being flagged. If you find that this is case, however, you should probably rather be checking your data and pipeline for errors!
+`manual_cutoffs` is an optional setting that allows manual modifications to cutoffs for individual samples. It may prove useful if only one or a few samples have a significant proportion of poorly aligned sequences, skewing their overall cutoff such that they are not being flagged. If you find that this is case, however, you should probably rather be checking your data and pipeline for errors!
 
 ### [output]
 The `output` category tells the program how and where to save your analysis results.
@@ -94,15 +104,15 @@ The `output` category tells the program how and where to save your analysis resu
 
 ## Examples and interpretation of results
 
-To use `spruceup` you will need to run the `spruceup` script from the command line and provide the name of your configuration file as the argument:
+To use `spruceup` you will need to run the `spruceup` script from the command line and provide the name of your configuration file as the argument. If you downloaded and installed `spruceup` from source, the example alignment and config files can be found in `examples` subdirectory:
 ```bash
 spruceup.py ./examples/config_example.conf
 ```
-Once you run the script, your sequence alignment will be divided into a number of windows of the size and overlap you specified. The script will then compute distances for each OTU (sample/taxon) in each window. This is done all-by-all by default or all-by-fraction of OTUs, if specified. You will see some messages along the way, including a progress bar that will display the number of iterations (windows) and remaining time, as we as the maximum amount of memory used for distance calculation.
+Once you run the script, the sequence alignment will be divided into a number of windows of the size and overlap you specified. The script will then compute distances for each sample (alignment row: the sequence representing an individual, taxon, OTU etc.) in each window. This is done all-by-all by default or all-by-fraction of samples, if specified. You will see some messages along the way, including a progress bar that will display the number of iterations (windows) and remaining time, as we as the maximum amount of memory used for distance calculation.
 
 ![progress-bar](./README_files/progress-bar.png) 
  
-Once all distances are calculated, `criterion` and `cutoffs` settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the `lognorm` criterion, specifying a quantile of `0.99` means that any sequence window that lies above 99th percentile of distances of a given OTU to other OUTs in that window will be deemed an outlier and should be removed. In theory, setting of `0.99` should mean that 1% of all sequence windows will be removed from each OTU. In practice, this is not true because real-life sequence data does not perfectly fit into lognormal distribution. Cutoff being constant, certain OTUs may have many outlier (misaligned) sequence fragments and more than 1% of sequence data removed, while others may have no misaligned fragments and no outliers.
+Once all distances are calculated, `criterion` and `cutoffs` settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the `lognorm` criterion, specifying a quantile of `0.99` means that any sequence window that lies above 99th percentile of distances of a given sample to other sample in that window will be deemed an outlier and should be removed. In theory, setting of `0.99` should mean that 1% of all sequence windows will be removed from each sample. In practice, this is not true because real-life sequence data does not perfectly fit into lognormal distribution. Cutoff being constant, certain samples may have many outlier (misaligned) sequence fragments and more than 1% of sequence data removed, while others may have no misaligned fragments and no outliers.
 
 You can now go back to your configuration file and try other cutoffs or methods without the need to re-calculate distances (unless you would like to use different correction or scaling). Simple load the generated `json` file (see below) with the `distances_object_file` option under `[input]` category.
 
@@ -110,19 +120,19 @@ You can now go back to your configuration file and try other cutoffs or methods 
 
 `spruceup` produces several types of output:
 
-1. Report files ending with suffix `-report.txt`, one of which is written for each cutoff specified, which indicated by the prefix (e.g `0.95`, `0.99` and so forth). These files contain the distance cutoff value for each OTU and which sequence windows were determined to be outliers and removed.
+1. Report files ending with suffix `-report.txt`, one of which is written for each cutoff specified, which indicated by the prefix (e.g `0.95`, `0.99` and so forth). These files contain the distance cutoff value for each sample and which sequence windows were determined to be outliers and removed.
 
 2. Trimmed alignment files ending with suffix `-trimmed.fas/phylip/nexus`, again, one for each cutoff value. These are the alignments with outlier windows removed.
 
-3. Distance distribution `png` plots, one for each OTU and cutoff value. These images can be used to examine the distribution of distances for each taxon, its fit to lognormal distribution, and cutoff value placed on each OTU given a cutoff.
+3. Distance distribution `png` plots, one for each sample and cutoff value. These images can be used to examine the distribution of distances for each taxon, its fit to lognormal distribution, and cutoff value placed on each sample given a cutoff.
 
-An example of distances plot is below. The header is the name of the OTU. The x-axis indicates distance to other OTUs, ranging from `0` to the maximum distance that was found for the OTU. The y-axis specifies relative number of windows. Blue bars comprise the histogram of distances. Orange line is the fitted lognormal distribution (only shown when using the `lognorm` criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.
+An example of distances plot is below. The header is the name of the sample. The x-axis indicates distance to other samples, ranging from `0` to the maximum distance that was found for the sample. The y-axis specifies relative number of windows. Blue bars comprise the histogram of distances. Orange line is the fitted lognormal distribution (only shown when using the `lognorm` criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.
 
-The first example plot below shows an OTU with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than `0.2`. You may not be able to see individual window distances as visible histogram bars since the distributions comprise thousands (in this small example) to hundreds of thousands of distances.
+The first example plot below shows an sample with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than `0.2`. You may not be able to see individual window distances as visible histogram bars since the distributions comprise thousands (in this small example) to hundreds of thousands of distances.
 
 ![example-plot-good](./README_files/example-plot-good.png)
 
-The following plot shows an OTU with less smooth distribution, overall sequences fewer sequences due to missing data, as indicated by the heigth of the histogram bars, and many outlier windows.
+The following plot shows a sample with less smooth distribution, overall sequences fewer sequences due to missing data, as indicated by the heigth of the histogram bars, and many outlier windows.
 
 ![example-plot-poor](./README_files/example-plot-poor.png)
 
