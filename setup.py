@@ -21,7 +21,7 @@ setup(
     package_dir={'spruceup':
                  'spruceup'},
     include_package_data=True,
-    scripts=['./spruceup/spruceup.py', './spruceup/aln_parsing.py', './spruceup/aln_writing.py'],
+    scripts=['./spruceup/spruceup.py', './spruceup/aln_parsing.py', './spruceup/aln_writing.py', './__init__.py'],
     python_requires='>=3.6.0, !=3.7.4',
     install_requires=[
         'matplotlib==3.0.3',
