@@ -108,6 +108,8 @@ To use `spruceup` you will need to run the `spruceup` script from the command li
 ```bash
 spruceup.py ./examples/config_example.conf
 ```
+The example alignment is a subset of empirical, anonymized [ultraconseved element or UCE](https://www.ultraconserved.org/) data set generated from insects.   
+
 Once you run the script, the sequence alignment will be divided into a number of windows of the size and overlap you specified. The script will then compute distances for each sample (alignment row: the sequence representing an individual, taxon, OTU etc.) in each window. This is done all-by-all by default or all-by-fraction of samples, if specified. You will see some messages along the way, including a progress bar that will display the number of iterations (windows) and remaining time, as we as the maximum amount of memory used for distance calculation.
 
 ![progress-bar](./README_files/progress-bar.png) 
