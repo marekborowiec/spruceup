@@ -14,7 +14,7 @@ authors:
 affiliations:
  - name: Department of Entomology, Plant Pathology and Nematology, University of Idaho
    index: 1
-date: 6 September 2019
+date: 23 September 2019
 bibliography: paper.bib
 ---
 
@@ -56,7 +56,7 @@ The workflow of outlier detection and removal is as follows:
 
 # Availability and Implementation 
 
-``spruceup`` is written in Python 3 and supported on Windows, Linux, and OSX operating systems. It is distributed under GNU GPLv3 license (https://www.gnu.org/licenses/gpl-3.0.en.html). It is available on and can be installed through the Python Package Index at (https://pypi.org/project/spruceup/). The source code, manual, tutorial, and example files are available on GitHub: (https://github.com/marekborowiec/spruceup).
+``spruceup`` is written in Python 3 and supported on Windows, Linux, and OSX operating systems. It is distributed under GNU GPLv3 license (https://www.gnu.org/licenses/gpl-3.0.en.html). The source code, manual, tutorial, and example files are available on GitHub (https://github.com/marekborowiec/spruceup). `spruceup` is available on and can also be installed through the Python Package Index at (https://pypi.org/project/spruceup/). 
 
 # Figure
 
