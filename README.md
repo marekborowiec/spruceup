@@ -148,6 +148,14 @@ This is a log file that will contain the same information that appears on the te
 
 Calculating distances with `spruceup` is often the most time- and memory-consuming part of the process, although trimming very large numbers of positions from the alignment can also take a long time. Because of this `spruceup` writes a `json` format file each time you run an analysis from scratch, allowing you to load it up later and trim with different criterion or cutoff values. Note that distances will be specific for each window size, overlap, and taxon fraction and you will need to re-run the whole analysis if you want to adjust these parameters. Note that the `json` file can be quite large at >150MB per 100,000 windows and 100 taxa.
 
+## Testing
+
+If you downloaded ``spruceup`` source you can test it with:
+```
+python setup.py nosetests
+```
+These tests are likely to take several minutes because they include metamorphic tests (cf. [Giannoulatou et al. 2014](https://doi.org/10.1186/1471-2105-15-S16-S15)) which involve running `spruceup` on simulated data with known properties. You can speed things up by increasing the number of cores in the metamorphic test configuration file found under `tests/metamorphic_tests/simulation.conf`.
+
 ## Issues and development
 
 If you encounter bugs or problems running the code, [create a new issue on GitHub](https://help.github.com/en/articles/creating-an-issue). Everyone is encouraged to [contribute](https://github.com/firstcontributions/first-contributions).
