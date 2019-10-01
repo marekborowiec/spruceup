@@ -150,11 +150,20 @@ Calculating distances with `spruceup` is often the most time- and memory-consumi
 
 ## Testing
 
-If you downloaded ``spruceup`` source you can test it with:
+If you downloaded `spruceup` source you can test it after installing `nose` with conda or pip:
 ```
-python setup.py nosetests
+conda install nose=1.3.7
 ```
+Once installed, you can test from the home `spruceup` directory with:
+```
+nosetests
+``` 
 These tests are likely to take several minutes because they include metamorphic tests (cf. [Giannoulatou et al. 2014](https://doi.org/10.1186/1471-2105-15-S16-S15)) which involve running `spruceup` on simulated data with known properties. You can speed things up by increasing the number of cores in the metamorphic test configuration file found under `tests/metamorphic_tests/simulation.conf`.
+If you want to just run unit tests without the time-consuming metamorphic tests, from the top directory run:
+```
+nosetests ./tests/test_simple.py
+```
+
 
 ## Issues and development
 
