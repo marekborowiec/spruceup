@@ -1,4 +1,4 @@
-include tests/simple_tests.py
+include tests/test_simple.py
 include tests/metamorphic_tests/*
 include examples/config_example.conf
 include examples/test_aln_aa.fasta
