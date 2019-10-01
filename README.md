@@ -62,7 +62,7 @@ Directory `examples` contains a template configuration file. It has the followin
 ### [input]
 The `input` category defines parameters of the input alignment and its type.
 
-`input_file_name` is the file path of the alignment to be processed.
+`input_file_name` is the file path of the alignment to be processed. *This should be a relatively large, concatenated alignment*. The `spruceup` algorithm works the better the more data it has, so if you have a phylogenomic dataset consisting of many single-locus alignments, you should first concatenate them. You can then split the processed/trimmed alignment back into single-locus alignments using another utility such as [AMAS](https://doi.org/10.7717/peerj.1660).
 
 `input_format` indicates which format the alignment file is in. It can be one of five popular formats: `fasta`, `phylip`, `phylip-int` (interleaved PHYLIP), `nexus`, and `nexus-int`.
 
