@@ -1,4 +1,4 @@
-Code of Conduct
+# Code of conduct
 
 Having a Code of Conduct is our way to encourage good behavior and discourage bad behavior in our open source community.
 
