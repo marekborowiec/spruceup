@@ -1,8 +1,8 @@
 #! /usr/bin/env python3
-import glob, os, subprocess
+import glob, os, unittest, subprocess
 
-from nose.tools import assert_true
-
+from spruceup import aln_parsing
+from tests.metamorphic_tests import complement, scramble_loci, scramble_taxa
 # the data is a simulated nucleotide alignment with 41 taxa, 100 loci each 500 nt long
 # with every taxon having 5 randomly selected loci complemented
 # making it easy to flag the outliers
@@ -17,128 +17,130 @@ from nose.tools import assert_true
 
 wd = os.path.dirname(os.path.realpath(__file__)) 
 
-def setup_module():
-    subprocess.run(['./complement.py', 'simulated.fas', 'fasta'], cwd=wd)
-    subprocess.run(['cp', 'simulation.conf', 'complemented-simulation.conf'], cwd=wd)
-    subprocess.run(
-        [
-            'sed',
-            '-i',
-            's/simulated/complemented-simulated/g',
-            'complemented-simulation.conf',
-        ],
-        cwd=wd
-    )
-    subprocess.run(
-        ['./scramble-loci.py', 'complemented-simulated.fas', 'fasta', '500'],
-        cwd=wd
-    )
-    subprocess.run(
-        ['cp', 'simulation.conf', 'scrambled-loci-complemented-simulation.conf'],
-        cwd=wd
-    )
-    subprocess.run(
-        [
-            'sed',
-            '-i',
-            's/simulated/scrambled-loci-complemented-simulated/g',
-            'scrambled-loci-complemented-simulation.conf',
-        ], 
-        cwd=wd
-    )
-    subprocess.run(
-        [
-            './scramble-taxa.py',
-            'scrambled-loci-complemented-simulated.fas',
-            'fasta',
-        ],
-        cwd=wd
-    )
-    subprocess.run(
-        [
-            'cp',
-            'simulation.conf',
-            'scrambled-taxa-scrambled-loci-complemented-simulation.conf',
-        ],
-        cwd=wd
-    )
-    subprocess.run(
-        [
-            'sed',
-            '-i',
-            's/simulated/scrambled-taxa-scrambled-loci-complemented-simulated/g',
-            'scrambled-taxa-scrambled-loci-complemented-simulation.conf',
-        ],
-        cwd=wd
-    )
+class MetamorphicTests(unittest.TestCase):
+    def setUp(self):
+        aln_filename = 'simulated.fas'
+        file_format = 'fasta'
+        aln_tuple = aln_parsing.parse_alignment(f'{wd}/{aln_filename}', file_format)
+        complement.complement_wrapper(aln_tuple) 
+        subprocess.run(['cp', f'{wd}/simulation.conf', f'{wd}/complemented-simulation.conf'], cwd=wd)
+        subprocess.run(
+            [
+                'sed',
+                '-i',
+                's/simulated/complemented-simulated/g',
+                f'{wd}/complemented-simulation.conf',
+            ],
+            cwd=wd
+        )
+
+        scrl_aln_filename = f'{wd}/complemented-simulated.fas'
+        chunk_size = '500'
+        scrl_aln_tuple = aln_parsing.parse_alignment(scrl_aln_filename, file_format)
+        scramble_loci.scramble_wrapper(scrl_aln_tuple, chunk_size)
+        subprocess.run(
+            ['cp', f'{wd}/simulation.conf', f'{wd}/scrambled-loci-complemented-simulation.conf'],
+            cwd=wd
+        )
+        subprocess.run(
+            [
+                'sed',
+                '-i',
+                's/simulated/scrambled-loci-complemented-simulated/g',
+                'scrambled-loci-complemented-simulation.conf',
+            ], 
+            cwd=wd
+        )
+
+        scrt_aln_filename = f'{wd}/scrambled-loci-complemented-simulated.fas'
+        scrt_aln_tuple = aln_parsing.parse_alignment(scrt_aln_filename, file_format)
+        scramble_taxa.wrapper(scrt_aln_tuple)
+        subprocess.run(
+            [
+                'cp',
+                f'{wd}/simulation.conf',
+                f'{wd}/scrambled-taxa-scrambled-loci-complemented-simulation.conf',
+            ],
+            cwd=wd
+        )
+        subprocess.run(
+            [
+                'sed',
+                '-i',
+                's/simulated/scrambled-taxa-scrambled-loci-complemented-simulated/g',
+                f'{wd}/scrambled-taxa-scrambled-loci-complemented-simulation.conf',
+            ],
+            cwd=wd
+        )
+        
+
+    def test_correct_removal_baseline(self):
+        baseline = subprocess.run(
+            ['python', '-m', 'spruceup', 'simulation.conf'],
+            cwd=wd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        self.assertTrue('Sites removed: 20500' in str(baseline.stderr))
+        self.assertTrue('Removed 1.00%' in str(baseline.stderr))
 
 
-def teardown_module():
-    print('Cleaning up directory ...')
-    pngs = glob.glob('{}/*.png'.format(wd))
-    cnfs = glob.glob('{}/*-simulation.conf'.format(wd))
-    outs = glob.glob('{}/*lognorms*'.format(wd))
-    logs = glob.glob('{}/*.log'.format(wd))
-    jsns = glob.glob('{}/*.json'.format(wd))
-    mtcs = glob.glob('{}/*-simulated.fas'.format(wd))
-    remove_wrapper(pngs)
-    remove_wrapper(cnfs)
-    remove_wrapper(outs)
-    remove_wrapper(logs)
-    remove_wrapper(jsns)
-    remove_wrapper(mtcs)
-    
-
-def test_correct_removal_baseline():
-    baseline = subprocess.run(
-        ['spruceup.py', 'simulation.conf'],
-        cwd=wd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    assert_true('Sites removed: 20500' in str(baseline.stderr))
-    assert_true('Removed 1.00%' in str(baseline.stderr))
+    def test_correct_removal_complemented(self):
+        complemented = subprocess.run(
+            ['python', '-m', 'spruceup', 'complemented-simulation.conf'],
+            cwd=wd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        self.assertTrue('Sites removed: 20500' in str(complemented.stderr))
+        self.assertTrue('Removed 1.00%' in str(complemented.stderr))
 
 
-def test_correct_removal_complemented():
-    complemented = subprocess.run(
-        ['spruceup.py', 'complemented-simulation.conf'],
-        cwd=wd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    assert_true('Sites removed: 20500' in str(complemented.stderr))
-    assert_true('Removed 1.00%' in str(complemented.stderr))
+    def test_correct_removal_loci_randomized(self):
+        scrambled_loci = subprocess.run(
+            ['python', '-m', 'spruceup', 'scrambled-loci-complemented-simulation.conf'],
+            cwd=wd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        self.assertTrue('Sites removed: 20500' in str(scrambled_loci.stderr))
+        self.assertTrue('Removed 1.00%' in str(scrambled_loci.stderr))
 
 
-def test_correct_removal_loci_randomized():
-    scrambled_loci = subprocess.run(
-        ['spruceup.py', 'scrambled-loci-complemented-simulation.conf'],
-        cwd=wd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    assert_true('Sites removed: 20500' in str(scrambled_loci.stderr))
-    assert_true('Removed 1.00%' in str(scrambled_loci.stderr))
+    def test_correct_removal_taxa_randomized(self):
+        scrambled_taxa = subprocess.run(
+            [
+                'python', '-m', 'spruceup', 
+                'scrambled-taxa-scrambled-loci-complemented-simulation.conf',
+            ],
+            cwd=wd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+        )
+        self.assertTrue('Sites removed: 20500' in str(scrambled_taxa.stderr))
+        self.assertTrue('Removed 1.00%' in str(scrambled_taxa.stderr))
 
 
-def test_correct_removal_taxa_randomized():
-    scrambled_taxa = subprocess.run(
-        [
-            'spruceup.py',
-            'scrambled-taxa-scrambled-loci-complemented-simulation.conf',
-        ],
-        cwd=wd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )
-    assert_true('Sites removed: 20500' in str(scrambled_taxa.stderr))
-    assert_true('Removed 1.00%' in str(scrambled_taxa.stderr))
+    def remove_wrapper(self, file_list):
+        for fn in file_list:
+            try:
+                os.remove(fn)
+            except:
+                print(f'Error while deleting file: {fn}')
 
 
-def remove_wrapper(file_list):
-    for fn in file_list:
-        try:
-            os.remove(fn)
-        except:
-            print(f'Error while deleting file: {fn}')
+
+    def tearDown(self):
+        print('Cleaning up directory ...')
+        pngs = glob.glob('{}/*.png'.format(wd))
+        cnfs = glob.glob('{}/*-simulation.conf'.format(wd))
+        outs = glob.glob('{}/*lognorms*'.format(wd))
+        logs = glob.glob('{}/*.log'.format(wd))
+        jsns = glob.glob('{}/*.json'.format(wd))
+        mtcs = glob.glob('{}/*-simulated.fas'.format(wd))
+        self.remove_wrapper(pngs)
+        self.remove_wrapper(cnfs)
+        self.remove_wrapper(outs)
+        self.remove_wrapper(logs)
+        self.remove_wrapper(jsns)
+        self.remove_wrapper(mtcs)

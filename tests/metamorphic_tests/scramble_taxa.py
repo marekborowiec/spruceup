@@ -1,12 +1,13 @@
 #! /usr/bin/env python3
 
 # coding: utf-8
+import os
 import random, string
 from sys import argv 
 
-from spruceup import aln_parsing, aln_writing
+from spruceup import aln_writing
 
-
+wd = os.path.dirname(os.path.realpath(__file__)) 
 def add_letters(aln_dict):
     for taxon in aln_dict.keys():
         new_taxon = f'{random.choice(string.ascii_uppercase)}{taxon}'
@@ -16,17 +17,9 @@ def add_letters(aln_dict):
 
 def wrapper(aln_tuple):
     aln_name, aln_dict = aln_tuple
+    f_name = os.path.basename(aln_name)
+    new_aln_name = f'{wd}/scrambled-taxa-{f_name}'
     scram_aln = add_letters(aln_dict)
     aln_writing.write_alignment_file(
-        scram_aln, 'fasta', f'scrambled-taxa-{aln_name}', 'dna'
+        scram_aln, 'fasta', new_aln_name, 'dna'
         )
-
-
-def get_parsed_aln(aln_filename, file_format):
-    aln_tuple = aln_parsing.parse_alignment(aln_filename, file_format)
-    return aln_tuple
-
-
-script, aln_filename, file_format = argv
-aln_tuple = get_parsed_aln(aln_filename, file_format)
-wrapper(aln_tuple)

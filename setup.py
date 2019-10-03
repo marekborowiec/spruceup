@@ -19,8 +19,8 @@ setup(
     url='https://github.com/marekborowiec/spruceup',
     keywords='alignment trimming outliers phylogenetics phylogenomics genomics bioinformatics',
     packages=['spruceup'],
+    package_dir={'spruceup': 'spruceup'},
     include_package_data=True,
-    scripts=['./spruceup/spruceup.py', './spruceup/aln_parsing.py', './spruceup/aln_writing.py', './__init__.py'],
     python_requires='>=3.6.0, !=3.7.4',
     install_requires=[
         'matplotlib==3.0.3',
@@ -39,4 +39,5 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Operating System :: OS Independent',
     ],
+    test_suite="tests",
 )

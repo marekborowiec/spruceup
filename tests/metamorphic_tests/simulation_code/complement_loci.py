@@ -52,6 +52,11 @@ def get_parsed_aln(aln_filename, file_format):
     return aln_tuple
 
 
-script, aln_filename, file_format, locus_size, no_loci_to_complement = argv
-aln_tuple = get_parsed_aln(aln_filename, file_format)
-complement_wrapper(aln_tuple, locus_size, no_loci_to_complement)
+def main():
+    script, aln_filename, file_format, locus_size, no_loci_to_complement = argv
+    aln_tuple = get_parsed_aln(aln_filename, file_format)
+    complement_wrapper(aln_tuple, locus_size, no_loci_to_complement)
+
+
+if __name__ == '__main__':
+    main()

@@ -1,16 +1,16 @@
 #! /usr/bin/env python3
 
 # coding: utf-8
+import os
 import random
 from sys import argv 
 
-from spruceup import aln_parsing, aln_writing
+from spruceup import aln_writing
 
 # load in alignments
 # for each taxon reverse complement 1 seq in all 5 different loci
 # write modified alignments 
-
-
+wd = os.path.dirname(os.path.realpath(__file__)) 
 # reverse complement
 def split_seq(dna_string, chunk_size):
     return [dna_string[i:i+int(chunk_size)] 
@@ -36,17 +36,9 @@ def scramble_alignment(aln_dict, chunk_size):
 
 def scramble_wrapper(aln_tuple, chunk_size):
     aln_name, aln_dict = aln_tuple
+    f_name = os.path.basename(aln_name)
+    new_aln_name = f'{wd}/scrambled-loci-{f_name}'
     scram_aln = scramble_alignment(aln_dict, chunk_size)
     aln_writing.write_alignment_file(
-        scram_aln, 'fasta', f'scrambled-loci-{aln_name}', 'dna'
+        scram_aln, 'fasta', new_aln_name, 'dna'
         )
-
-
-def get_parsed_aln(aln_filename, file_format):
-    aln_tuple = aln_parsing.parse_alignment(aln_filename, file_format)
-    return aln_tuple
-
-
-script, aln_filename, file_format, chunk_size = argv
-aln_tuple = get_parsed_aln(aln_filename, file_format)
-scramble_wrapper(aln_tuple, chunk_size)

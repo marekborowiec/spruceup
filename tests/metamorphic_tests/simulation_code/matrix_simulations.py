@@ -1,5 +1,8 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
+
+# this code documents how test data was simulated
+# dependencies needed to execute it must be installed independently of 'spruceup'
 import random
 
 import dendropy
@@ -44,6 +47,4 @@ def sum_to_one(random_list):
     summing_to_one = [round((e / sum(random_list)), 2) for e in random_list]
     return summing_to_one
 
-
 simulate_matrix_wrapper(100)
-
