@@ -40,8 +40,7 @@
                   README.md
                 </h3>
               
-              <article class="markdown-body entry-content" itemprop="text" id="grip-content">
-                <h1>
+              <article class="markdown-body entry-content" itemprop="text" id="grip-content"><h1>
 <a id="user-content-spruceup" class="anchor" href="#spruceup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>spruceup</h1>
 <pre><code>        A  
        TCG  
@@ -49,7 +48,7 @@
         T 
 </code></pre>
 <p>Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments.</p>
-<p><code>Spruceup</code> is a Python tool for biologists 
+<p><code>spruceup</code> is a Python tool for biologists 
 (bioinformaticians, phylogeneticists, evolutionary biologists) doing 
 inference on phylogenomic sequence alignments. It allows discovery and 
 removal of individual poorly aligned sequences or sequence fragments 
@@ -62,31 +61,36 @@ trimming software.</p>
 <h2>
 <a id="user-content-installation-and-requirements" class="anchor" href="#installation-and-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation and requirements</h2>
 <p>You can download a zipped GitHub repository, clone it if you have <code>git</code> installed on your system, or install using <a href="https://pip.pypa.io/en/latest/installing.html" rel="nofollow">pip</a> from the <a href="https://pypi.python.org/pypi/spruceup" rel="nofollow">Python Package Index</a>. Cloning the repository will also download example files used in the tutorial below.</p>
-<p><code>spruceup</code> requires you have Python version 3.6 or newer. You can use <code>spruceup</code>
+<p><code>spruceup</code> has been developed and tested under Ubuntu Linux. It requires you have Python version 3.6 or newer. You can use <code>spruceup</code>
  with early releases of Python 3.7, but as of today (12 August 2019), 
 you may experience trouble installing it if using Python 3.7.4. 
 Dependencies should be installed automatically. If your system does not 
 have Python version 3.6 or newer you will need to <a href="http://www.python.org/downloads/" rel="nofollow">download and install it</a>. On Linux-like systems (including Ubuntu) you can install it from the command line using:</p>
 <div class="highlight highlight-source-shell"><pre>sudo apt-get install python3.6</pre></div>
-<p>It is best to create a new environment before installing spruceup, either using <code>conda</code>:</p>
+<p>It is highly recommended that you install <code>spruceup</code> in a new Python environment. If you are using the <a href="https://www.anaconda.com/distribution/" rel="nofollow">conda package manager</a>, type:</p>
 <div class="highlight highlight-source-shell"><pre>conda create --name spruceup python=3.6</pre></div>
-<p>Now activate your environment (with <code>conda</code> you would type <code>conda activate spruceup</code>) and install. If you want to download example files, clone or download this repository with:</p>
+<p>And follow instuctions on the prompt.</p>
+<p>Now activate your environment (with <code>conda</code> you would type <code>conda activate spruceup</code>)
+ and install. If you want to download example files, simply download and
+ unzip this repository or, if you have git, clone it with:</p>
 <div class="highlight highlight-source-shell"><pre>git clone https://github.com/marekborowiec/spruceup.git</pre></div>
 <p>You can then install <code>spruceup</code> from within this cloned repository:</p>
 <div class="highlight highlight-source-shell"><pre>python setup.py install</pre></div>
 <p><code>spruceup</code> is also available on <a href="https://pypi.org/" rel="nofollow">Python Package Index</a> and you can install it via <code>pip</code> without example files:</p>
 <div class="highlight highlight-source-shell"><pre>pip install spruceup</pre></div>
-<p>To set up the new environment you can also use a different environment manager, such as <code>venv</code>, instead of <code>conda</code>:</p>
+<p>If you do not wish to install <code>conda</code>, you can set up a new environment using a different package manager, such as <code>venv</code>:</p>
 <div class="highlight highlight-source-shell"><pre>python3 -m venv spruceup</pre></div>
 <h2>
 <a id="user-content-interface" class="anchor" href="#interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interface</h2>
 <p>Once you successfully installed <code>spruceup</code> you will need 1) an alignment in <code>FASTA</code>, <code>PHYLIP</code> or <code>NEXUS</code> format, 2) (optional) a guide tree for your alignment in <code>NEWICK</code> format, and 3) configuration file to run the program. To run the program from the command line you can type:</p>
-<div class="highlight highlight-source-shell"><pre>spruceup.py my-configuration-file.conf</pre></div>
-<p>Directory <code>examples</code> contains a template configuration file. It has the following fields:</p>
+<div class="highlight highlight-source-shell"><pre>python -m spruceup my-configuration-file.conf</pre></div>
+<p>Directory <code>examples</code> contains a template configuration file (<code>/examples/config_example.conf</code>). This file should be a template for your own analyses. It has the following fields:</p>
 <h3>
 <a id="user-content-input" class="anchor" href="#input" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[input]</h3>
 <p>The <code>input</code> category defines parameters of the input alignment and its type.</p>
-<p><code>input_file_name</code> is the file path of the alignment to be processed. <em>This should be a relatively large, concatenated alignment</em>. The <code>spruceup</code>
+<p><code>input_file_name</code> is the file path of the alignment to be 
+processed. This can be provided as a file name, if the config is in the 
+same directory as alignment and <code>spruceup</code> command will be ran from there as well. Alternatively, you can provide the absolute path. <em><strong>This should be a relatively large, concatenated alignment</strong></em>. The <code>spruceup</code>
  algorithm works the better the more data it has, so if you have a 
 phylogenomic dataset consisting of many single-locus alignments, you 
 should first concatenate them. You can then split the processed/trimmed 
@@ -94,25 +98,26 @@ alignment back into single-locus alignments using another utility such
 as <a href="https://doi.org/10.7717/peerj.1660" rel="nofollow">AMAS</a>.</p>
 <p><code>input_format</code> indicates which format the alignment file is in. It can be one of five popular formats: <code>fasta</code>, <code>phylip</code>, <code>phylip-int</code> (interleaved PHYLIP), <code>nexus</code>, and <code>nexus-int</code>.</p>
 <p><code>data_type</code> tells the program whether your alignment contains amino acids (<code>aa</code>) or DNA nucleotides (<code>nt</code>).</p>
-<p><code>distances_object_file</code> is the file name of an existing 
-distance object. Because sometimes you will want to adjust cutoffs or 
-cutoff criterion and computing distances is the most time-consuming part
- of the analysis, <code>spruceup</code> saves a <code>json</code> format
- file with distances from each analysis. By default this is blank, but 
-if you do have a distance file from a previous analysis and you want to 
-trim your alignment with new cutoffs, supply the <code>json</code> file name here. <code>spruceup</code> will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.</p>
+<p><code>distances_object_file</code> is the file name of an existing distance object. By default this saves to the directory where you run the <code>spruceup</code>
+ command and so it is better to provide absolute path here. Because 
+sometimes you will want to adjust cutoffs or cutoff criterion and 
+computing distances is the most time-consuming part of the analysis, <code>spruceup</code> saves a <code>json</code>
+ format file with distances from each analysis. By default this is 
+blank, but if you do have a distance file from a previous analysis and 
+you want to trim your alignment with new cutoffs, supply the <code>json</code> file name here. <code>spruceup</code> will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.</p>
 <p><code>guide_tree</code> is a phylogram or cladogram <code>NEWICK</code>
- format file to be used as a guide tree. The tree can be inferred using 
-any method and can be fully resolved or contain polytomies. If you do 
-not supply a guide tree the program will still run but without phylogeny
- it will have less information to identify misaligned sequences. This is
- particularly important in vartiable algnments with distantly related 
-samples (individual sequences representing individual, taxon, OTU etc.),
- where it is more difficult to distinguish genuinely variable sequences 
-from misaligned fragments. In cases where you suspect and are mainly 
-concerned with samples with spuriously long terminal branches it is 
-adivsable to supply topology-only (cladogram) guide tree and/or run the 
-program without a guide tree.</p>
+ format file to be used as a guide tree. File name or absolute path. The
+ tree can be inferred using any method and can be fully resolved or 
+contain polytomies. If you do not supply a guide tree the program will 
+still run but without phylogeny it will have less information to 
+identify misaligned sequences. This is particularly important in 
+vartiable algnments with distantly related samples (individual sequences
+ representing individual, taxon, OTU, etc.), where it is more difficult 
+to distinguish genuinely variable sequences from misaligned fragments. 
+In cases where you suspect and are mainly concerned with samples with 
+spuriously long terminal branches it is adivsable to supply 
+topology-only (cladogram) guide tree and/or run the program without a 
+guide tree.</p>
 <h3>
 <a id="user-content-analysis" class="anchor" href="#analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[analysis]</h3>
 <p>The <code>analysis</code> category defines parameters used to analyze and clean up your alignment.</p>
@@ -153,7 +158,7 @@ being flagged. If you find that this is case, however, you should
 probably rather be checking your data and pipeline for errors!</p>
 <h3>
 <a id="user-content-output" class="anchor" href="#output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[output]</h3>
-<p>The <code>output</code> category tells the program how and where to save your analysis results.</p>
+<p>The <code>output</code> category tells the program how and where to save your analysis results. <em>Remember that by default any file will be written to directory from which you executed <code>spruceup</code> command. To change this behavior provide full paths.</em></p>
 <p><code>output_file_aln</code> is the name for your trimmed output 
 alignment(s). The actual name saved on your machine will have a prefix 
 signifying cutoff value used.</p>
@@ -165,7 +170,8 @@ signifying cutoff value used.</p>
 <h2>
 <a id="user-content-examples-and-interpretation-of-results" class="anchor" href="#examples-and-interpretation-of-results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples and interpretation of results</h2>
 <p>To use <code>spruceup</code> you will need to run the <code>spruceup</code> script from the command line and provide the name of your configuration file as the argument. If you downloaded and installed <code>spruceup</code> from source, the example alignment and config files can be found in <code>examples</code> subdirectory:</p>
-<div class="highlight highlight-source-shell"><pre>spruceup.py ./examples/config_example.conf</pre></div>
+<div class="highlight highlight-source-shell"><pre><span class="pl-c1">cd</span> ./examples
+python -m spruceup config_example.conf</pre></div>
 <p>The example alignment is a subset of empirical, anonymized <a href="https://www.ultraconserved.org/" rel="nofollow">ultraconseved element or UCE</a> data set generated from insects.</p>
 <p>Once you run the script, the sequence alignment will be divided into a
  number of windows of the size and overlap you specified. The script 
@@ -254,24 +260,22 @@ that distances will be specific for each window size, overlap, and taxon
 adjust these parameters. Note that the <code>json</code> file can be quite large at &gt;150MB per 100,000 windows and 100 taxa.</p>
 <h2>
 <a id="user-content-testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
-<p>If you downloaded <code>spruceup</code> source you can test it after installing <code>nose</code> with conda or pip:</p>
-<pre><code>conda install nose=1.3.7
-</code></pre>
-<p>Once installed, you can test from the home <code>spruceup</code> directory with:</p>
-<pre><code>nosetests
+<p>Tests written for <code>spruceup</code> code use the Python's standard library module <code>unittest</code> and are integrated with <code>setuptools</code>. This means that if you downloaded the <code>spruceup</code> source code, you can run tests from the top <code>spruceup</code> directory after installing with:</p>
+<pre><code>python setup.py install
+python setup.py test
 </code></pre>
 <p>These tests are likely to take several minutes because they include metamorphic tests (cf. <a href="https://doi.org/10.1186/1471-2105-15-S16-S15" rel="nofollow">Giannoulatou et al. 2014</a>) which involve running <code>spruceup</code>
  on simulated data with known properties. You can speed things up by 
 increasing the number of cores in the metamorphic test configuration 
 file found under <code>tests/metamorphic_tests/simulation.conf</code>.
-If you want to just run unit tests without the time-consuming metamorphic tests, from the top directory run:</p>
-<pre><code>nosetests ./tests/test_simple.py
+If you want just a quick check of basic functions, run unit tests 
+without the time-consuming metamorphic tests. To do this, from the top <code>spruceup</code> directory run:</p>
+<pre><code>python -m unittest tests.test_simple
 </code></pre>
 <h2>
 <a id="user-content-issues-and-development" class="anchor" href="#issues-and-development" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Issues and development</h2>
 <p>If you encounter bugs or problems running the code, <a href="https://help.github.com/en/articles/creating-an-issue">create a new issue on GitHub</a>. Everyone is encouraged to <a href="https://github.com/firstcontributions/first-contributions">contribute</a>.</p>
-
-              </article>
+</article>
             </div>
           </div>
         </div>

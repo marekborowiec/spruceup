@@ -9,3 +9,5 @@ include README.md
 include README.html
 include README_files/*
 include LICENSE
+include CODE_OF_CONDUCT
+include CONTRIBUTING
