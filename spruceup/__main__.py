@@ -8,7 +8,7 @@ import psutil
 from spruceup import aln_parsing, aln_writing, spruceup
 from spruceup.__init__ import __version__
 
-parser = argparse.ArgumentParser(usage='spruceup.py <config_file_name>')
+parser = argparse.ArgumentParser(usage='python -m spruceup <config_file_name>')
 
 parser.add_argument(
     'config_file_name',

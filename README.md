@@ -21,13 +21,13 @@ This script uses [numpy](http://www.numpy.org/), [scipy](https://www.scipy.org/i
 You can download a zipped GitHub repository, clone it if you have `git` installed on your system, or install using [pip](https://pip.pypa.io/en/latest/installing.html) from the [Python Package Index](https://pypi.python.org/pypi/spruceup). Cloning the repository will also download example files used in the tutorial below. 
 
 
-`spruceup` requires you have Python version 3.6 or newer. You can use `spruceup` with early releases of Python 3.7, but as of today (12 August 2019), you may experience trouble installing it if using Python 3.7.4. Dependencies should be installed automatically. If your system does not have Python version 3.6 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using:
+`spruceup` has been developed and tested under Ubuntu Linux. It requires you have Python version 3.6 or newer. You can use `spruceup` with early releases of Python 3.7, but as of today (12 August 2019), you may experience trouble installing it if using Python 3.7.4. Dependencies should be installed automatically. If your system does not have Python version 3.6 or newer you will need to [download and install it](http://www.python.org/downloads/). On Linux-like systems (including Ubuntu) you can install it from the command line using:
 
 ```bash
 sudo apt-get install python3.6
 ```
 
-It is best to create a new environment before installing spruceup. If you are using the [conda package manager](https://www.anaconda.com/distribution/), type:
+It is highly recommended that you install `spruceup` in a new Python environment. If you are using the [conda package manager](https://www.anaconda.com/distribution/), type:
 ```bash
 conda create --name spruceup python=3.6
 ```
