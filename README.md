@@ -8,7 +8,7 @@
 
 Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments.
 
-`Spruceup` is a Python tool for biologists (bioinformaticians, phylogeneticists, evolutionary biologists) doing inference on phylogenomic sequence alignments. It allows discovery and removal of individual poorly aligned sequences or sequence fragments (alignment rows), which is different from the problem of poorly aligned sequence blocks (alignment columns) commonly addressed by alignment trimming software.
+`spruceup` is a Python tool for biologists (bioinformaticians, phylogeneticists, evolutionary biologists) doing inference on phylogenomic sequence alignments. It allows discovery and removal of individual poorly aligned sequences or sequence fragments (alignment rows), which is different from the problem of poorly aligned sequence blocks (alignment columns) commonly addressed by alignment trimming software.
 
 If you are using this program, please cite [this publication](link):
 ```
@@ -27,12 +27,13 @@ You can download a zipped GitHub repository, clone it if you have `git` installe
 sudo apt-get install python3.6
 ```
 
-It is best to create a new environment before installing spruceup, either using `conda`:
+It is best to create a new environment before installing spruceup. If you are using the [conda package manager](https://www.anaconda.com/distribution/), type:
 ```bash
 conda create --name spruceup python=3.6
 ```
+And follow instuctions on the prompt.
 
-Now activate your environment (with `conda` you would type `conda activate spruceup`) and install. If you want to download example files, clone or download this repository with:
+Now activate your environment (with `conda` you would type `conda activate spruceup`) and install. If you want to download example files, simply download and unzip this repository or, if you have git, clone it with:
 ```bash
 git clone https://github.com/marekborowiec/spruceup.git
 ```
@@ -47,7 +48,7 @@ python setup.py install
 pip install spruceup
 ```
 
-To set up the new environment you can also use a different environment manager, such as `venv`, instead of `conda`:
+If you do not wish to install `conda`, you can set up a new environment using a different package manager, such as `venv`:
 ```bash
 python3 -m venv spruceup
 ```
@@ -55,22 +56,22 @@ python3 -m venv spruceup
 ## Interface
 Once you successfully installed `spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format, 2) (optional) a guide tree for your alignment in `NEWICK` format, and 3) configuration file to run the program. To run the program from the command line you can type:
 ```bash
-spruceup.py my-configuration-file.conf
+python -m spruceup my-configuration-file.conf
 ```
-Directory `examples` contains a template configuration file. It has the following fields:
+Directory `examples` contains a template configuration file (`/examples/config_example.conf`). This file should be a template for your own analyses. It has the following fields:
 
 ### [input]
 The `input` category defines parameters of the input alignment and its type.
 
-`input_file_name` is the file path of the alignment to be processed. *This should be a relatively large, concatenated alignment*. The `spruceup` algorithm works the better the more data it has, so if you have a phylogenomic dataset consisting of many single-locus alignments, you should first concatenate them. You can then split the processed/trimmed alignment back into single-locus alignments using another utility such as [AMAS](https://doi.org/10.7717/peerj.1660).
+`input_file_name` is the file path of the alignment to be processed. This can be provided as a file name, if the config is in the same directory as alignment and `spruceup` command will be ran from there as well. Alternatively, you can provide the absolute path. *__This should be a relatively large, concatenated alignment__*. The `spruceup` algorithm works the better the more data it has, so if you have a phylogenomic dataset consisting of many single-locus alignments, you should first concatenate them. You can then split the processed/trimmed alignment back into single-locus alignments using another utility such as [AMAS](https://doi.org/10.7717/peerj.1660).
 
 `input_format` indicates which format the alignment file is in. It can be one of five popular formats: `fasta`, `phylip`, `phylip-int` (interleaved PHYLIP), `nexus`, and `nexus-int`.
 
 `data_type` tells the program whether your alignment contains amino acids (`aa`) or DNA nucleotides (`nt`).
 
-`distances_object_file` is the file name of an existing distance object. Because sometimes you will want to adjust cutoffs or cutoff criterion and computing distances is the most time-consuming part of the analysis, `spruceup` saves a `json` format file with distances from each analysis. By default this is blank, but if you do have a distance file from a previous analysis and you want to trim your alignment with new cutoffs, supply the `json` file name here. `spruceup` will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.
+`distances_object_file` is the file name of an existing distance object. By default this saves to the directory where you run the `spruceup` command and so it is better to provide absolute path here. Because sometimes you will want to adjust cutoffs or cutoff criterion and computing distances is the most time-consuming part of the analysis, `spruceup` saves a `json` format file with distances from each analysis. By default this is blank, but if you do have a distance file from a previous analysis and you want to trim your alignment with new cutoffs, supply the `json` file name here. `spruceup` will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.
 
-`guide_tree` is a phylogram or cladogram `NEWICK` format file to be used as a guide tree. The tree can be inferred using any method and can be fully resolved or contain polytomies. If you do not supply a guide tree the program will still run but without phylogeny it will have less information to identify misaligned sequences. This is particularly important in vartiable algnments with distantly related samples (individual sequences representing individual, taxon, OTU etc.), where it is more difficult to distinguish genuinely variable sequences from misaligned fragments. In cases where you suspect and are mainly concerned with samples with spuriously long terminal branches it is adivsable to supply topology-only (cladogram) guide tree and/or run the program without a guide tree. 
+`guide_tree` is a phylogram or cladogram `NEWICK` format file to be used as a guide tree. File name or absolute path. The tree can be inferred using any method and can be fully resolved or contain polytomies. If you do not supply a guide tree the program will still run but without phylogeny it will have less information to identify misaligned sequences. This is particularly important in vartiable algnments with distantly related samples (individual sequences representing individual, taxon, OTU, etc.), where it is more difficult to distinguish genuinely variable sequences from misaligned fragments. In cases where you suspect and are mainly concerned with samples with spuriously long terminal branches it is adivsable to supply topology-only (cladogram) guide tree and/or run the program without a guide tree. 
 
 ### [analysis]
 The `analysis` category defines parameters used to analyze and clean up your alignment.
@@ -92,7 +93,7 @@ The `analysis` category defines parameters used to analyze and clean up your ali
 `manual_cutoffs` is an optional setting that allows manual modifications to cutoffs for individual samples. It may prove useful if only one or a few samples have a significant proportion of poorly aligned sequences, skewing their overall cutoff such that they are not being flagged. If you find that this is case, however, you should probably rather be checking your data and pipeline for errors!
 
 ### [output]
-The `output` category tells the program how and where to save your analysis results.
+The `output` category tells the program how and where to save your analysis results. *Remember that by default any file will be written to directory from which you executed `spruceup` command. To change this behavior provide full paths.* 
 
 `output_file_aln` is the name for your trimmed output alignment(s). The actual name saved on your machine will have a prefix signifying cutoff value used.
 
@@ -106,7 +107,8 @@ The `output` category tells the program how and where to save your analysis resu
 
 To use `spruceup` you will need to run the `spruceup` script from the command line and provide the name of your configuration file as the argument. If you downloaded and installed `spruceup` from source, the example alignment and config files can be found in `examples` subdirectory:
 ```bash
-spruceup.py ./examples/config_example.conf
+cd ./examples
+python -m spruceup config_example.conf
 ```
 The example alignment is a subset of empirical, anonymized [ultraconseved element or UCE](https://www.ultraconserved.org/) data set generated from insects.   
 
@@ -150,20 +152,16 @@ Calculating distances with `spruceup` is often the most time- and memory-consumi
 
 ## Testing
 
-If you downloaded `spruceup` source you can test it after installing `nose` with conda or pip:
+Tests written for `spruceup` code use the Python's standard library module `unittest` and are integrated with `setuptools`. This means that if you downloaded the `spruceup` source code, you can run tests from the top `spruceup` directory after installing with:
 ```
-conda install nose=1.3.7
+python setup.py install
+python setup.py test
 ```
-Once installed, you can test from the home `spruceup` directory with:
-```
-nosetests
-``` 
 These tests are likely to take several minutes because they include metamorphic tests (cf. [Giannoulatou et al. 2014](https://doi.org/10.1186/1471-2105-15-S16-S15)) which involve running `spruceup` on simulated data with known properties. You can speed things up by increasing the number of cores in the metamorphic test configuration file found under `tests/metamorphic_tests/simulation.conf`.
-If you want to just run unit tests without the time-consuming metamorphic tests, from the top directory run:
+If you want just a quick check of basic functions, run unit tests without the time-consuming metamorphic tests. To do this, from the top `spruceup` directory run:
 ```
-nosetests ./tests/test_simple.py
+python -m unittest tests.test_simple
 ```
-
 
 ## Issues and development
 
