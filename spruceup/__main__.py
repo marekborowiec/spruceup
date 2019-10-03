@@ -19,7 +19,7 @@ parser.add_argument(
     '-v',
     '--version', 
     action='version',
-    version='%(prog)s {version}'.format(version=__version__),
+    version=f'spruceup {__version__}',
     help='show the version number and exit'
     )
 
