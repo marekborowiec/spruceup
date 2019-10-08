@@ -418,7 +418,13 @@ def plotting_wrapper(
 ):
     """This is a wrapper for plot_taxon_dists() function to work across all OTUs and windows."""
     taxa = sorted(all_taxa_dists.keys())
+    if manual_cutoffs:
+        manual_dict = parse_manual_cutoffs(manual_cutoffs)
     for taxon in taxa:
+        if manual_cutoffs and taxon in manual_dict.keys():
+            manual_cutoff = manual_dict[taxon]
+        else:
+            manual_cutoff = None
         if criterion == 'lognorm':
             dist_list = [window[1] for window in all_taxa_dists[taxon]]
             dists = get_np_dists(dist_list)
@@ -430,6 +436,7 @@ def plotting_wrapper(
                 method,
                 criterion,
                 cutoffs,
+                manual_cutoff,
                 fit_line=logn_fit_line,
             )
         if criterion == 'mean':
@@ -437,7 +444,7 @@ def plotting_wrapper(
 
 
 def plot_taxon_dists(
-    all_taxa_dists, taxon, method, criterion, cutoffs, fit_line=0
+    all_taxa_dists, taxon, method, criterion, cutoffs, manual_cutoff, fit_line=0
 ):
     """Get a histogram plot of distance distribution across windows."""
     fname = '{}-{}-{}.png'.format(taxon, method, criterion)
@@ -451,20 +458,31 @@ def plot_taxon_dists(
         plt.plot(x, fit_line)
     plt.title(taxon)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(cutoffs))))
-    for cutoff in cutoffs:
-        if criterion == 'lognorm':
-            shape, loc, scale = get_shape_loc_scale(dists)
-            cutoff_line = get_lognorm_cutoff(float(cutoff), shape, loc, scale)
-        if criterion == 'mean':
-            cutoff_line = get_mean_cutoff(dists, float(cutoff))
+    if manual_cutoff:
+        cutoff_line = manual_cutoff
         color = next(colors)
         plt.axvline(
             cutoff_line,
             color=color,
-            label=str(cutoff),
+            label=str(manual_cutoff),
             linestyle='dashed',
             linewidth=1,
         )
+    else:
+        for cutoff in cutoffs:
+            if criterion == 'lognorm':
+                shape, loc, scale = get_shape_loc_scale(dists)
+                cutoff_line = get_lognorm_cutoff(float(cutoff), shape, loc, scale)
+            if criterion == 'mean':
+                cutoff_line = get_mean_cutoff(dists, float(cutoff))
+            color = next(colors)
+            plt.axvline(
+                cutoff_line,
+                color=color,
+                label=str(cutoff),
+                linestyle='dashed',
+                linewidth=1,
+            )
     plt.legend(loc='upper right')
     plt.savefig(fname)
     plt.close()
@@ -527,6 +545,15 @@ def get_outliers_list(window_dist_list, cutoff):
     return [window for window in window_dist_list if window[1] >= cutoff]
 
 
+def parse_manual_cutoffs(manual_cutoffs):
+    manual_dict = {}
+    for group in manual_cutoffs:
+        manual_taxon_name, manual_cutoff_value = group
+        manual_cutoff = float(manual_cutoff_value)
+        manual_dict[manual_taxon_name] = manual_cutoff
+    return manual_dict
+
+
 def get_lognorm_outliers(
     all_dists, taxon, window_size, method, criterion, cutoff, manual_cutoffs
 ):
@@ -541,11 +568,7 @@ def get_lognorm_outliers(
     shape, loc, scale = get_shape_loc_scale(dists)
     logn_cutoff = get_lognorm_cutoff(cutoff, shape, loc, scale)
     if manual_cutoffs:
-        manual_dict = {}
-        for group in manual_cutoffs:
-            manual_taxon_name, manual_cutoff_value = group
-            manual_cutoff = float(manual_cutoff_value)
-            manual_dict[manual_taxon_name] = manual_cutoff
+        manual_dict = parse_manual_cutoffs(manual_cutoffs)
         if taxon in manual_dict.keys():
             outliers_list = sorted(
                 get_outliers_list(all_dists[taxon], manual_dict[taxon])
