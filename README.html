@@ -212,10 +212,10 @@ removed.</p>
 <p>Trimmed alignment files ending with suffix <code>-trimmed.fas/phylip/nexus</code>, again, one for each cutoff value. These are the alignments with outlier windows removed.</p>
 </li>
 <li>
-<p>Distance distribution <code>png</code> plots, one for each sample and
- cutoff value. These images can be used to examine the distribution of 
-distances for each taxon, its fit to lognormal distribution, and cutoff 
-value placed on each sample given a cutoff.</p>
+<p>Distance distribution <code>png</code> plots, one for each sample. 
+These images can be used to examine the distribution of distances for 
+each taxon, its fit to lognormal distribution, and cutoff value placed 
+on each sample given a cutoff.</p>
 </li>
 </ol>
 <p>An example of distances plot is below. The header is the name of the 
@@ -226,8 +226,8 @@ of distances. Orange line is the fitted lognormal distribution (only
 shown when using the <code>lognorm</code> criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.</p>
 <p>The first example plot below shows an sample with relatively smooth 
 distance distribution and few sequence windows with extreme values, none
- of which are greater than <code>0.2</code>. You may not be able to see 
-individual window distances as visible histogram bars since the 
+ of which are greater than <code>0.25</code>. You may not be able to see
+ individual window distances as visible histogram bars since the 
 distributions comprise thousands (in this small example) to hundreds of 
 thousands of distances.</p>
 <p><a href="http://localhost:6419/README_files/example-plot-good.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-good.png" alt="example-plot-good" style="max-width:100%;"></a></p>

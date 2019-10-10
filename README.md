@@ -131,11 +131,11 @@ You can now go back to your configuration file and try other cutoffs or methods 
 
 2. Trimmed alignment files ending with suffix `-trimmed.fas/phylip/nexus`, again, one for each cutoff value. These are the alignments with outlier windows removed.
 
-3. Distance distribution `png` plots, one for each sample and cutoff value. These images can be used to examine the distribution of distances for each taxon, its fit to lognormal distribution, and cutoff value placed on each sample given a cutoff.
+3. Distance distribution `png` plots, one for each sample. These images can be used to examine the distribution of distances for each taxon, its fit to lognormal distribution, and cutoff value placed on each sample given a cutoff.
 
 An example of distances plot is below. The header is the name of the sample. The x-axis indicates distance to other samples, ranging from `0` to the maximum distance that was found for the sample. The y-axis specifies relative number of windows. Blue bars comprise the histogram of distances. Orange line is the fitted lognormal distribution (only shown when using the `lognorm` criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.
 
-The first example plot below shows an sample with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than `0.2`. You may not be able to see individual window distances as visible histogram bars since the distributions comprise thousands (in this small example) to hundreds of thousands of distances.
+The first example plot below shows an sample with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than `0.25`. You may not be able to see individual window distances as visible histogram bars since the distributions comprise thousands (in this small example) to hundreds of thousands of distances.
 
 ![example-plot-good](./README_files/example-plot-good.png)
 
