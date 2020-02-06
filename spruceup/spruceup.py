@@ -440,7 +440,7 @@ def plotting_wrapper(
                 fit_line=logn_fit_line,
             )
         if criterion == 'mean':
-            plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs)
+            plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, manual_cutoff)
 
 
 def plot_taxon_dists(
