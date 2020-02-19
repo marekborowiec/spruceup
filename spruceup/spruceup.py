@@ -464,7 +464,7 @@ def plot_taxon_dists(
         plt.axvline(
             cutoff_line,
             color=color,
-            label=str(manual_cutoff),
+            label='manual: {}'.format(str(manual_cutoff)),
             linestyle='dashed',
             linewidth=1,
         )

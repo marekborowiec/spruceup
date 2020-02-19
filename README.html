@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <title>README.md - Grip</title>
   <link rel="icon" href="http://localhost:6419/__/grip/static/favicon.ico">
-  <link rel="stylesheet" href="README_files/frameworks-a3b8a10d4a9e37a78f033ef4a4f525f5.css">
-  <link rel="stylesheet" href="README_files/github-a842d1324eb4ab086590be512b951c4c.css">
-  <link rel="stylesheet" href="README_files/site-bdd55e67f0ed3e8974c7c941589e8c6a.css">
+  <link rel="stylesheet" href="README_files/github-e3bff23d54e12a76d66b61023f1c8796.css">
+  <link rel="stylesheet" href="README_files/frameworks-41c2037bf12f1e46d8f08b88a04a8d8f.css">
+  <link rel="stylesheet" href="README_files/site-294181adec18ed639e160b96b45d17ac.css">
   <link rel="stylesheet" href="README_files/octicons.css">
   <style>
     /* Page tweaks */
@@ -153,12 +153,12 @@ alignment contains many saturated or poorly aligned sites, a low setting
  may result in huge amount of data being trimmed from the original 
 alignment. This is time-consuming and you may want to trim your 
 alignment with a more stringent 'block' method before using <code>spruceup</code> or remove lower cutoff values from the list.</p>
-<p><code>manual_cutoffs</code> is an optional setting that allows manual
- modifications to cutoffs for individual samples. It may prove useful if
- only one or a few samples have a significant proportion of poorly 
-aligned sequences, skewing their overall cutoff such that they are not 
-being flagged. If you find that this is case, however, you should 
-probably rather be checking your data and pipeline for errors!</p>
+<p><code>manual_cutoffs</code> is an optional setting that allows manual modifications to cutoffs for individual samples. <em><strong>Important: the cutoff here is the absolute distance value on the <code>x</code> axis of your output plots where you want to draw the cutoff line, not where you expect the value of your <code>lognorm</code> or <code>mean</code> to fall on that plot.</strong></em>
+ It may prove useful if only one or a few samples have a significant 
+proportion of poorly aligned sequences, skewing their overall cutoff 
+such that they are not being flagged. If you find that this is case, 
+however, you should probably rather be checking your data and pipeline 
+for errors!</p>
 <h3>
 <a id="user-content-output" class="anchor" href="#output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[output]</h3>
 <p>The <code>output</code> category tells the program how and where to save your analysis results. <em>Remember that by default any file will be written to directory from which you executed <code>spruceup</code> command. To change this behavior provide full paths.</em></p>
