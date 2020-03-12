@@ -26,7 +26,7 @@ setup(
         'matplotlib==3.0.3',
         'numpy==1.17',
         'scipy==1.3.1',
-        'psutil==5.4.8',
+        'psutil==5.6.6',
         'tqdm==4.29.1',
         'treeswift==1.0.100',
     ],
