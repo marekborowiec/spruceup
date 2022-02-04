@@ -832,8 +832,8 @@ def check_cutoff_value(criterion, cutoff_value):
         if cutoff_value > 0 and cutoff_value < 1:
             pass
         else:
-            exit(
-                'Invalid lognorm quantile cutoff value "{}". The cutoffs must be numbers greater than 0 and less than 1.'.format(
+            print(
+                'WARNING: your lognorm cutoff values should be between 0 and 1, unless you are using manual cutoffs.'.format(
                     cutoff_value
                 )
             )
