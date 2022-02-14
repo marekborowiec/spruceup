@@ -36,7 +36,12 @@ conda create --name spruceup python=3.6
 ```
 And follow instuctions on the prompt.
 
-Now activate your environment (with `conda` you would type `conda activate spruceup`) and install. If you want to download example files, simply download and unzip this repository or, if you have git, clone it with:
+*Note that at this point you only created a virtual environment called "spruceup". You haven't installed it yet.* Now activate your environment (with `conda` you would type `conda activate spruceup`) and install. I recommend using `pip` ([Python Package Index](https://pypi.org/)):
+```bash
+pip install spruceup
+```
+
+If you want to download example files, simply download and unzip this repository or, if you have git, clone it with:
 ```bash
 git clone https://github.com/marekborowiec/spruceup.git
 ```
@@ -46,15 +51,12 @@ You can then install `spruceup` from within this cloned repository:
 python setup.py install
 ```
 
-`spruceup` is also available on [Python Package Index](https://pypi.org/) and you can install it via `pip` without example files:
-```bash
-pip install spruceup
-```
-
 If you do not wish to install `conda`, you can set up a new environment using a different package manager, such as `venv`:
 ```bash
 python3 -m venv spruceup
 ```
+
+There is a known issue when installing on Mac/OSX, which arises because `matplotlib` requires a framework build of Python. If you are working on OSX, you can install this with `conda install python.app` and use `pythonw -m` instead of `python -m` to run `spruceup`. See also [here](https://matplotlib.org/3.1.0/faq/osx_framework.html).
 
 ## Interface
 Once you successfully installed `spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format, 2) (optional) a guide tree for your alignment in `NEWICK` format, and 3) configuration file to run the program. To run the program from the command line you can type:
