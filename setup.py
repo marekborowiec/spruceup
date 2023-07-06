@@ -25,7 +25,7 @@ setup(
     install_requires=[
         'matplotlib==3.0.3',
         'numpy==1.17',
-        'scipy==1.3.1',
+        'scipy==1.10.0',
         'psutil==5.6.6',
         'tqdm==4.29.1',
         'treeswift==1.0.100',
