@@ -66,7 +66,7 @@ def print_phylip_int(source_dict):
 
 def print_nexus(source_dict, data_type):
     """Print nexus-formatted string from {taxon: seq} dict."""
-    if data_type == "aa" or command == "translate":
+    if data_type == "aa":
         data_type = "PROTEIN"
     elif data_type == "nt":
         data_type = "DNA"
