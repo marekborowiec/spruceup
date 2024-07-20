@@ -59,9 +59,10 @@ def analyze(
     all_distances = spruceup.distances_wrapper(
         windows, tree_dists, cores, data_type, method=method, fraction=fraction
     )
-    taxa_distances = spruceup.dist_taxa_wrapper(all_distances)
-    mean_aln_distances = spruceup.mean_distances_wrapper(taxa_distances)
+#    taxa_distances = spruceup.dist_taxa_wrapper(all_distances)
+    mean_aln_distances = spruceup.mean_distances_wrapper(all_distances)
     mean_taxon_distances = spruceup.dists_per_taxon(mean_aln_distances)
+    #print(mean_taxon_distances)
     spruceup.write_distances_dict(mean_taxon_distances, method, window_size, overlap)
     return (aln_tuple, mean_taxon_distances)
 

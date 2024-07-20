@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 
 # coding: utf-8
+from collections import defaultdict
 import configparser
 import logging
 import random
@@ -108,6 +109,7 @@ def read_config(config_file_name):
     return config
 
 
+# This whole function is replaced !!!
 def p_distance(seq1, seq2):
     """Calculate Hamming/p-distance for two sequences.
 
@@ -116,16 +118,20 @@ def p_distance(seq1, seq2):
     """
     if len(seq1) != len(seq2):
         raise ValueError('Sequences are of unequal length. Did you align them?')
-    eff_len1 = len(seq1.strip('-').strip('?'))
-    eff_len2 = len(seq2.strip('-').strip('?'))
-    if eff_len1 != 0 and eff_len2 != 0:
-        p_distance = sum(
-            el1 != el2
-            for el1, el2 in zip(seq1, seq2)
-            if el1 != '-' and el2 != '-' and el1 != '?' and el2 != '?'
-        )
+
+    eff_len1 = len(seq1.replace('-', '').replace('?', ''))
+    eff_len2 = len(seq2.replace('-', '').replace('?', ''))
+
+    valid_comparisons = [
+        (el1, el2) for el1, el2 in zip(seq1, seq2)
+        if el1 != '-' and el2 != '-' and el1 != '?' and el2 != '?'
+    ]
+
+    if valid_comparisons:
+        p_distance = sum(el1 != el2 for el1, el2 in valid_comparisons)
     else:
         p_distance = 'NaN'
+    #print(seq1, seq2, eff_len1, eff_len2, p_distance)
     return (eff_len1, p_distance)
 
 
@@ -144,6 +150,7 @@ def get_scaled_distance(distance_tpl):
             scaled_distance = 0
     else:
         scaled_distance = 'NaN'
+    #print(scaled_distance)
     return scaled_distance
 
 
@@ -234,6 +241,7 @@ def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
             for sp2, seq2 in seqs_to_compare_to
             for sp1, seq1 in aln_dict.items()
         ]
+    #print(aln_name, distances)
     return (aln_name, distances)
 
 
@@ -268,90 +276,129 @@ def distances_wrapper(
                     yield output
 
 
-def get_dist_and_taxa_lists(distances):
-    """Get aligned lists of taxa and distances.
-
-    Given pairwise distances tuples 
-    (taxon1, taxon2, pairwise distance between the two)
-    return tuple (taxa list, distances list).
-    """
-    taxa_rows = [sp2 for (sp1, sp2, dist) in distances]
-    dists = [dist for (sp1, sp2, dist) in distances]
-    return (taxa_rows, dists)
-
-
-def dist_taxa_wrapper(dist_tuples):
-    """Wrapper for getting aligned lists of taxa and distances.
-
-    Given list of tuples of multiple alignments
-    return tuple (alignment name : (taxa rows, distances list)).
-    """
-    for aln_name, distances in dist_tuples:
-        yield (aln_name, get_dist_and_taxa_lists(distances))
+#def get_dist_and_taxa_lists(distances):
+#    """Get aligned lists of taxa and distances.
+#
+#    Given pairwise distances tuples 
+#    (taxon1, taxon2, pairwise distance between the two)
+#    return tuple (taxa list, distances list).
+#    """
+#    taxa_rows = [sp1 for (sp1, sp2, dist) in distances] # !!!
+#    dists = [dist for (sp1, sp2, dist) in distances]
+#    #for taxon, dist in zip(taxa_rows, dists):
+#     #   print(taxon, dist)
+#    return (taxa_rows, dists)
 
 
-def get_dist_matrix(distances, taxa_no):
-    """Create distance matrix for alignment.
-
-    Split all distances list [sp1 to sp1 dist, sp1 to sp2 dist, sp1 to sp3 dist etc.]
-    to return list of lists [[sp1 dists to all other], [sp2 dists to all other], etc.]
-    """
-    matrix = [
-        distances[x : x + taxa_no] for x in range(0, len(distances), taxa_no)
-    ]
-    return matrix
+#def dist_taxa_wrapper(dist_tuples):
+#    """Wrapper for getting aligned lists of taxa and distances.
+#
+#    Given list of tuples of multiple alignments
+#    return tuple (alignment name : (taxa rows, distances list)).
+#    """
+#    for aln_name, distances in dist_tuples:
+#        yield (aln_name, get_dist_and_taxa_lists(distances))
 
 
-def get_taxon_map(taxa_rows):
-    """Create taxon map for distance matrix.
+#def get_dist_matrix(distances, taxa_no):
+#    """Create distance matrix for alignment.
+#
+#    Split all distances list [sp1 to sp1 dist, sp1 to sp2 dist, sp1 to sp3 dist etc.]
+#    to return list of lists [[sp1 dists to all other], [sp2 dists to all other], etc.]
+#    """
+#    matrix = [
+#        distances[x : x + taxa_no] for x in range(0, len(distances), taxa_no)
+#    ]
+#    return matrix
 
-    Taxon map is a list of unique taxon names in order.
-    """
-    seen = set()
-    taxa_map = [sp for sp in taxa_rows if not (sp in seen or seen.add(sp))]
-    return taxa_map
+
+#def get_taxon_map(taxa_rows):
+#    """Create taxon map for distance matrix.
+#
+#    Taxon map is a list of unique taxon names in order.
+#    """
+#    seen = set()
+#    taxa_map = [sp for sp in taxa_rows if not (sp in seen or seen.add(sp))]
+#    return taxa_map
 
 
-def mean_distances_wrapper(aln_tpls):
+#def mean_distances_wrapper(aln_tpls):
+#    """Wrapper to get taxon mean distances across multiple alignments.
+#
+#    Given list of tuples (alignment name, (taxa rows, distances list))
+#    return list of tuples (alignment name, {taxon : mean distance within alignment}).
+#    """
+#    for aln_tpl_lists in aln_tpls:
+#        aln_name, dist_tuple = aln_tpl_lists
+#        taxa_rows, dists = dist_tuple
+#        taxon_map = get_taxon_map(taxa_rows)
+#        dist_matrix = get_dist_matrix(dists, len(taxon_map))
+#        print(dist_tuple)
+#        means = get_mean_distances(dist_matrix, taxa_rows) # !!!
+#        yield (aln_name, means)
+
+
+#def get_mean_distances(dist_matrix, taxon_map):
+#    """Get taxon mean distances from taxon map and distance matrix.
+#
+#    Given matrix of all pairwise distances and taxon map
+#    return dict of {taxon : mean distances}.
+#    """
+#    mean_distances = {
+#        sp: mean_dist
+#        for sp, mean_dist in zip(
+#            taxon_map, [get_list_mean(dist) for dist in dist_matrix]
+#        )
+#    }
+#    return mean_distances
+
+
+#def get_list_mean(lst):
+#    """Return mean for all items in a list."""
+#    clean_list = [i for i in lst if i != 'NaN']
+#    print(clean_list)
+#    try:
+#        list_mean = abs(
+#            sum([i for i in clean_list]) / float(len(clean_list) - 1)
+#        )  # - 1 ensures that distance to self does not count
+#    except ZeroDivisionError:  # when there is only one non-empty sequence in window
+#        list_mean = 0
+#    return round(list_mean, 5)
+
+
+def mean_distances_wrapper(aln_tuples):
     """Wrapper to get taxon mean distances across multiple alignments.
 
     Given list of tuples (alignment name, (taxa rows, distances list))
     return list of tuples (alignment name, {taxon : mean distance within alignment}).
     """
-    for aln_tpl_lists in aln_tpls:
-        aln_name, dist_tuple = aln_tpl_lists
-        taxa_rows, dists = dist_tuple
-        taxon_map = get_taxon_map(taxa_rows)
-        dist_matrix = get_dist_matrix(dists, len(taxon_map))
-        means = get_mean_distances(dist_matrix, taxon_map)
-        yield (aln_name, means)
+    all_taxa = set()
+    # Populate sums and counts, excluding 'NaN' values and self-comparisons
+    for aln_tpl_lists in aln_tuples:
+        aln_name, taxa_distances = aln_tpl_lists
+        # Create dictionaries to store sums and counts of distances for each taxon
+        taxa_sums = defaultdict(float)
+        taxa_counts = defaultdict(int)
+        for taxon1, taxon2, distance in taxa_distances:
+            all_taxa.add(taxon1)
+            if taxon1 != taxon2 and distance != 'NaN':
+                #print(taxon1, taxon2, distance)
+                distance = float(distance)
+                taxa_sums[taxon1] += distance
+                taxa_counts[taxon1] += 1
 
-
-def get_mean_distances(dist_matrix, taxon_map):
-    """Get taxon mean distances from taxon map and distance matrix.
-
-    Given matrix of all pairwise distances and taxon map
-    return dict of {taxon : mean distances}.
-    """
-    mean_distances = {
-        sp: mean_dist
-        for sp, mean_dist in zip(
-            taxon_map, [get_list_mean(dist) for dist in dist_matrix]
-        )
-    }
-    return mean_distances
-
-
-def get_list_mean(lst):
-    """Return mean for all items in a list."""
-    clean_list = [i for i in lst if i != 'NaN']
-    try:
-        list_mean = abs(
-            sum([i for i in clean_list]) / float(len(clean_list) - 1)
-        )  # - 1 ensures that distance to self does not count
-    except ZeroDivisionError:  # when there is only one non-empty sequence in window
-        list_mean = 0
-    return round(list_mean, 5)
+        # Calculate means
+        #print(taxa_counts['D'])
+        #print(taxa_sums['D'])
+        taxa_means = {}
+        for taxon in all_taxa:
+            #print("printing taxa: ", taxon)
+            if taxa_counts[taxon] > 0:
+                taxa_means[taxon] = round(taxa_sums[taxon] / taxa_counts[taxon], 3)
+            else:
+                taxa_means[taxon] = 'NaN'
+        #print(aln_name, taxa_means)
+        yield (aln_name, taxa_means)
 
 
 def dists_per_taxon(means_tuple_list):
@@ -367,50 +414,56 @@ def dists_per_taxon(means_tuple_list):
                 taxa_dists[sp] = [(aln_name, mean_dist)]
             else:
                 taxa_dists[sp].append((aln_name, mean_dist))
+    #print(taxa_dists)
     return taxa_dists
 
 
-def means_per_taxon(taxa_dists):
-    """Get mean distances for taxon.
-
-    Given dict of {taxon : (alignment, mean distance within alignment)}
-    return dict of {taxon : mean distance across alignments}.
-    """
-    taxa_means = {
-        sp: get_list_mean([dists for aln_name, dists in aln_dists])
-        for sp, aln_dists in taxa_dists.items()
-    }
-    return taxa_means
+#def means_per_taxon(taxa_dists):
+#    """Get mean distances for taxon.
+#
+#    Given dict of {taxon : (alignment, mean distance within alignment)}
+#    return dict of {taxon : mean distance across alignments}.
+#    """
+#    taxa_means = {
+#        sp: get_list_mean([dists for aln_name, dists in aln_dists])
+#        for sp, aln_dists in taxa_dists.items()
+#    }
+#    return taxa_means
 
 
 def get_np_dists(dist_list):
-    """Get numpy distances array in which zeros are NaN."""
-    dists = np.asarray(dist_list)
-    dists[dists == 0] = np.nan
-    return dists[~np.isnan(dists)]
+    """Get numpy distances array from distances list."""
+    dists = [float(x) if x != 'NaN' else np.nan for x in dist_list]
+    dists_array = np.asarray(dists)
+    return dists_array
+
+
+def get_dists_no_nans(dists_array):
+    """Get numpy distances array without NaNs."""
+    return dists_array[~np.isnan(dists_array)]
 
 
 def get_shape_loc_scale(dists):
-    """Given distances fit lognormal distribution."""
-    return scp.lognorm.fit(dists, floc=0)
+    """Given distances fit Weibull distribution."""
+    return scp.weibull_min.fit(dists)
 
 
-def get_lognorm_fit_line(dists, shape, loc, scale):
-    """Get parameters for lognorm distribution plotting."""
-    x = np.linspace(0, np.nanmax(dists), 500)
-    return scp.lognorm.pdf(x, shape, loc, scale)
+def get_weibull_min_fit_line(dists, shape, loc, scale):
+    """Get parameters for weibull_min distribution plotting."""
+    x = np.linspace(np.min(dists), np.max(dists), 500)
+    return scp.weibull_min.pdf(x, shape, loc, scale)
 
 
-def get_lognorm_cutoff(cutoff, shape, loc, scale):
+def get_weibull_min_cutoff(cutoff, shape, loc, scale):
     """Get cutoff values for plotting."""
-    logn_cutoff = scp.lognorm.ppf(cutoff, shape, loc, scale)
-    return logn_cutoff
+    weib_cutoff = scp.weibull_min.ppf(cutoff, shape, loc, scale)
+    return weib_cutoff
 
 
 def get_mean_cutoff(dist_list, cutoff):
-    """Get mean from a list of distances."""
+    """Get mean from a list of distances without NaNs."""
     mean = np.mean(dist_list)
-    return round((mean * cutoff), 5)
+    return round((mean * cutoff), 3)
 
 
 def plotting_wrapper(
@@ -425,11 +478,12 @@ def plotting_wrapper(
             manual_cutoff = manual_dict[taxon]
         else:
             manual_cutoff = None
-        if criterion == 'lognorm':
+        if criterion == 'weibull_min':
             dist_list = [window[1] for window in all_taxa_dists[taxon]]
             dists = get_np_dists(dist_list)
-            shape, loc, scale = get_shape_loc_scale(dists)
-            logn_fit_line = get_lognorm_fit_line(dists, shape, loc, scale)
+            no_nan_dists = get_dists_no_nans(dists)
+            shape, loc, scale = get_shape_loc_scale(no_nan_dists)
+            weib_fit_line = get_weibull_min_fit_line(no_nan_dists, shape, loc, scale)
             plot_taxon_dists(
                 all_taxa_dists,
                 taxon,
@@ -437,7 +491,7 @@ def plotting_wrapper(
                 criterion,
                 cutoffs,
                 manual_cutoff,
-                fit_line=logn_fit_line,
+                fit_line=weib_fit_line,
             )
         if criterion == 'mean':
             plot_taxon_dists(all_taxa_dists, taxon, method, criterion, cutoffs, manual_cutoff)
@@ -450,11 +504,14 @@ def plot_taxon_dists(
     fname = '{}-{}-{}.png'.format(taxon, method, criterion)
     dist_list = [window[1] for window in all_taxa_dists[taxon]]
     dists = get_np_dists(dist_list)
+    no_nan_dists = get_dists_no_nans(dists)
     plt.figure(num=None, figsize=(12, 6), dpi=150, facecolor='w', edgecolor='k')
-    plt.xlim(0, np.nanmax(dists))
-    plt.hist(dists[~np.isnan(dists)], bins=100, density=True)
+    counts, bins, patches = plt.hist(no_nan_dists, bins=100, density=True)
+    x_limit = np.minimum(np.mean(no_nan_dists) + 10 * np.std(no_nan_dists), 1)
+    plt.xlim(np.min(no_nan_dists), x_limit)
+    plt.ylim(0, np.max(counts) * 1.1)
     if fit_line is not 0:
-        x = np.linspace(0, np.nanmax(dists), 500)
+        x = np.linspace(np.min(no_nan_dists), np.max(no_nan_dists), 500)
         plt.plot(x, fit_line)
     plt.title(taxon)
     colors = iter(plt.cm.rainbow(np.linspace(0, 1, len(cutoffs))))
@@ -470,11 +527,11 @@ def plot_taxon_dists(
         )
     else:
         for cutoff in cutoffs:
-            if criterion == 'lognorm':
-                shape, loc, scale = get_shape_loc_scale(dists)
-                cutoff_line = get_lognorm_cutoff(float(cutoff), shape, loc, scale)
+            if criterion == 'weibull_min':
+                shape, loc, scale = get_shape_loc_scale(no_nan_dists)
+                cutoff_line = get_weibull_min_cutoff(float(cutoff), shape, loc, scale)
             if criterion == 'mean':
-                cutoff_line = get_mean_cutoff(dists, float(cutoff))
+                cutoff_line = get_mean_cutoff(no_nan_dists, float(cutoff))
             color = next(colors)
             plt.axvline(
                 cutoff_line,
@@ -502,9 +559,9 @@ def get_outliers_wrapper(
     return dict of tuples {taxon : (taxon_mean_distance, outlier_sequence_ranges)}
     """
     taxa = sorted(all_taxa_dists.keys())
-    if criterion == 'lognorm':
+    if criterion == 'weibull_min':
         outliers_dict = {
-            taxon: get_lognorm_outliers(
+            taxon: get_weibull_min_outliers(
                 all_taxa_dists,
                 taxon,
                 window_size,
@@ -542,7 +599,9 @@ def get_window_tuple(tpl, window_size):
 
 def get_outliers_list(window_dist_list, cutoff):
     """List comprehension to get all windows above certain threshold."""
-    return [window for window in window_dist_list if window[1] >= cutoff]
+    #print(window_dist_list)
+    #print("cutoff: ", cutoff)
+    return [window for window in window_dist_list if window[1] != 'NaN' and window[1] >= cutoff]
 
 
 def parse_manual_cutoffs(manual_cutoffs):
@@ -554,19 +613,20 @@ def parse_manual_cutoffs(manual_cutoffs):
     return manual_dict
 
 
-def get_lognorm_outliers(
+def get_weibull_min_outliers(
     all_dists, taxon, window_size, method, criterion, cutoff, manual_cutoffs
 ):
     """Identify outlier windows in a taxon.
 
     Given dict of {(taxon, aln_name) : dist}
-    return tuple of lognormal fit cutoff for taxon 
+    return tuple of Weibull fit cutoff for taxon 
     and list of ranges in sequence that are outliers.
     """
     dist_list = [window[1] for window in all_dists[taxon]]
     dists = get_np_dists(dist_list)
-    shape, loc, scale = get_shape_loc_scale(dists)
-    logn_cutoff = get_lognorm_cutoff(cutoff, shape, loc, scale)
+    no_nan_dists = get_dists_no_nans(dists)
+    shape, loc, scale = get_shape_loc_scale(no_nan_dists)
+    weib_cutoff = get_weibull_min_cutoff(cutoff, shape, loc, scale)
     if manual_cutoffs:
         manual_dict = parse_manual_cutoffs(manual_cutoffs)
         if taxon in manual_dict.keys():
@@ -579,14 +639,14 @@ def get_lognorm_outliers(
             ]
         else:
             outliers_list = sorted(
-                get_outliers_list(all_dists[taxon], logn_cutoff)
+                get_outliers_list(all_dists[taxon], weib_cutoff)
             )
             outliers = [
                 get_window_tuple(window, window_size)
                 for window in outliers_list
             ]
     else:
-        outliers_list = sorted(get_outliers_list(all_dists[taxon], logn_cutoff))
+        outliers_list = sorted(get_outliers_list(all_dists[taxon], weib_cutoff))
         outliers = [
             get_window_tuple(window, window_size) for window in outliers_list
         ]
@@ -595,7 +655,7 @@ def get_lognorm_outliers(
     else:
         merged_outliers = []
     outlier_sequence_ranges = list(merged_outliers)
-    return (logn_cutoff, outlier_sequence_ranges)
+    return (weib_cutoff, outlier_sequence_ranges)
 
 
 def get_mean_outliers(
@@ -609,7 +669,8 @@ def get_mean_outliers(
     """
     dist_list = [window[1] for window in all_dists[taxon]]
     dists = get_np_dists(dist_list)
-    mean_cutoff = get_mean_cutoff(dists, cutoff)
+    no_nan_dists = get_dists_no_nans(dists)
+    mean_cutoff = get_mean_cutoff(no_nan_dists, cutoff)
     if manual_cutoffs:
         manual_dict = {}
         for group in manual_cutoffs:
@@ -828,12 +889,12 @@ def get_stride(window_size, overlap):
 
 def check_cutoff_value(criterion, cutoff_value):
     """Validate single cutoff value from config file."""
-    if criterion == 'lognorm':
+    if criterion == 'weibull_min':
         if cutoff_value > 0 and cutoff_value < 1:
             pass
         else:
             print(
-                'WARNING: your lognorm cutoff values should be between 0 and 1, unless you are using manual cutoffs.'.format(
+                'WARNING: your weibull_min cutoff values should be between 0 and 1, unless you are using manual cutoffs.'.format(
                     cutoff_value
                 )
             )
@@ -842,7 +903,7 @@ def check_cutoff_value(criterion, cutoff_value):
             pass
         elif cutoff_value > 0 and cutoff_value < 1:
             print(
-                'WARNING: cutoff value "{}" is less than 1 mean. Did you intend to specify "lognorm" as criterion?'.format(
+                'WARNING: cutoff value "{}" is less than 1 mean. Did you intend to specify "weibull_min" as criterion?'.format(
                     cutoff_value
                 )
             )
@@ -960,11 +1021,11 @@ def get_validated_input(parsed_config):
         )
     # analysis config section
     criterion = parsed_config.get('analysis', 'criterion')
-    if criterion == 'lognorm' or criterion == 'mean':
+    if criterion == 'weibull_min' or criterion == 'mean':
         valid_input_dict['criterion'] = criterion
     else:
         exit(
-            'Invalid criterion "{}". Choose between "lognorm" and "mean".'.format(
+            'Invalid criterion "{}". Choose between "weibull_min" and "mean".'.format(
                 criterion
             )
         )
