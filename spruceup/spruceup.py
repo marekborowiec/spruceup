@@ -109,7 +109,6 @@ def read_config(config_file_name):
     return config
 
 
-# This whole function is replaced !!!
 def p_distance(seq1, seq2):
     """Calculate Hamming/p-distance for two sequences.
 
@@ -131,7 +130,6 @@ def p_distance(seq1, seq2):
         p_distance = sum(el1 != el2 for el1, el2 in valid_comparisons)
     else:
         p_distance = 'NaN'
-    #print(seq1, seq2, eff_len1, eff_len2, p_distance)
     return (eff_len1, p_distance)
 
 
@@ -150,7 +148,6 @@ def get_scaled_distance(distance_tpl):
             scaled_distance = 0
     else:
         scaled_distance = 'NaN'
-    #print(scaled_distance)
     return scaled_distance
 
 
@@ -241,7 +238,6 @@ def get_distances(aln_tuple, tree_dists, method, fraction, data_type):
             for sp2, seq2 in seqs_to_compare_to
             for sp1, seq1 in aln_dict.items()
         ]
-    #print(aln_name, distances)
     return (aln_name, distances)
 
 
@@ -276,96 +272,6 @@ def distances_wrapper(
                     yield output
 
 
-#def get_dist_and_taxa_lists(distances):
-#    """Get aligned lists of taxa and distances.
-#
-#    Given pairwise distances tuples 
-#    (taxon1, taxon2, pairwise distance between the two)
-#    return tuple (taxa list, distances list).
-#    """
-#    taxa_rows = [sp1 for (sp1, sp2, dist) in distances] # !!!
-#    dists = [dist for (sp1, sp2, dist) in distances]
-#    #for taxon, dist in zip(taxa_rows, dists):
-#     #   print(taxon, dist)
-#    return (taxa_rows, dists)
-
-
-#def dist_taxa_wrapper(dist_tuples):
-#    """Wrapper for getting aligned lists of taxa and distances.
-#
-#    Given list of tuples of multiple alignments
-#    return tuple (alignment name : (taxa rows, distances list)).
-#    """
-#    for aln_name, distances in dist_tuples:
-#        yield (aln_name, get_dist_and_taxa_lists(distances))
-
-
-#def get_dist_matrix(distances, taxa_no):
-#    """Create distance matrix for alignment.
-#
-#    Split all distances list [sp1 to sp1 dist, sp1 to sp2 dist, sp1 to sp3 dist etc.]
-#    to return list of lists [[sp1 dists to all other], [sp2 dists to all other], etc.]
-#    """
-#    matrix = [
-#        distances[x : x + taxa_no] for x in range(0, len(distances), taxa_no)
-#    ]
-#    return matrix
-
-
-#def get_taxon_map(taxa_rows):
-#    """Create taxon map for distance matrix.
-#
-#    Taxon map is a list of unique taxon names in order.
-#    """
-#    seen = set()
-#    taxa_map = [sp for sp in taxa_rows if not (sp in seen or seen.add(sp))]
-#    return taxa_map
-
-
-#def mean_distances_wrapper(aln_tpls):
-#    """Wrapper to get taxon mean distances across multiple alignments.
-#
-#    Given list of tuples (alignment name, (taxa rows, distances list))
-#    return list of tuples (alignment name, {taxon : mean distance within alignment}).
-#    """
-#    for aln_tpl_lists in aln_tpls:
-#        aln_name, dist_tuple = aln_tpl_lists
-#        taxa_rows, dists = dist_tuple
-#        taxon_map = get_taxon_map(taxa_rows)
-#        dist_matrix = get_dist_matrix(dists, len(taxon_map))
-#        print(dist_tuple)
-#        means = get_mean_distances(dist_matrix, taxa_rows) # !!!
-#        yield (aln_name, means)
-
-
-#def get_mean_distances(dist_matrix, taxon_map):
-#    """Get taxon mean distances from taxon map and distance matrix.
-#
-#    Given matrix of all pairwise distances and taxon map
-#    return dict of {taxon : mean distances}.
-#    """
-#    mean_distances = {
-#        sp: mean_dist
-#        for sp, mean_dist in zip(
-#            taxon_map, [get_list_mean(dist) for dist in dist_matrix]
-#        )
-#    }
-#    return mean_distances
-
-
-#def get_list_mean(lst):
-#    """Return mean for all items in a list."""
-#    clean_list = [i for i in lst if i != 'NaN']
-#    print(clean_list)
-#    try:
-#        list_mean = abs(
-#            sum([i for i in clean_list]) / float(len(clean_list) - 1)
-#        )  # - 1 ensures that distance to self does not count
-#    except ZeroDivisionError:  # when there is only one non-empty sequence in window
-#        list_mean = 0
-#    return round(list_mean, 5)
-
-
 def mean_distances_wrapper(aln_tuples):
     """Wrapper to get taxon mean distances across multiple alignments.
 
@@ -382,22 +288,16 @@ def mean_distances_wrapper(aln_tuples):
         for taxon1, taxon2, distance in taxa_distances:
             all_taxa.add(taxon1)
             if taxon1 != taxon2 and distance != 'NaN':
-                #print(taxon1, taxon2, distance)
                 distance = float(distance)
                 taxa_sums[taxon1] += distance
                 taxa_counts[taxon1] += 1
-
         # Calculate means
-        #print(taxa_counts['D'])
-        #print(taxa_sums['D'])
         taxa_means = {}
         for taxon in all_taxa:
-            #print("printing taxa: ", taxon)
             if taxa_counts[taxon] > 0:
                 taxa_means[taxon] = round(taxa_sums[taxon] / taxa_counts[taxon], 3)
             else:
                 taxa_means[taxon] = 'NaN'
-        #print(aln_name, taxa_means)
         yield (aln_name, taxa_means)
 
 
@@ -414,21 +314,7 @@ def dists_per_taxon(means_tuple_list):
                 taxa_dists[sp] = [(aln_name, mean_dist)]
             else:
                 taxa_dists[sp].append((aln_name, mean_dist))
-    #print(taxa_dists)
     return taxa_dists
-
-
-#def means_per_taxon(taxa_dists):
-#    """Get mean distances for taxon.
-#
-#    Given dict of {taxon : (alignment, mean distance within alignment)}
-#    return dict of {taxon : mean distance across alignments}.
-#    """
-#    taxa_means = {
-#        sp: get_list_mean([dists for aln_name, dists in aln_dists])
-#        for sp, aln_dists in taxa_dists.items()
-#    }
-#    return taxa_means
 
 
 def get_np_dists(dist_list):
@@ -599,8 +485,6 @@ def get_window_tuple(tpl, window_size):
 
 def get_outliers_list(window_dist_list, cutoff):
     """List comprehension to get all windows above certain threshold."""
-    #print(window_dist_list)
-    #print("cutoff: ", cutoff)
     return [window for window in window_dist_list if window[1] != 'NaN' and window[1] >= cutoff]
 
 
@@ -1114,6 +998,4 @@ def get_validated_input(parsed_config):
     except IOError as ex:
         exit('Invalid output: {}'.format(ex.strerror))
     return valid_input_dict
-
-
 
