@@ -744,7 +744,6 @@ def write_report(report_string, report_file_name):
 def round_mean_distances(mean_taxon_distances):
     """Round distances before writing output."""
     rounded_mean_taxon_distances = {}
-    print(mean_taxon_distances)
     for taxon, dists_list in mean_taxon_distances.items():
         for window_mean in dists_list:
             window, mean = window_mean
