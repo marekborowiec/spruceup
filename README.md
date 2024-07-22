@@ -65,6 +65,7 @@ You can then use `spruceup` by invoking
 ```bash
 docker run -w /data -v "/path/to/your/files/:/data" marekborowiec/spruceup-miniconda bash -c "source activate spruceup && python3 -m spruceup config_example.conf"
 ```
+Replace the part of the command following `-v` and preceding `:` with the path to your files and `config_example.conf` with your configuration file name.
 
 ## Interface
 Once you successfully installed `spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format, 2) (optional) a guide tree for your alignment in `NEWICK` format, and 3) configuration file to run the program. To run the program from the command line you can type:
