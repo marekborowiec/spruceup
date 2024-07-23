@@ -57,6 +57,7 @@ python3 -m venv spruceup
 ```
 
 There is a known issue when installing on Mac/OSX, which arises because `matplotlib` requires a framework build of Python. If you are working on OSX, you can install this with `conda install python.app` and use `pythonw -m` instead of `python -m` to run `spruceup`. See also [here](https://matplotlib.org/3.1.0/faq/osx_framework.html).
+
 If you are unsuccessful in installing `spruceup` using these instructions on your system, try installing [Docker](https://docs.docker.com/engine/install/). You can then pull an image containing installed `spruceup` [here](https://hub.docker.com/r/marekborowiec/spruceup-miniconda) or using
 ```bash
 docker pull marekborowiec/spruceup-miniconda
