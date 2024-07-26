@@ -167,7 +167,7 @@ Calculating distances with `spruceup` is often the most time- and memory-consumi
 
 ## Testing
 
-**Note:** As of version 2024.7.20 and newer, the tests are not working because `spruceup` completely changed the way distances are computer. Stay tuned as I update the tests.  
+**Note:** As of version 2024.7.20 and newer, the tests are not working because `spruceup` completely changed the way distances are computed. Stay tuned as I update the tests.  
 
 Tests written for `spruceup` code use the Python's standard library module `unittest` and are integrated with `setuptools`. This means that if you downloaded the `spruceup` source code, you can run tests from the top `spruceup` directory after installing with:
 ```
