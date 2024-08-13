@@ -729,7 +729,7 @@ def print_report(outliers, criterion, cutoff, manual_cutoffs):
             'Cutoff: {}\n'
             'Removed {} positions\n'
             '{}\n\n'.format(
-                taxon, round(cutoff_value, 5), total_seq_removed_from_taxon, ranges
+                taxon, round(float(cutoff_value), 5), total_seq_removed_from_taxon, ranges
             )
         )
     return report_string
