@@ -741,17 +741,6 @@ def write_report(report_string, report_file_name):
         rf.write(report_string)
 
 
-def round_mean_distances(mean_taxon_distances):
-    """Round distances before writing output."""
-    rounded_mean_taxon_distances = {}
-    for taxon, dists_list in mean_taxon_distances.items():
-        for window_mean in dists_list:
-            window, mean = window_mean
-            rounded_mean = round(float(mean), 5)
-        rounded_mean_taxon_distances[taxon] = (window, rounded_mean)
-    return rounded_mean_taxon_distances
-
-
 def write_distances_dict(
     mean_taxon_distances, distances_method, window_size, overlap
 ):
@@ -764,7 +753,7 @@ def write_distances_dict(
     )
     with open(dist_fn, 'w') as f:
         logging.info('Writing distances to file {} ...\n'.format(dist_fn))
-        json.dump(round_mean_distances(mean_taxon_distances), f)
+        json.dump(mean_taxon_distances, f)
 
 
 def read_distances_dict(distances_json):
