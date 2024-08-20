@@ -295,7 +295,7 @@ def mean_distances_wrapper(aln_tuples):
         taxa_means = {}
         for taxon in all_taxa:
             if taxa_counts[taxon] > 0:
-                taxa_means[taxon] = round(taxa_sums[taxon] / taxa_counts[taxon], 3)
+                taxa_means[taxon] = taxa_sums[taxon] / taxa_counts[taxon]
             else:
                 taxa_means[taxon] = 'NaN'
         yield (aln_name, taxa_means)
@@ -349,7 +349,7 @@ def get_weibull_min_cutoff(cutoff, shape, loc, scale):
 def get_mean_cutoff(dist_list, cutoff):
     """Get mean from a list of distances without NaNs."""
     mean = np.mean(dist_list)
-    return round((mean * cutoff), 3)
+    return mean * cutoff
 
 
 def plotting_wrapper(
@@ -729,7 +729,7 @@ def print_report(outliers, criterion, cutoff, manual_cutoffs):
             'Cutoff: {}\n'
             'Removed {} positions\n'
             '{}\n\n'.format(
-                taxon, cutoff_value, total_seq_removed_from_taxon, ranges
+                taxon, round(float(cutoff_value), 5), total_seq_removed_from_taxon, ranges
             )
         )
     return report_string
@@ -741,19 +741,30 @@ def write_report(report_string, report_file_name):
         rf.write(report_string)
 
 
+def round_mean_distances(mean_taxon_distances):
+    """Round distances before writing output."""
+    rounded_mean_taxon_distances = {}
+    for taxon, dists_list in mean_taxon_distances.items():
+        for window_mean in dists_list:
+            window, mean = window_mean
+            rounded_mean = round(float(mean), 5)
+        rounded_mean_taxon_distances[taxon] = (window, rounded_mean)
+    return rounded_mean_taxon_distances
+
+
 def write_distances_dict(
     mean_taxon_distances, distances_method, window_size, overlap
 ):
     """Write json file with per-taxon windows and their distances.
 
-    The format is: {"taxon": [[window0, mean_distance_in_window], [window1, dist] ...]}.
+    The format is: {"taxon": [(window0, mean_distance_in_window), (window1, dist) ...]}.
     """
     dist_fn = '{}-distances-{}window-{}overlap.json'.format(
         distances_method, window_size, overlap
     )
     with open(dist_fn, 'w') as f:
         logging.info('Writing distances to file {} ...\n'.format(dist_fn))
-        json.dump(mean_taxon_distances, f)
+        json.dump(round_mean_distances(mean_taxon_distances), f)
 
 
 def read_distances_dict(distances_json):

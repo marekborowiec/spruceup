@@ -58,6 +58,16 @@ python3 -m venv spruceup
 
 There is a known issue when installing on Mac/OSX, which arises because `matplotlib` requires a framework build of Python. If you are working on OSX, you can install this with `conda install python.app` and use `pythonw -m` instead of `python -m` to run `spruceup`. See also [here](https://matplotlib.org/3.1.0/faq/osx_framework.html).
 
+If you are unsuccessful in installing `spruceup` using these instructions on your system, try installing [Docker](https://docs.docker.com/engine/install/). You can then pull an image containing installed `spruceup` [here](https://hub.docker.com/r/marekborowiec/spruceup-miniconda) or using
+```bash
+docker pull marekborowiec/spruceup-miniconda
+```
+You can then use `spruceup` by invoking
+```bash
+docker run -w /data -v "/path/to/your/files/:/data" marekborowiec/spruceup-miniconda bash -c "source activate spruceup && python3 -m spruceup config_example.conf"
+```
+Replace the part of the command following `-v` and preceding `:` with the path to your files and `config_example.conf` with your configuration file name.
+
 ## Interface
 Once you successfully installed `spruceup` you will need 1) an alignment in `FASTA`, `PHYLIP` or `NEXUS` format, 2) (optional) a guide tree for your alignment in `NEWICK` format, and 3) configuration file to run the program. To run the program from the command line you can type:
 ```bash
@@ -87,13 +97,13 @@ The `analysis` category defines parameters used to analyze and clean up your ali
 
 `window_size` chooses how many characters (aa/nt) to include in a window in which distances will be calculated. Default value that works well for most alignments is `20`. 
 
-`overlap` indicates how many characters (aa/nt) each sliding window will be overlapping with preceding window. Overlap of `15` and window size of `20` means that each new window will move 5 positions down the alignment and overlap by 15 characters with the preceding window. Decreasing the overlap will decrease computational burden because fewer windows will be created. Default value is `15` (two thirds of default window size of `20`) but you may want to go lower, to half of window size or even `0` (non-overlapping windows) if your alignment is very large and you want to decrease compute time and memory usage and don't mind sacrificing some precision. 
+`overlap` indicates how many characters (aa/nt) each sliding window will be overlapping with preceding window. Overlap of `10` and window size of `20` means that each new window will move 10 positions down the alignment and overlap by 10 characters with the preceding window. Decreasing the overlap will decrease computational burden because fewer windows will be created. Default value is `10` (half of default window size of `20`) but you may want to go lower, to half of window size or even `0` (non-overlapping windows) if your alignment is very large and you want to decrease compute time and memory usage and don't mind sacrificing some precision. 
 
 `fraction` signifies proportion of samples that will be used to calculate average distance in each window. With fraction set to `1.0` distances for each sample will be calculated against all other samples in the alignment. With fraction set to `0.5` distances for each sample will be calculated against a random draw representing 50% of samples in the alignment. Lowering this number will help to speed up calculations in alignments with large numbers of taxa.
 
 `criterion` chooses how outlier distances will be determined. `weibull_min` means that a [Weibull distribution](https://en.wikipedia.org/wiki/Weibull_distribution) will be fitted to your distance data for each sample and cutoffs will be determined by specifying quantile of observations above which sequence will be considered outliers. If you are using `mean`, simple multiple of those values computed for each sample will be considered cutoffs for identifying outliers.
 
-`cutoffs` specifies multiple values considered as cutoffs. If using `weibull_min` criterion, use fractions of `1`, for example `0.9,0.995` etc. Default values that should work for most alignments are `0.9,0.95,0.97,0.99,0.995,0.999`. If you are using `mean` as your criterion, use multiples of those values, for example `5,30` etc. Defaults of `5,10,15,18,20,25,30` for `mean` criterion should be useful starting points for most datasets. You can always trim with additional criteria and cutoffs after the initial analysis (see point 5 below under Interpreting the output). If the alignment contains many saturated or poorly aligned sites, a low setting may result in huge amount of data being trimmed from the original alignment. This is time-consuming and you may want to trim your alignment with a more stringent 'block' method before using `spruceup` or remove lower cutoff values from the list.
+`cutoffs` specifies multiple values considered as cutoffs. If you are using `mean` as your criterion (default), use multiples of those values, for example `2,3,5` etc. Defaults of `2,3,5,10,15,18,20,25,30` for `mean` criterion should be a useful starting point for most datasets. You can always trim with additional criteria and cutoffs after the initial analysis (see point 5 below under Interpreting the output). If using `weibull_min` criterion, use fractions of `1`, for example `0.9,0.995` etc. Default values that should work for most alignments are `0.9,0.95,0.97,0.99,0.995,0.999`. If the alignment contains many saturated or poorly aligned sites, a low setting may result in huge amount of data being trimmed from the original alignment. This is time-consuming and you may want to trim your alignment with a more stringent 'block' method before using `spruceup` or remove lower cutoff values from the list.
 
 `manual_cutoffs` is an optional setting that allows manual modifications to cutoffs for individual samples. *__Important: the cutoff here is the absolute distance value on the `x` axis of your output plots where you want to draw the cutoff line, not where you expect the value of your `weibull_min` or `mean` to fall on that plot.__* It may prove useful if only one or a few samples have a significant proportion of poorly aligned sequences, skewing their overall cutoff such that they are not being flagged. If you find that this is case, however, you should probably rather be checking your data and pipeline for errors!
 
@@ -156,6 +166,8 @@ This is a log file that will contain the same information that appears on the te
 Calculating distances with `spruceup` is often the most time- and memory-consuming part of the process, although trimming very large numbers of positions from the alignment can also take a long time. Because of this `spruceup` writes a `json` format file each time you run an analysis from scratch, allowing you to load it up later and trim with different criterion or cutoff values. Note that distances will be specific for each window size, overlap, and taxon fraction and you will need to re-run the whole analysis if you want to adjust these parameters. Note that the `json` file can be quite large at >150MB per 100,000 windows and 100 taxa.
 
 ## Testing
+
+**Note:** As of version 2024.7.20 and newer, the tests are not working because `spruceup` completely changed the way distances are computed. Stay tuned as I update the tests.  
 
 Tests written for `spruceup` code use the Python's standard library module `unittest` and are integrated with `setuptools`. This means that if you downloaded the `spruceup` source code, you can run tests from the top `spruceup` directory after installing with:
 ```
