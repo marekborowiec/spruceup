@@ -1,358 +1,185 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-  <meta charset="utf-8">
-  <title>README.md - Grip</title>
-  <link rel="icon" href="http://localhost:6419/__/grip/static/favicon.ico">
-  <link rel="stylesheet" href="README_files/github-e3bff23d54e12a76d66b61023f1c8796.css">
-  <link rel="stylesheet" href="README_files/frameworks-41c2037bf12f1e46d8f08b88a04a8d8f.css">
-  <link rel="stylesheet" href="README_files/site-294181adec18ed639e160b96b45d17ac.css">
-  <link rel="stylesheet" href="README_files/octicons.css">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
   <style>
-    /* Page tweaks */
-    .preview-page {
-      margin-top: 64px;
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
     }
-    /* User-content tweaks */
-    .timeline-comment-wrapper > .timeline-comment:after,
-    .timeline-comment-wrapper > .timeline-comment:before {
-      content: none;
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
     }
-    /* User-content overrides */
-    .discussion-timeline.wide {
-      width: 920px;
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
     }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
 </head>
 <body>
-  <div class="page">
-    <div id="preview-page" class="preview-page" data-autorefresh-url="/__/grip/refresh/">
-
-    
-
-      <div role="main" class="main-content">
-        <div class="container new-discussion-timeline experiment-repo-nav">
-          <div class="repository-content">
-            <div id="readme" class="readme boxed-group clearfix announce instapaper_body md">
-              
-                <h3>
-                  <span class="octicon octicon-book"></span>
-                  README.md
-                </h3>
-              
-              <article class="markdown-body entry-content" itemprop="text" id="grip-content">
-                <p><a href="https://doi.org/10.21105/joss.01635" rel="nofollow"><img src="README_files/status.svg" alt="DOI" data-canonical-src="https://joss.theoj.org/papers/10.21105/joss.01635/status.svg" style="max-width:100%;"></a></p>
-<h1>
-<a id="user-content-spruceup" class="anchor" href="#spruceup" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>spruceup</h1>
+<p><a href="https://doi.org/10.21105/joss.01635"><img src="https://joss.theoj.org/papers/10.21105/joss.01635/status.svg" alt="DOI" /></a></p>
+<h1 id="spruceup">spruceup</h1>
 <pre><code>        A  
        TCG  
       ACGTA  
-        T 
-</code></pre>
+        T </code></pre>
 <p>Tools to discover, visualize, and remove outlier sequences in large multiple sequence alignments.</p>
-<p><code>spruceup</code> is a Python tool for biologists 
-(bioinformaticians, phylogeneticists, evolutionary biologists) doing 
-inference on phylogenomic sequence alignments. It allows discovery and 
-removal of individual poorly aligned sequences or sequence fragments 
-(alignment rows), which is different from the problem of poorly aligned 
-sequence blocks (alignment columns) commonly addressed by alignment 
-trimming software.</p>
-<p>If you are using this program, please cite <a href="https://joss.theoj.org/papers/10.21105/joss.01635" rel="nofollow">this publication</a>:</p>
-<pre><code>Borowiec, M.L. (2019) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments. Journal of Open Source Software, 4(42), 1635, https://doi.org/10.21105/joss.01635
-</code></pre>
-<p>This script uses <a href="http://www.numpy.org/" rel="nofollow">numpy</a>, <a href="https://www.scipy.org/index.html" rel="nofollow">scipy</a>, <a href="https://matplotlib.org/" rel="nofollow">matplotlib</a>, <a href="https://pypi.org/project/psutil/" rel="nofollow">psutil</a>, <a href="https://pypi.org/project/tqdm/" rel="nofollow">tqdm</a>, and <a href="https://pypi.org/project/treeswift/" rel="nofollow">treeswift</a>.</p>
-<h2>
-<a id="user-content-installation-and-requirements" class="anchor" href="#installation-and-requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation and requirements</h2>
-<p>You can download a zipped GitHub repository, clone it if you have <code>git</code> installed on your system, or install using <a href="https://pip.pypa.io/en/latest/installing.html" rel="nofollow">pip</a> from the <a href="https://pypi.python.org/pypi/spruceup" rel="nofollow">Python Package Index</a>. Cloning the repository will also download example files used in the tutorial below.</p>
-<p><code>spruceup</code> has been developed and tested under Ubuntu Linux. It requires you have Python version 3.6 or newer. You can use <code>spruceup</code>
- with early releases of Python 3.7, but as of today (12 August 2019), 
-you may experience trouble installing it if using Python 3.7.4. 
-Dependencies should be installed automatically. If your system does not 
-have Python version 3.6 or newer you will need to <a href="http://www.python.org/downloads/" rel="nofollow">download and install it</a>. On Linux-like systems (including Ubuntu) you can install it from the command line using:</p>
-<div class="highlight highlight-source-shell"><pre>sudo apt-get install python3.6</pre></div>
-<p>It is highly recommended that you install <code>spruceup</code> in a new Python environment. If you are using the <a href="https://www.anaconda.com/distribution/" rel="nofollow">conda package manager</a>, type:</p>
-<div class="highlight highlight-source-shell"><pre>conda create --name spruceup python=3.6</pre></div>
+<p><code>spruceup</code> is a Python tool for biologists (bioinformaticians, phylogeneticists, evolutionary biologists) doing inference on phylogenomic sequence alignments. It allows discovery and removal of individual poorly aligned sequences or sequence fragments (alignment rows), which is different from the problem of poorly aligned sequence blocks (alignment columns) commonly addressed by alignment trimming software.</p>
+<p>If you are using this program, please cite <a href="https://joss.theoj.org/papers/10.21105/joss.01635">this publication</a>:</p>
+<pre><code>Borowiec, M.L. (2019) Spruceup: fast and flexible identification, visualization, and removal of outliers from large multiple sequence alignments. Journal of Open Source Software, 4(42), 1635, https://doi.org/10.21105/joss.01635</code></pre>
+<p>This script uses <a href="http://www.numpy.org/">numpy</a>, <a href="https://www.scipy.org/index.html">scipy</a>, <a href="https://matplotlib.org/">matplotlib</a>, <a href="https://pypi.org/project/psutil/">psutil</a>, <a href="https://pypi.org/project/tqdm/">tqdm</a>, and <a href="https://pypi.org/project/treeswift/">treeswift</a>.</p>
+<h2 id="installation-and-requirements">Installation and requirements</h2>
+<p>You can download a zipped GitHub repository, clone it if you have <code>git</code> installed on your system, or install using <a href="https://pip.pypa.io/en/latest/installing.html">pip</a> from the <a href="https://pypi.python.org/pypi/spruceup">Python Package Index</a>. Cloning the repository will also download example files used in the tutorial below.</p>
+<p><code>spruceup</code> has been developed and tested under Ubuntu Linux. It requires you have Python version 3.6 or newer. You can use <code>spruceup</code> with early releases of Python 3.7, but as of today (12 August 2019), you may experience trouble installing it if using Python 3.7.4. Dependencies should be installed automatically. If your system does not have Python version 3.6 or newer you will need to <a href="http://www.python.org/downloads/">download and install it</a>. On Linux-like systems (including Ubuntu) you can install it from the command line using:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="fu">sudo</span> apt-get install python3.6</span></code></pre></div>
+<p>It is highly recommended that you install <code>spruceup</code> in a new Python environment. If you are using the <a href="https://www.anaconda.com/distribution/">conda package manager</a>, type:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="ex">conda</span> create --name spruceup python=3.6</span></code></pre></div>
 <p>And follow instuctions on the prompt.</p>
-<p>Now activate your environment (with <code>conda</code> you would type <code>conda activate spruceup</code>)
- and install. If you want to download example files, simply download and
- unzip this repository or, if you have git, clone it with:</p>
-<div class="highlight highlight-source-shell"><pre>git clone https://github.com/marekborowiec/spruceup.git</pre></div>
+<p><em>Note that at this point you only created a virtual environment called “spruceup”. You haven’t installed it yet.</em> Now activate your environment (with <code>conda</code> you would type <code>conda activate spruceup</code>) and install. I recommend using <code>pip</code> (<a href="https://pypi.org/">Python Package Index</a>):</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a><span class="ex">pip</span> install spruceup</span></code></pre></div>
+<p>If you want to download example files, simply download and unzip this repository or, if you have git, clone it with:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a><span class="fu">git</span> clone https://github.com/marekborowiec/spruceup.git</span></code></pre></div>
 <p>You can then install <code>spruceup</code> from within this cloned repository:</p>
-<div class="highlight highlight-source-shell"><pre>python setup.py install</pre></div>
-<p><code>spruceup</code> is also available on <a href="https://pypi.org/" rel="nofollow">Python Package Index</a> and you can install it via <code>pip</code> without example files:</p>
-<div class="highlight highlight-source-shell"><pre>pip install spruceup</pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a><span class="ex">python</span> setup.py install</span></code></pre></div>
 <p>If you do not wish to install <code>conda</code>, you can set up a new environment using a different package manager, such as <code>venv</code>:</p>
-<div class="highlight highlight-source-shell"><pre>python3 -m venv spruceup</pre></div>
-<h2>
-<a id="user-content-interface" class="anchor" href="#interface" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interface</h2>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a><span class="ex">python3</span> -m venv spruceup</span></code></pre></div>
+<p>There is a known issue when installing on Mac/OSX, which arises because <code>matplotlib</code> requires a framework build of Python. If you are working on OSX, you can install this with <code>conda install python.app</code> and use <code>pythonw -m</code> instead of <code>python -m</code> to run <code>spruceup</code>. See also <a href="https://matplotlib.org/3.1.0/faq/osx_framework.html">here</a>.</p>
+<p>If you are unsuccessful in installing <code>spruceup</code> using these instructions on your system, try installing <a href="https://docs.docker.com/engine/install/">Docker</a>. You can then pull an image containing installed <code>spruceup</code> <a href="https://hub.docker.com/r/marekborowiec/spruceup-miniconda">here</a> or using</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="ex">docker</span> pull marekborowiec/spruceup-miniconda</span></code></pre></div>
+<p>You can then use <code>spruceup</code> by invoking</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="ex">docker</span> run -w /data -v <span class="st">&quot;/path/to/your/files/:/data&quot;</span> marekborowiec/spruceup-miniconda bash -c <span class="st">&quot;source activate spruceup &amp;&amp; python3 -m spruceup config_example.conf&quot;</span></span></code></pre></div>
+<p>Replace the part of the command following <code>-v</code> and preceding <code>:</code> with the path to your files and <code>config_example.conf</code> with your configuration file name.</p>
+<h2 id="interface">Interface</h2>
 <p>Once you successfully installed <code>spruceup</code> you will need 1) an alignment in <code>FASTA</code>, <code>PHYLIP</code> or <code>NEXUS</code> format, 2) (optional) a guide tree for your alignment in <code>NEWICK</code> format, and 3) configuration file to run the program. To run the program from the command line you can type:</p>
-<div class="highlight highlight-source-shell"><pre>python -m spruceup my-configuration-file.conf</pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true"></a><span class="ex">python</span> -m spruceup my-configuration-file.conf</span></code></pre></div>
 <p>Directory <code>examples</code> contains a template configuration file (<code>/examples/config_example.conf</code>). This file should be a template for your own analyses. It has the following fields:</p>
-<h3>
-<a id="user-content-input" class="anchor" href="#input" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[input]</h3>
+<h3 id="input">[input]</h3>
 <p>The <code>input</code> category defines parameters of the input alignment and its type.</p>
-<p><code>input_file_name</code> is the file path of the alignment to be 
-processed. This can be provided as a file name, if the config is in the 
-same directory as alignment and <code>spruceup</code> command will be ran from there as well. Alternatively, you can provide the absolute path. <em><strong>This should be a relatively large, concatenated alignment</strong></em>. The <code>spruceup</code>
- algorithm works the better the more data it has, so if you have a 
-phylogenomic dataset consisting of many single-locus alignments, you 
-should first concatenate them. You can then split the processed/trimmed 
-alignment back into single-locus alignments using another utility such 
-as <a href="https://doi.org/10.7717/peerj.1660" rel="nofollow">AMAS</a>.</p>
+<p><code>input_file_name</code> is the file path of the alignment to be processed. This can be provided as a file name, if the config is in the same directory as alignment and <code>spruceup</code> command will be ran from there as well. Alternatively, you can provide the absolute path. <em><strong>This should be a relatively large, concatenated alignment</strong></em>. The <code>spruceup</code> algorithm works the better the more data it has, so if you have a phylogenomic dataset consisting of many single-locus alignments, you should first concatenate them. You can then split the processed/trimmed alignment back into single-locus alignments using another utility such as <a href="https://doi.org/10.7717/peerj.1660">AMAS</a>.</p>
 <p><code>input_format</code> indicates which format the alignment file is in. It can be one of five popular formats: <code>fasta</code>, <code>phylip</code>, <code>phylip-int</code> (interleaved PHYLIP), <code>nexus</code>, and <code>nexus-int</code>.</p>
 <p><code>data_type</code> tells the program whether your alignment contains amino acids (<code>aa</code>) or DNA nucleotides (<code>nt</code>).</p>
-<p><code>distances_object_file</code> is the file name of an existing distance object. By default this saves to the directory where you run the <code>spruceup</code>
- command and so it is better to provide absolute path here. Because 
-sometimes you will want to adjust cutoffs or cutoff criterion and 
-computing distances is the most time-consuming part of the analysis, <code>spruceup</code> saves a <code>json</code>
- format file with distances from each analysis. By default this is 
-blank, but if you do have a distance file from a previous analysis and 
-you want to trim your alignment with new cutoffs, supply the <code>json</code> file name here. <code>spruceup</code> will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.</p>
-<p><code>guide_tree</code> is a phylogram or cladogram <code>NEWICK</code>
- format file to be used as a guide tree. File name or absolute path. The
- tree can be inferred using any method and can be fully resolved or 
-contain polytomies. If you do not supply a guide tree the program will 
-still run but without phylogeny it will have less information to 
-identify misaligned sequences. This is particularly important in 
-vartiable algnments with distantly related samples (individual sequences
- representing individual, taxon, OTU, etc.), where it is more difficult 
-to distinguish genuinely variable sequences from misaligned fragments. 
-In cases where you suspect and are mainly concerned with samples with 
-spuriously long terminal branches it is adivsable to supply 
-topology-only (cladogram) guide tree and/or run the program without a 
-guide tree.</p>
-<h3>
-<a id="user-content-analysis" class="anchor" href="#analysis" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[analysis]</h3>
+<p><code>distances_object_file</code> is the file name of an existing distance object. By default this saves to the directory where you run the <code>spruceup</code> command and so it is better to provide absolute path here. Because sometimes you will want to adjust cutoffs or cutoff criterion and computing distances is the most time-consuming part of the analysis, <code>spruceup</code> saves a <code>json</code> format file with distances from each analysis. By default this is blank, but if you do have a distance file from a previous analysis and you want to trim your alignment with new cutoffs, supply the <code>json</code> file name here. <code>spruceup</code> will then run with new trimming cutoffs and/or criterion but without the need to re-calculate distances.</p>
+<p><code>guide_tree</code> is a phylogram or cladogram <code>NEWICK</code> format file to be used as a guide tree. File name or absolute path. The tree can be inferred using any method and can be fully resolved or contain polytomies. If you do not supply a guide tree the program will still run but without phylogeny it will have less information to identify misaligned sequences. This is particularly important in vartiable algnments with distantly related samples (individual sequences representing individual, taxon, OTU, etc.), where it is more difficult to distinguish genuinely variable sequences from misaligned fragments. In cases where you suspect and are mainly concerned with samples with spuriously long terminal branches it is adivsable to supply topology-only (cladogram) guide tree and/or run the program without a guide tree.</p>
+<h3 id="analysis">[analysis]</h3>
 <p>The <code>analysis</code> category defines parameters used to analyze and clean up your alignment.</p>
 <p><code>cores</code> how many CPU cores to use for distance calculations.</p>
 <p><code>distance_method</code> chooses to compute uncorrected p-distance with <code>uncorrected</code> or Jukes-Cantor-corrected distance with <code>jc</code>.</p>
-<p><code>window_size</code> chooses how many characters (aa/nt) to 
-include in a window in which distances will be calculated. Default value
- that works well for most alignments is <code>20</code>.</p>
-<p><code>overlap</code> indicates how many characters (aa/nt) each sliding window will be overlapping with preceding window. Overlap of <code>15</code> and window size of <code>20</code>
- means that each new window will move 5 positions down the alignment and
- overlap by 15 characters with the preceding window. Decreasing the 
-overlap will decrease computational burden because fewer windows will be
- created. Default value is <code>15</code> (two thirds of default window size of <code>20</code>) but you may want to go lower, to half of window size or even <code>0</code>
- (non-overlapping windows) if your alignment is very large and you want 
-to decrease compute time and memory usage and don't mind sacrificing 
-some precision.</p>
-<p><code>fraction</code> signifies proportion of samples that will be used to calculate average distance in each window. With fraction set to <code>1.0</code> distances for each sample will be calculated against all other samples in the alignment. With fraction set to <code>0.5</code>
- distances for each sample will be calculated against a random draw 
-representing 50% of samples in the alignment. Lowering this number will 
-help to speed up calculations in alignments with large numbers of taxa.</p>
-<p><code>criterion</code> chooses how outlier distances will be determined. <code>lognorm</code> means that a <a href="https://en.wikipedia.org/wiki/Log-normal_distribution" rel="nofollow">lognormal distribution</a>
- will be fitted to your distance data for each sample and cutoffs will 
-be determined by specifying quantile of observations above which 
-sequence will be considered outliers. If you are using <code>mean</code>, simple multiple of those values computed for each sample will be considered cutoffs for identifying outliers.</p>
-<p><code>cutoffs</code> specifies multiple values considered as cutoffs. If using <code>lognorm</code> criterion, use fractions of <code>1</code>, for example <code>0.9,0.995</code> etc. Default values that should work for most alignments are <code>0.9,0.95,0.97,0.99,0.995,0.999</code>. If you are using <code>mean</code> as your criterion, use multiples of those values, for example <code>5,30</code> etc. Defaults of <code>5,10,15,18,20,25,30</code> for <code>mean</code>
- criterion should be useful starting points for most datasets. You can 
-always trim with additional criteria and cutoffs after the initial 
-analysis (see point 5 below under Interpreting the output). If the 
-alignment contains many saturated or poorly aligned sites, a low setting
- may result in huge amount of data being trimmed from the original 
-alignment. This is time-consuming and you may want to trim your 
-alignment with a more stringent 'block' method before using <code>spruceup</code> or remove lower cutoff values from the list.</p>
-<p><code>manual_cutoffs</code> is an optional setting that allows manual modifications to cutoffs for individual samples. <em><strong>Important: the cutoff here is the absolute distance value on the <code>x</code> axis of your output plots where you want to draw the cutoff line, not where you expect the value of your <code>lognorm</code> or <code>mean</code> to fall on that plot.</strong></em>
- It may prove useful if only one or a few samples have a significant 
-proportion of poorly aligned sequences, skewing their overall cutoff 
-such that they are not being flagged. If you find that this is case, 
-however, you should probably rather be checking your data and pipeline 
-for errors!</p>
-<h3>
-<a id="user-content-output" class="anchor" href="#output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>[output]</h3>
+<p><code>window_size</code> chooses how many characters (aa/nt) to include in a window in which distances will be calculated. Default value that works well for most alignments is <code>20</code>.</p>
+<p><code>overlap</code> indicates how many characters (aa/nt) each sliding window will be overlapping with preceding window. Overlap of <code>10</code> and window size of <code>20</code> means that each new window will move 10 positions down the alignment and overlap by 10 characters with the preceding window. Decreasing the overlap will decrease computational burden because fewer windows will be created. Default value is <code>10</code> (half of default window size of <code>20</code>) but you may want to go lower, to half of window size or even <code>0</code> (non-overlapping windows) if your alignment is very large and you want to decrease compute time and memory usage and don’t mind sacrificing some precision.</p>
+<p><code>fraction</code> signifies proportion of samples that will be used to calculate average distance in each window. With fraction set to <code>1.0</code> distances for each sample will be calculated against all other samples in the alignment. With fraction set to <code>0.5</code> distances for each sample will be calculated against a random draw representing 50% of samples in the alignment. Lowering this number will help to speed up calculations in alignments with large numbers of taxa.</p>
+<p><code>criterion</code> chooses how outlier distances will be determined. <code>weibull_min</code> means that a <a href="https://en.wikipedia.org/wiki/Weibull_distribution">Weibull distribution</a> will be fitted to your distance data for each sample and cutoffs will be determined by specifying quantile of observations above which sequence will be considered outliers. If you are using <code>mean</code>, simple multiple of those values computed for each sample will be considered cutoffs for identifying outliers. <strong><code>mean</code> should work for most datasets and is especially appropriate for shallow divergences where most window distances are at or close to <code>0</code></strong>.</p>
+<p><code>cutoffs</code> specifies multiple values considered as cutoffs. If you are using <code>mean</code> as your criterion (default), use multiples of those values, for example <code>2,3,5</code> etc. Defaults of <code>2,3,5,10,15,18,20,25,30</code> for <code>mean</code> criterion should be a useful starting point for most datasets. You can always trim with additional criteria and cutoffs after the initial analysis (see point 5 below under Interpreting the output). If using <code>weibull_min</code> criterion, use fractions of <code>1</code>, for example <code>0.9,0.995</code> etc. Default values that should work for most alignments are <code>0.9,0.95,0.97,0.99,0.995,0.999</code>. If the alignment contains many saturated or poorly aligned sites, a low setting may result in huge amount of data being trimmed from the original alignment. This is time-consuming and you may want to trim your alignment with a more stringent ‘block’ method before using <code>spruceup</code> or remove lower cutoff values from the list.</p>
+<p><code>manual_cutoffs</code> is an optional setting that allows manual modifications to cutoffs for individual samples. <em><strong>Important: the cutoff here is the absolute distance value on the <code>x</code> axis of your output plots where you want to draw the cutoff line, not where you expect the value of your <code>weibull_min</code> or <code>mean</code> to fall on that plot.</strong></em> It may prove useful if only one or a few samples have a significant proportion of poorly aligned sequences, skewing their overall cutoff such that they are not being flagged. If you find that this is case, however, you should probably rather be checking your data and pipeline for errors!</p>
+<h3 id="output">[output]</h3>
 <p>The <code>output</code> category tells the program how and where to save your analysis results. <em>Remember that by default any file will be written to directory from which you executed <code>spruceup</code> command. To change this behavior provide full paths.</em></p>
-<p><code>output_file_aln</code> is the name for your trimmed output 
-alignment(s). The actual name saved on your machine will have a prefix 
-signifying cutoff value used.</p>
+<p><code>output_file_aln</code> is the name for your trimmed output alignment(s). The actual name saved on your machine will have a prefix signifying cutoff value used.</p>
 <p><code>output_format</code> file format for the trimmed alignment. Choose from <code>fasta</code>, <code>phylip</code>, <code>phylip-int</code>, <code>nexus</code>, or <code>nexus-int</code>.</p>
-<p><code>report</code> name of files containing information on which 
-sequences were flagged as outliers. The actual name will have a prefix 
-signifying cutoff value used.</p>
+<p><code>report</code> name of files containing information on which sequences were flagged as outliers. The actual name will have a prefix signifying cutoff value used.</p>
 <p><code>log</code> is the name of the log with all analysis screen output.</p>
-<h2>
-<a id="user-content-examples-and-interpretation-of-results" class="anchor" href="#examples-and-interpretation-of-results" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Examples and interpretation of results</h2>
+<h2 id="examples-and-interpretation-of-results">Examples and interpretation of results</h2>
 <p>To use <code>spruceup</code> you will need to run the <code>spruceup</code> script from the command line and provide the name of your configuration file as the argument. If you downloaded and installed <code>spruceup</code> from source, the example alignment and config files can be found in <code>examples</code> subdirectory:</p>
-<div class="highlight highlight-source-shell"><pre><span class="pl-c1">cd</span> ./examples
-python -m spruceup config_example.conf</pre></div>
-<p>The example alignment is a subset of empirical, anonymized <a href="https://www.ultraconserved.org/" rel="nofollow">ultraconseved element or UCE</a> data set generated from insects.</p>
-<p>Once you run the script, the sequence alignment will be divided into a
- number of windows of the size and overlap you specified. The script 
-will then compute distances for each sample (alignment row: the sequence
- representing an individual, taxon, OTU etc.) in each window. This is 
-done all-by-all by default or all-by-fraction of samples, if specified. 
-You will see some messages along the way, including a progress bar that 
-will display the number of iterations (windows) and remaining time, as 
-we as the maximum amount of memory used for distance calculation.</p>
-<p><a href="http://localhost:6419/README_files/progress-bar.png" target="_blank" rel="noopener noreferrer"><img src="README_files/progress-bar.png" alt="progress-bar" style="max-width:100%;"></a></p>
-<p>Once all distances are calculated, <code>criterion</code> and <code>cutoffs</code> settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the <code>lognorm</code> criterion, specifying a quantile of <code>0.99</code>
- means that any sequence window that lies above 99th percentile of 
-distances of a given sample to other sample in that window will be 
-deemed an outlier and should be removed. In theory, setting of <code>0.99</code>
- should mean that 1% of all sequence windows will be removed from each 
-sample. In practice, this is not true because real-life sequence data 
-does not perfectly fit into lognormal distribution. Cutoff being 
-constant, certain samples may have many outlier (misaligned) sequence 
-fragments and more than 1% of sequence data removed, while others may 
-have no misaligned fragments and no outliers.</p>
-<p>You can now go back to your configuration file and try other cutoffs 
-or methods without the need to re-calculate distances (unless you would 
-like to use different correction or scaling). Simple load the generated <code>json</code> file (see below) with the <code>distances_object_file</code> option under <code>[input]</code> category.</p>
-<h3>
-<a id="user-content-interpreting-output" class="anchor" href="#interpreting-output" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Interpreting output</h3>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true"></a><span class="bu">cd</span> ./examples</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true"></a><span class="ex">python</span> -m spruceup config_example.conf</span></code></pre></div>
+<p>The example alignment is a subset of empirical, anonymized <a href="https://www.ultraconserved.org/">ultraconseved element or UCE</a> data set generated from insects.</p>
+<p>Once you run the script, the sequence alignment will be divided into a number of windows of the size and overlap you specified. The script will then compute distances for each sample (alignment row: the sequence representing an individual, taxon, OTU etc.) in each window. This is done all-by-all by default or all-by-fraction of samples, if specified. You will see some messages along the way, including a progress bar that will display the number of iterations (windows) and remaining time, as we as the maximum amount of memory used for distance calculation.</p>
+<figure>
+<img src="./README_files/progress-bar.png" alt="" /><figcaption>progress-bar</figcaption>
+</figure>
+<p>Once all distances are calculated, <code>criterion</code> and <code>cutoffs</code> settings will determine which windows are considered outliers and should be trimmed out of the alignment. When using the <code>weibull_min</code> criterion, specifying a quantile of <code>0.99</code> means that any sequence window that lies above 99th percentile of distances of a given sample to other sample in that window will be deemed an outlier and should be removed. In theory, setting of <code>0.99</code> should mean that 1% of all sequence windows will be removed from each sample. In practice, this is not true because real-life sequence data does not perfectly fit into the fitted density distribution. Cutoff being constant, certain samples may have many outlier (misaligned) sequence fragments and more than 1% of sequence data removed, while others may have no misaligned fragments and no outliers.</p>
+<p>You can now go back to your configuration file and try other cutoffs or methods without the need to re-calculate distances (unless you would like to use different correction or scaling). Simple load the generated <code>json</code> file (see below) with the <code>distances_object_file</code> option under <code>[input]</code> category.</p>
+<h3 id="interpreting-output">Interpreting output</h3>
 <p><code>spruceup</code> produces several types of output:</p>
-<ol>
-<li>
-<p>Report files ending with suffix <code>-report.txt</code>, one of which is written for each cutoff specified, which indicated by the prefix (e.g <code>0.95</code>, <code>0.99</code>
- and so forth). These files contain the distance cutoff value for each 
-sample and which sequence windows were determined to be outliers and 
-removed.</p>
-</li>
-<li>
-<p>Trimmed alignment files ending with suffix <code>-trimmed.fas/phylip/nexus</code>, again, one for each cutoff value. These are the alignments with outlier windows removed.</p>
-</li>
-<li>
-<p>Distance distribution <code>png</code> plots, one for each sample. 
-These images can be used to examine the distribution of distances for 
-each taxon, its fit to lognormal distribution, and cutoff value placed 
-on each sample given a cutoff.</p>
-</li>
+<ol type="1">
+<li><p>Report files ending with suffix <code>-report.txt</code>, one of which is written for each cutoff specified, which indicated by the prefix (e.g <code>0.95</code>, <code>0.99</code> and so forth). These files contain the distance cutoff value for each sample and which sequence windows were determined to be outliers and removed.</p></li>
+<li><p>Trimmed alignment files ending with suffix <code>-trimmed.fas/phylip/nexus</code>, again, one for each cutoff value. These are the alignments with outlier windows removed.</p></li>
+<li><p>Distance distribution <code>png</code> plots, one for each sample. These images can be used to examine the distribution of distances for each taxon, its fit to density distribution, and cutoff value placed on each sample given a cutoff.</p></li>
 </ol>
-<p>An example of distances plot is below. The header is the name of the 
-sample. The x-axis indicates distance to other samples, ranging from <code>0</code>
- to the maximum distance that was found for the sample. The y-axis 
-specifies relative number of windows. Blue bars comprise the histogram 
-of distances. Orange line is the fitted lognormal distribution (only 
-shown when using the <code>lognorm</code> criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.</p>
-<p>The first example plot below shows an sample with relatively smooth 
-distance distribution and few sequence windows with extreme values, none
- of which are greater than <code>0.25</code>. You may not be able to see
- individual window distances as visible histogram bars since the 
-distributions comprise thousands (in this small example) to hundreds of 
-thousands of distances.</p>
-<p><a href="http://localhost:6419/README_files/example-plot-good.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-good.png" alt="example-plot-good" style="max-width:100%;"></a></p>
-<p>The following plot shows a sample with less smooth distribution, 
-overall sequences fewer sequences due to missing data, as indicated by 
-the heigth of the histogram bars, and many outlier windows.</p>
-<p><a href="http://localhost:6419/README_files/example-plot-poor.png" target="_blank" rel="noopener noreferrer"><img src="README_files/example-plot-poor.png" alt="example-plot-poor" style="max-width:100%;"></a></p>
-<p>Both examples have been processed under the same cutoffs values, <code>0.95,0.97,0.99</code>
- quantiles of fitted lognormal distribution but in the poorly aligned 
-data the last falls outside of computed distance values. These plots, 
-combined with visual examinaton of report files and alignments should 
-serve you as a guide on what criterion and cutoff values make most sense
- for your dataset.</p>
-<ol start="4">
+<p>An example of distances plot is below. The header is the name of the sample. The x-axis indicates distance to other samples, ranging from <code>0</code> to the maximum distance that was found for the sample. The y-axis specifies relative number of windows. Blue bars comprise the histogram of distances. Orange line is the fitted Weibull distribution (only shown when using the <code>weibull_min</code> criterion) and the vertical dashed line indicates the cutoff above which any window will be deemed an outlier and removed.</p>
+<p>The first example plot below shows an sample with relatively smooth distance distribution and few sequence windows with extreme values, none of which are greater than <code>0.25</code>. You may not be able to see individual window distances as visible histogram bars since the distributions comprise thousands (in this small example) to hundreds of thousands of distances.</p>
+<figure>
+<img src="./README_files/example-plot-good.png" alt="" /><figcaption>example-plot-good</figcaption>
+</figure>
+<p>The following plot shows a sample with less smooth distribution, overall sequences fewer sequences due to missing data, as indicated by the heigth of the histogram bars, and many outlier windows.</p>
+<figure>
+<img src="./README_files/example-plot-poor.png" alt="" /><figcaption>example-plot-poor</figcaption>
+</figure>
+<p>Both examples have been processed under the same cutoffs values, <code>0.95,0.97,0.99</code> quantiles of fitted distribution but in the poorly aligned data the last falls outside of computed distance values. These plots, combined with visual examinaton of report files and alignments should serve you as a guide on what criterion and cutoff values make most sense for your dataset.</p>
+<ol start="4" type="1">
 <li>Log file</li>
 </ol>
-<p>This is a log file that will contain the same information that 
-appears on the terminal screen, excluding progress bar. It will log what
-  steps were taken by the program, their timing, show information about 
-how many/what proportion of sites were trimmed at each cutoff and output
- file names that were written.</p>
-<ol start="5">
+<p>This is a log file that will contain the same information that appears on the terminal screen, excluding progress bar. It will log what steps were taken by the program, their timing, show information about how many/what proportion of sites were trimmed at each cutoff and output file names that were written.</p>
+<ol start="5" type="1">
 <li>Distances Python object file</li>
 </ol>
-<p>Calculating distances with <code>spruceup</code> is often the most 
-time- and memory-consuming part of the process, although trimming very 
-large numbers of positions from the alignment can also take a long time.
- Because of this <code>spruceup</code> writes a <code>json</code> format
- file each time you run an analysis from scratch, allowing you to load 
-it up later and trim with different criterion or cutoff values. Note 
-that distances will be specific for each window size, overlap, and taxon
- fraction and you will need to re-run the whole analysis if you want to 
-adjust these parameters. Note that the <code>json</code> file can be quite large at &gt;150MB per 100,000 windows and 100 taxa.</p>
-<h2>
-<a id="user-content-testing" class="anchor" href="#testing" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Testing</h2>
-<p>Tests written for <code>spruceup</code> code use the Python's standard library module <code>unittest</code> and are integrated with <code>setuptools</code>. This means that if you downloaded the <code>spruceup</code> source code, you can run tests from the top <code>spruceup</code> directory after installing with:</p>
+<p>Calculating distances with <code>spruceup</code> is often the most time- and memory-consuming part of the process, although trimming very large numbers of positions from the alignment can also take a long time. Because of this <code>spruceup</code> writes a <code>json</code> format file each time you run an analysis from scratch, allowing you to load it up later and trim with different criterion or cutoff values. Note that distances will be specific for each window size, overlap, and taxon fraction and you will need to re-run the whole analysis if you want to adjust these parameters. Note that the <code>json</code> file can be quite large at &gt;150MB per 100,000 windows and 100 taxa.</p>
+<h2 id="testing">Testing</h2>
+<p><strong>Note:</strong> As of version 2024.7.20 and newer, the tests are not working because <code>spruceup</code> completely changed the way distances are computed. Stay tuned as I update the tests.</p>
+<p>Tests written for <code>spruceup</code> code use the Python’s standard library module <code>unittest</code> and are integrated with <code>setuptools</code>. This means that if you downloaded the <code>spruceup</code> source code, you can run tests from the top <code>spruceup</code> directory after installing with:</p>
 <pre><code>python setup.py install
-python setup.py test
-</code></pre>
-<p>These tests are likely to take several minutes because they include metamorphic tests (cf. <a href="https://doi.org/10.1186/1471-2105-15-S16-S15" rel="nofollow">Giannoulatou et al. 2014</a>) which involve running <code>spruceup</code>
- on simulated data with known properties. You can speed things up by 
-increasing the number of cores in the metamorphic test configuration 
-file found under <code>tests/metamorphic_tests/simulation.conf</code>.
-If you want just a quick check of basic functions, run unit tests 
-without the time-consuming metamorphic tests. To do this, from the top <code>spruceup</code> directory run:</p>
-<pre><code>python -m unittest tests.test_simple
-</code></pre>
-<h2>
-<a id="user-content-issues-and-development" class="anchor" href="#issues-and-development" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Issues and development</h2>
+python setup.py test</code></pre>
+<p>These tests are likely to take several minutes because they include metamorphic tests (cf. <a href="https://doi.org/10.1186/1471-2105-15-S16-S15">Giannoulatou et al. 2014</a>) which involve running <code>spruceup</code> on simulated data with known properties. You can speed things up by increasing the number of cores in the metamorphic test configuration file found under <code>tests/metamorphic_tests/simulation.conf</code>. If you want just a quick check of basic functions, run unit tests without the time-consuming metamorphic tests. To do this, from the top <code>spruceup</code> directory run:</p>
+<pre><code>python -m unittest tests.test_simple</code></pre>
+<h2 id="issues-and-development">Issues and development</h2>
 <p>If you encounter bugs or problems running the code, <a href="https://help.github.com/en/articles/creating-an-issue">create a new issue on GitHub</a>. Everyone is encouraged to <a href="https://github.com/firstcontributions/first-contributions">contribute</a>.</p>
-
-              </article>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    
-
-  </div>
-  <div>&nbsp;</div>
-  </div><script>
-    function showCanonicalImages() {
-      var images = document.getElementsByTagName('img');
-      if (!images) {
-        return;
-      }
-      for (var index = 0; index < images.length; index++) {
-        var image = images[index];
-        if (image.getAttribute('data-canonical-src') && image.src !== image.getAttribute('data-canonical-src')) {
-          image.src = image.getAttribute('data-canonical-src');
-        }
-      }
-    }
-
-    function scrollToHash() {
-      if (location.hash && !document.querySelector(':target')) {
-        var element = document.getElementById('user-content-' + location.hash.slice(1));
-        if (element) {
-           element.scrollIntoView();
-        }
-      }
-    }
-
-    function autorefreshContent(eventSourceUrl) {
-      var initialTitle = document.title;
-      var contentElement = document.getElementById('grip-content');
-      var source = new EventSource(eventSourceUrl);
-      var isRendering = false;
-
-      source.onmessage = function(ev) {
-        var msg = JSON.parse(ev.data);
-        if (msg.updating) {
-          isRendering = true;
-          document.title = '(Rendering) ' + document.title;
-        } else {
-          isRendering = false;
-          document.title = initialTitle;
-          contentElement.innerHTML = msg.content;
-          showCanonicalImages();
-        }
-      }
-
-      source.onerror = function(e) {
-        if (e.readyState === EventSource.CLOSED && isRendering) {
-          isRendering = false;
-          document.title = initialTitle;
-        }
-      }
-    }
-
-    window.onhashchange = function() {
-      scrollToHash();
-    }
-
-    window.onload = function() {
-      scrollToHash();
-    }
-
-    showCanonicalImages();
-
-    var autorefreshUrl = document.getElementById('preview-page').getAttribute('data-autorefresh-url');
-    if (autorefreshUrl) {
-      autorefreshContent(autorefreshUrl);
-    }
-  </script>
-
-</body></html>
+</body>
+</html>
