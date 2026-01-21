@@ -24,7 +24,7 @@ setup(
     python_requires='>=3.6.0, !=3.7.4',
     install_requires=[
         'matplotlib==3.0.3',
-        'numpy==1.17',
+        'numpy==1.22.0',
         'scipy==1.3.1',
         'psutil==5.6.6',
         'tqdm==4.29.1',
